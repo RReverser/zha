@@ -323,6 +323,9 @@ class Device(LogMixin, EventBase):
     @cached_property
     def name(self) -> str:
         """Return device name."""
+        # Nabu Casa devices include a brand name in the model
+        if self.manufacturer == "Nabu Casa":
+            return self.model
         return f"{self.manufacturer} {self.model}"
 
     @property

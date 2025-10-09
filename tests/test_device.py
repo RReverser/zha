@@ -353,10 +353,44 @@ async def test_device_is_active_coordinator(
     assert not stale_coordinator.is_active_coordinator
 
 
-async def test_coordinator_info_uses_node_info(
+@pytest.mark.parametrize(
+    # node_info is populated with manf and model strings
+    ("manf", "model", "expected_manf", "expected_model", "expected_name"),
+    [
+        ("RealManf", "RealModel", "RealManf", "RealModel", "RealManf RealModel"),
+        (
+            "RealManf",
+            None,
+            "RealManf",
+            "Generic Zigbee Coordinator (EZSP)",
+            "RealManf Generic Zigbee Coordinator (EZSP)",
+        ),
+        (None, "RealModel", "", "RealModel", " RealModel"),
+        (
+            None,
+            None,
+            "",
+            "Generic Zigbee Coordinator (EZSP)",
+            " Generic Zigbee Coordinator (EZSP)",
+        ),
+        (
+            "Nabu Casa",
+            "Home Assistant Connect ZBT-2",
+            "Nabu Casa",
+            "Home Assistant Connect ZBT-2",
+            "Home Assistant Connect ZBT-2",
+        ),
+    ],
+)
+async def test_coordinator_info_names(
     zha_gateway: Gateway,
+    manf,
+    model,
+    expected_manf,
+    expected_model,
+    expected_name,
 ) -> None:
-    """Test that the current coordinator uses strings from `node_info`."""
+    """Test that the current coordinator device is named correctly."""
 
     current_coord_dev = zigpy_device(
         zha_gateway, ieee="aa:bb:cc:dd:ee:ff:00:11", nwk=0x0000
@@ -367,38 +401,15 @@ async def test_coordinator_info_uses_node_info(
 
     app = current_coord_dev.application
     app.state.node_info.ieee = current_coord_dev.ieee
-    app.state.node_info.model = "Real Coordinator Model"
-    app.state.node_info.manufacturer = "Real Coordinator Manufacturer"
+    app.state.node_info.manufacturer = manf
+    app.state.node_info.model = model
 
     current_coordinator = await join_zigpy_device(zha_gateway, current_coord_dev)
     assert current_coordinator.is_active_coordinator
 
-    assert current_coordinator.model == "Real Coordinator Model"
-    assert current_coordinator.manufacturer == "Real Coordinator Manufacturer"
-
-
-async def test_coordinator_info_generic_name(
-    zha_gateway: Gateway,
-) -> None:
-    """Test that the current coordinator uses strings from `node_info`."""
-
-    current_coord_dev = zigpy_device(
-        zha_gateway, ieee="aa:bb:cc:dd:ee:ff:00:11", nwk=0x0000
-    )
-    current_coord_dev.node_desc = current_coord_dev.node_desc.replace(
-        logical_type=zdo_t.LogicalType.Coordinator
-    )
-
-    app = current_coord_dev.application
-    app.state.node_info.ieee = current_coord_dev.ieee
-    app.state.node_info.model = None
-    app.state.node_info.manufacturer = None
-
-    current_coordinator = await join_zigpy_device(zha_gateway, current_coord_dev)
-    assert current_coordinator.is_active_coordinator
-
-    assert current_coordinator.model == "Generic Zigbee Coordinator (EZSP)"
-    assert current_coordinator.manufacturer == ""
+    assert current_coordinator.manufacturer == expected_manf
+    assert current_coordinator.model == expected_model
+    assert current_coordinator.name == expected_name
 
 
 async def test_async_get_clusters(
