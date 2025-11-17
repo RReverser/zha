@@ -601,6 +601,37 @@ async def test_gateway_device_initialized(
     )
 
 
+async def test_gateway_device_rejoined(
+    zha_gateway: Gateway,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test device rejoin re-reads attributes from device instead of using cache."""
+
+    # Create and join a device initially
+    zigpy_dev_basic = create_mock_zigpy_device(zha_gateway, ZIGPY_DEVICE_BASIC)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev_basic)
+
+    # Verify device is initialized
+    assert zha_device.status.name == "INITIALIZED"
+    assert zha_device.available is True
+
+    # Mock async_initialize to verify it's called with from_cache=False on rejoin
+    with patch.object(
+        zha_device, "async_initialize", wraps=zha_device.async_initialize
+    ) as mock_init:
+        # Simulate device rejoin by calling async_device_initialized again
+        # This triggers _async_device_rejoined since the device status is already INITIALIZED
+        await zha_gateway.async_device_initialized(zigpy_dev_basic)
+        await zha_gateway.async_block_till_done()
+
+        # Verify async_initialize was called with from_cache=False to force re-reading attributes
+        assert mock_init.await_count == 1
+        assert mock_init.await_args == call(from_cache=False)
+
+    # Verify the log message indicates a rejoin
+    assert "has been reset and re-added or its nwk address changed" in caplog.text
+
+
 def test_gateway_raw_device_initialized(
     zha_gateway: Gateway,
 ) -> None:
