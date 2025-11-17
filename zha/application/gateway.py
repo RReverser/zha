@@ -646,9 +646,14 @@ class Gateway(AsyncUtilMixin, EventBase):
             zha_device.nwk,
             zha_device.ieee,
         )
+        zha_device.available = True
+        zha_device.on_network = True
+
         # we don't have to do this on a nwk swap
         # but we don't have a way to tell currently
-        await zha_device.async_configure()
+        async with self.request_priority(t.PacketPriority.HIGH):
+            await zha_device.async_configure()
+            await zha_device.async_initialize(from_cache=False)
 
         self.emit(
             ZHA_GW_MSG_DEVICE_FULL_INIT,
@@ -659,9 +664,6 @@ class Gateway(AsyncUtilMixin, EventBase):
                 )
             ),
         )
-        # Mark the device as unavailable, `async_initialize` will be called later
-        zha_device.available = False
-        zha_device.on_network = True
 
     async def async_create_zigpy_group(
         self,
