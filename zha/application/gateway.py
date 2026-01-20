@@ -33,7 +33,6 @@ from zigpy.types.named import EUI64
 
 from zha.application import discovery
 from zha.application.const import (
-    CONF_USE_THREAD,
     UNKNOWN_MANUFACTURER,
     UNKNOWN_MODEL,
     ZHA_GW_MSG,
@@ -215,15 +214,6 @@ class Gateway(AsyncUtilMixin, EventBase):
 
         if CONF_NWK_VALIDATE_SETTINGS not in app_config:
             app_config[CONF_NWK_VALIDATE_SETTINGS] = True
-
-        # The bellows UART thread sometimes propagates a cancellation into the main Core
-        # event loop, when a connection to a TCP coordinator fails in a specific way
-        if (
-            CONF_USE_THREAD not in app_config
-            and self.radio_type is RadioType.ezsp
-            and app_config[CONF_DEVICE][CONF_DEVICE_PATH].startswith("socket://")
-        ):
-            app_config[CONF_USE_THREAD] = False
 
         return self.radio_type.controller, app_config
 

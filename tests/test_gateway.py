@@ -449,8 +449,8 @@ async def test_remove_device_cleans_up_group_membership(
     ("device_path", "thread_state", "config_override"),
     [
         ("/dev/ttyUSB0", True, {}),
-        ("socket://192.168.1.123:9999", False, {}),
-        ("socket://192.168.1.123:9999", True, {"use_thread": True}),
+        ("socket://192.168.1.123:9999", True, {}),
+        ("socket://192.168.1.123:9999", False, {"use_thread": False}),
     ],
 )
 async def test_gateway_initialize_bellows_thread(
@@ -460,7 +460,7 @@ async def test_gateway_initialize_bellows_thread(
     zigpy_app_controller: ControllerApplication,
     zha_data: ZHAData,
 ) -> None:
-    """Test ZHA disabling the UART thread when connecting to a TCP coordinator."""
+    """Test ZHA thread configuration when connecting to coordinators."""
     zha_data.config.coordinator_configuration.path = device_path
     zha_data.zigpy_config = config_override
 
