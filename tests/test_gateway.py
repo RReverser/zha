@@ -25,11 +25,7 @@ from tests.common import (
     zigpy_device_from_json,
 )
 from zha.application import Platform
-from zha.application.const import (
-    ZHA_GW_MSG,
-    ZHA_GW_MSG_CONNECTION_LOST,
-    RadioType,
-)
+from zha.application.const import ZHA_GW_MSG, ZHA_GW_MSG_CONNECTION_LOST, RadioType
 from zha.application.gateway import (
     ConnectionLostEvent,
     DeviceJoinedDeviceInfo,
