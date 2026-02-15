@@ -16,7 +16,7 @@ from zigpy.zcl.foundation import Status
 
 from zha.application import Platform
 from zha.application.platforms import (
-    ClusterHandlerMatch,
+    ClusterMatch,
     PlatformEntity,
     PlatformFeatureGroup,
     register_entity,
@@ -133,7 +133,7 @@ class Cover(BaseCover):
 
     _attr_translation_key: str = "cover"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_COVER}),
     )
 
@@ -710,7 +710,7 @@ class Shade(BaseCover):
     _attr_device_class = CoverDeviceClass.SHADE
     _attr_translation_key: str = "shade"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_ON_OFF}),
         optional_cluster_handlers=frozenset(
             {CLUSTER_HANDLER_LEVEL, CLUSTER_HANDLER_SHADE}
@@ -909,7 +909,7 @@ class KeenVent(Shade):
     _attr_device_class = CoverDeviceClass.DAMPER
     _attr_translation_key: str = "keen_vent"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_LEVEL, CLUSTER_HANDLER_ON_OFF}),
         manufacturers=frozenset({"Keen Home Inc"}),
         feature_priority=(PlatformFeatureGroup.LIGHT_OR_SWITCH_OR_SHADE, 1),

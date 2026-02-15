@@ -12,6 +12,10 @@ from zigpy.profiles.zha import PROFILE_ID as ZHA_PROFILE_ID
 from zigpy.profiles.zll import PROFILE_ID as ZLL_PROFILE_ID
 
 from zha.application import const
+from zha.application.platforms.cluster_config import (
+    ClusterConfigContribution,
+    ClusterConfigMerger,
+)
 from zha.async_ import gather_with_limited_concurrency
 from zha.zigbee.cluster_handlers import ClusterHandler
 from zha.zigbee.cluster_handlers.const import (
@@ -51,6 +55,8 @@ class Endpoint:
         self._all_cluster_handlers: dict[str, ClusterHandler] = {}
         self._claimed_cluster_handlers: dict[str, ClusterHandler] = {}
         self._client_cluster_handlers: dict[str, ClientClusterHandler] = {}
+        self._cluster_config_merger = ClusterConfigMerger()
+        self._cluster_config_order: int = 0
         self._unique_id: str = f"{device.unique_id}-{zigpy_endpoint.endpoint_id}"
 
     def on_remove(self) -> None:
@@ -64,6 +70,7 @@ class Endpoint:
             handler.on_remove()
 
         self.client_cluster_handlers.clear()
+        self._cluster_config_merger.reset()
 
     @functools.cached_property
     def device(self) -> Device:
@@ -223,13 +230,68 @@ class Endpoint:
 
     async def async_initialize(self, from_cache: bool = False) -> None:
         """Initialize claimed cluster handlers."""
+        self._apply_merged_cluster_configs()
         await self._execute_handler_tasks(
             "async_initialize", from_cache, max_concurrency=1
         )
 
     async def async_configure(self) -> None:
         """Configure claimed cluster handlers."""
+        self._apply_merged_cluster_configs()
         await self._execute_handler_tasks("async_configure")
+
+    def reset_cluster_config_contributions(self) -> None:
+        """Clear any entity/quirk cluster configuration contributions."""
+        self._cluster_config_merger.reset()
+        self._cluster_config_order = 0
+
+    def add_cluster_config_contribution(
+        self, contribution: ClusterConfigContribution
+    ) -> None:
+        """Record a cluster configuration contribution for this endpoint."""
+        self._cluster_config_merger.add(contribution)
+
+    def next_cluster_config_order(self) -> int:
+        """Return a monotonically increasing contribution order value."""
+        order = self._cluster_config_order
+        self._cluster_config_order += 1
+        return order
+
+    def _apply_merged_cluster_configs(self) -> None:
+        """Apply merged entity cluster config to cluster handler instances."""
+        merged = self._cluster_config_merger.merge()
+        if not merged:
+            return
+
+        for target, config in merged.items():
+            if target.endpoint_id != self.id:
+                continue
+
+            handler_id = (
+                f"{target.endpoint_id}:0x{target.cluster_id:04x}_client"
+                if target.is_client
+                else f"{target.endpoint_id}:0x{target.cluster_id:04x}"
+            )
+            cluster_handler = self.all_cluster_handlers.get(handler_id) or (
+                self.client_cluster_handlers.get(handler_id)
+            )
+            if cluster_handler is None:
+                continue
+
+            if config.bind is not None:
+                cluster_handler.BIND = config.bind
+
+            if config.reporting:
+                cluster_handler.REPORT_CONFIG = tuple(
+                    {"attr": conf.attribute, "config": conf.config}
+                    for conf in config.reporting
+                )
+
+            if config.init_attrs:
+                cluster_handler.ZCL_INIT_ATTRS = dict(config.init_attrs)
+
+            # Ensure any explicitly configured handler is configured/initialized.
+            self.claim_cluster_handlers([cluster_handler])
 
     async def _execute_handler_tasks(
         self, func_name: str, *args: Any, max_concurrency: int | None = None

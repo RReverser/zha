@@ -956,6 +956,9 @@ class Device(LogMixin, EventBase):
     def _discover_new_entities(self) -> None:
         new_entities: Iterable[BaseEntity]
 
+        for endpoint in self._endpoints.values():
+            endpoint.reset_cluster_config_contributions()
+
         if self.is_active_coordinator:
             new_entities = discovery.discover_coordinator_device_entities(self)
         elif self.is_coordinator:

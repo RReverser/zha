@@ -15,7 +15,7 @@ from zha.application.const import ENTITY_METADATA
 from zha.application.platforms import (
     BaseEntity,
     BaseEntityInfo,
-    ClusterHandlerMatch,
+    ClusterMatch,
     EntityCategory,
     PlatformEntity,
     register_entity,
@@ -121,7 +121,7 @@ class IdentifyButton(Button):
     _kwargs = {}
     _args = [DEFAULT_DURATION]
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_IDENTIFY})
     )
 
@@ -188,7 +188,7 @@ class FrostLockResetButton(WriteAttributeButton):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_translation_key = "reset_frost_lock"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"tuya_manufacturer"}),
         manufacturers=frozenset({"_TZE200_htnnfasr"}),
     )
@@ -205,7 +205,7 @@ class NoPresenceStatusResetButton(WriteAttributeButton):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_translation_key = "reset_no_presence_status"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.motion.ac01"}),
     )
@@ -220,7 +220,7 @@ class AqaraPetFeederFeedButton(WriteAttributeButton):
     _attribute_value = 1
     _attr_translation_key = "feed"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"aqara.feeder.acn001"}),
     )
@@ -236,7 +236,7 @@ class AqaraSelfTestButton(WriteAttributeButton):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_translation_key = "self_test"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.sensor_smoke.acn03"}),
     )

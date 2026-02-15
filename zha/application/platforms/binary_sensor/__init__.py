@@ -19,7 +19,7 @@ from zigpy.zcl.clusters.security import IasZone
 from zha.application import Platform
 from zha.application.platforms import (
     BaseEntityInfo,
-    ClusterHandlerMatch,
+    ClusterMatch,
     EntityCategory,
     PlatformEntity,
     PlatformFeatureGroup,
@@ -167,7 +167,7 @@ class Accelerometer(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.MOVING
     _attr_translation_key: str = "accelerometer"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_ACCELEROMETER})
     )
 
@@ -180,7 +180,7 @@ class Occupancy(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.OCCUPANCY
     _attr_primary_weight = 2
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_OCCUPANCY})
     )
 
@@ -193,7 +193,7 @@ class HueOccupancy(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.OCCUPANCY
     _attr_primary_weight = 3
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_HUE_OCCUPANCY})
     )
 
@@ -206,7 +206,7 @@ class Opening(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.OPENING
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         client_cluster_handlers=frozenset({CLUSTER_HANDLER_ON_OFF}),
         not_profile_device_types=frozenset(
             {
@@ -238,7 +238,7 @@ class BinaryInputWithDescription(BinarySensor):
 
     _attribute_name = "present_value"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_BINARY_INPUT})
     )
 
@@ -261,7 +261,7 @@ class BinaryInput(BinarySensor):
     _attribute_name = "present_value"
     _attr_translation_key: str = "binary_input"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_BINARY_INPUT})
     )
 
@@ -281,7 +281,7 @@ class IkeaMotion(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.MOTION
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         client_cluster_handlers=frozenset({CLUSTER_HANDLER_ON_OFF}),
         manufacturers=frozenset({"IKEA of Sweden"}),
         models=frozenset({"TRADFRI motion sensor"}),
@@ -297,7 +297,7 @@ class PhilipsMotion(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.MOTION
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         client_cluster_handlers=frozenset({CLUSTER_HANDLER_ON_OFF}),
         manufacturers=frozenset({"Philips"}),
         models=frozenset({"SML001", "SML002"}),
@@ -314,9 +314,7 @@ class IASZone(BinarySensor):
 
     # TODO: split this sensor off into individual sensor classes per IASZone type
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ZONE})
-    )
+    _cluster_match = ClusterMatch(cluster_handlers=frozenset({CLUSTER_HANDLER_ZONE}))
 
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
@@ -352,7 +350,7 @@ class SinopeLeakStatus(BinarySensor):
     _attr_device_class = BinarySensorDeviceClass.MOISTURE
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_ZONE}),
         models=frozenset({"WL4200", "WL4200S"}),
     )
@@ -367,7 +365,7 @@ class FrostLock(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.LOCK
     _attr_translation_key: str = "frost_lock"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"tuya_manufacturer"}),
         manufacturers=frozenset({"_TZE200_htnnfasr"}),
     )
@@ -383,9 +381,7 @@ class ReplaceFilter(BinarySensor):
     _attr_entity_category: EntityCategory = EntityCategory.DIAGNOSTIC
     _attr_translation_key: str = "replace_filter"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"ikea_airpurifier"})
-    )
+    _cluster_match = ClusterMatch(cluster_handlers=frozenset({"ikea_airpurifier"}))
 
 
 @register_entity(AQARA_OPPLE_CLUSTER)
@@ -396,7 +392,7 @@ class AqaraPetFeederErrorDetected(BinarySensor):
     _unique_id_suffix = "error_detected"
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"aqara.feeder.acn001"}),
     )
@@ -411,7 +407,7 @@ class XiaomiPlugConsumerConnected(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PLUG
     _attr_translation_key: str = "consumer_connected"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.plug.mmeu01", "lumi.plug.maeu01"}),
     )
@@ -425,7 +421,7 @@ class AqaraThermostatWindowOpen(BinarySensor):
     _unique_id_suffix = "window_open"
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.WINDOW
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.airrtc.agl001"}),
     )
@@ -440,7 +436,7 @@ class AqaraThermostatValveAlarm(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
     _attr_translation_key: str = "valve_alarm"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.airrtc.agl001"}),
     )
@@ -455,7 +451,7 @@ class AqaraThermostatCalibrated(BinarySensor):
     _attr_entity_category: EntityCategory = EntityCategory.DIAGNOSTIC
     _attr_translation_key: str = "calibrated"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.airrtc.agl001"}),
     )
@@ -470,7 +466,7 @@ class AqaraThermostatExternalSensor(BinarySensor):
     _attr_entity_category: EntityCategory = EntityCategory.DIAGNOSTIC
     _attr_translation_key: str = "external_sensor"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.airrtc.agl001"}),
     )
@@ -485,7 +481,7 @@ class AqaraLinkageAlarmState(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.SMOKE
     _attr_translation_key: str = "linkage_alarm_state"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.sensor_smoke.acn03"}),
     )
@@ -500,7 +496,7 @@ class AqaraE1CurtainMotorOpenedByHandBinarySensor(BinarySensor):
     _attr_translation_key = "hand_open"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.curtain.agl001"}),
     )
@@ -516,7 +512,7 @@ class DanfossMountingModeActive(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.OPENING
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
@@ -530,7 +526,7 @@ class DanfossHeatRequired(BinarySensor):
     _attribute_name = "heat_required"
     _attr_translation_key: str = "heat_required"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
@@ -546,7 +542,7 @@ class DanfossPreheatStatus(BinarySensor):
     _attr_entity_registry_enabled_default = False
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )

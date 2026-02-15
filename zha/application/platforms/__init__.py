@@ -68,8 +68,8 @@ class PlatformFeatureGroup(StrEnum):
 
 
 @dataclasses.dataclass(frozen=True)
-class ClusterHandlerMatch:
-    """Declares cluster handler requirements for an entity class."""
+class ClusterMatch:
+    """Declares cluster requirements for an entity class."""
 
     cluster_handlers: frozenset[str] = frozenset()
     client_cluster_handlers: frozenset[str] = frozenset()
@@ -101,6 +101,25 @@ class ClusterHandlerMatch:
 
     # For a given feature, only entities with the highest priority will be considered
     feature_priority: tuple[PlatformFeatureGroup, int] | None = None
+
+    @property
+    def clusters(self) -> frozenset[str]:
+        """Alias for server cluster requirements."""
+        return self.cluster_handlers
+
+    @property
+    def client_clusters(self) -> frozenset[str]:
+        """Alias for client cluster requirements."""
+        return self.client_cluster_handlers
+
+    @property
+    def optional_clusters(self) -> frozenset[str]:
+        """Alias for optional server cluster requirements."""
+        return self.optional_cluster_handlers
+
+
+# Backwards-compat alias while entity modules migrate to `_cluster_match`.
+ClusterHandlerMatch = ClusterMatch
 
 
 def register_entity[T: type[PlatformEntity]](cluster_id: ClusterId) -> Callable[[T], T]:
@@ -439,7 +458,8 @@ class PlatformEntity(BaseEntity):
     _migrate_platform_unique_ids: tuple[tuple[UniqueIdMigration, str]] | None = None
 
     # Auto-discovery for the entity
-    _cluster_handler_match: ClusterHandlerMatch | None
+    _cluster_match: ClusterMatch | None = None
+    _cluster_handler_match: ClusterMatch | None = None
 
     def __init__(
         self,
@@ -475,6 +495,11 @@ class PlatformEntity(BaseEntity):
 
         self._device: Device = device
         self._endpoint = endpoint
+
+    @classmethod
+    def get_cluster_match(cls) -> ClusterMatch | None:
+        """Return the entity cluster match declaration."""
+        return cls._cluster_match or cls._cluster_handler_match
 
     def _init_from_quirks_metadata(self, entity_metadata: EntityMetadata) -> None:
         """Init this entity from the quirks metadata."""

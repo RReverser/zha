@@ -28,7 +28,7 @@ from zha.application.const import (
 )
 from zha.application.platforms import (
     BaseEntityInfo,
-    ClusterHandlerMatch,
+    ClusterMatch,
     PlatformEntity,
     register_entity,
 )
@@ -74,7 +74,7 @@ class Siren(PlatformEntity):
     _attr_fallback_name: str = "Siren"
     _attr_primary_weight = 4
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         cluster_handlers=frozenset({CLUSTER_HANDLER_IAS_WD}),
     )
 

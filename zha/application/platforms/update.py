@@ -16,7 +16,7 @@ from zigpy.zcl.foundation import Status
 from zha.application import Platform
 from zha.application.platforms import (
     BaseEntityInfo,
-    ClusterHandlerMatch,
+    ClusterMatch,
     EntityCategory,
     PlatformEntity,
     register_entity,
@@ -283,7 +283,7 @@ class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
 
     _unique_id_suffix = "firmware_update"
 
-    _cluster_handler_match = ClusterHandlerMatch(
+    _cluster_match = ClusterMatch(
         client_cluster_handlers=frozenset({CLUSTER_HANDLER_OTA})
     )
 
@@ -333,9 +333,7 @@ class FirmwareUpdateServerEntity(BaseFirmwareUpdateEntity):
     """Representation of a ZHA firmware update entity."""
 
     _unique_id_suffix = "firmware_update"
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_OTA})
-    )
+    _cluster_match = ClusterMatch(cluster_handlers=frozenset({CLUSTER_HANDLER_OTA}))
 
     def __init__(
         self,
