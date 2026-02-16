@@ -223,16 +223,14 @@ class Sensor(PlatformEntity):
         **kwargs: Any,
     ) -> None:
         """Init this sensor."""
-        self._cluster_handler: Cluster = clusters[0]
+        self._cluster: Cluster = clusters[0]
         self._attr_def: foundation.ZCLAttributeDef | None = None
 
         if self._attribute_name is not None:
             # If the attribute definition does not exist, this entity will be filtered
             # out via `is_supported`
             with contextlib.suppress(KeyError):
-                self._attr_def = self._cluster_handler.find_attribute(
-                    self._attribute_name
-                )
+                self._attr_def = self._cluster.find_attribute(self._attribute_name)
 
         super().__init__(clusters, endpoint, device, **kwargs)
         self.recompute_capabilities()
@@ -247,16 +245,16 @@ class Sensor(PlatformEntity):
             AttributeWrittenEvent,
         ):
             self._on_remove_callbacks.append(
-                self._cluster_handler.on_event(
+                self._cluster.on_event(
                     event_type.event_type,
-                    self.handle_cluster_handler_attribute_updated,
+                    self.handle_cluster_attribute_updated,
                 )
             )
 
     def _is_supported(self) -> bool:
         if (
-            self._attribute_name not in self._cluster_handler.attributes_by_name
-        ) or self._cluster_handler.is_attribute_unsupported(self._attribute_name):
+            self._attribute_name not in self._cluster.attributes_by_name
+        ) or self._cluster.is_attribute_unsupported(self._attribute_name):
             _LOGGER.debug(
                 "%s is not supported - skipping %s entity creation",
                 self._attribute_name,
@@ -266,7 +264,7 @@ class Sensor(PlatformEntity):
 
         if (
             self._skip_creation_if_no_attr_cache
-            and self._cluster_handler.get(self._attribute_name) is None
+            and self._cluster.get(self._attribute_name) is None
         ):
             return False
 
@@ -336,7 +334,7 @@ class Sensor(PlatformEntity):
     def native_value(self) -> date | datetime | str | int | float | None:
         """Return the state of the entity."""
         assert self._attribute_name is not None
-        raw_state = self._cluster_handler.get(self._attribute_name)
+        raw_state = self._cluster.get(self._attribute_name)
         if raw_state is None:
             return None
         if self._is_non_value(raw_state):
@@ -350,7 +348,7 @@ class Sensor(PlatformEntity):
         await super().async_update()
 
         attrs_to_read: list[str] = []
-        cluster_name = self.endpoint.resolve_cluster_name(self._cluster_handler)
+        cluster_name = self.endpoint.resolve_cluster_name(self._cluster)
         polling_attrs = getattr(self, "_polling_attrs", None)
         if polling_attrs:
             attrs_to_read.extend(polling_attrs)
@@ -370,9 +368,9 @@ class Sensor(PlatformEntity):
             if attr in seen:
                 continue
             seen.add(attr)
-            if attr not in self._cluster_handler.attributes_by_name:
+            if attr not in self._cluster.attributes_by_name:
                 continue
-            if self._cluster_handler.is_attribute_unsupported(attr):
+            if self._cluster.is_attribute_unsupported(attr):
                 continue
             deduped_attrs.append(attr)
 
@@ -381,7 +379,7 @@ class Sensor(PlatformEntity):
             rest = deduped_attrs[CLUSTER_READS_PER_REQ:]
             while chunk:
                 await safe_read(
-                    self._cluster_handler,
+                    self._cluster,
                     chunk,
                     allow_cache=False,
                     only_cache=False,
@@ -390,7 +388,7 @@ class Sensor(PlatformEntity):
                 rest = rest[CLUSTER_READS_PER_REQ:]
             self.maybe_emit_state_changed_event()
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
         event: AttributeReadEvent
         | AttributeReportedEvent
@@ -725,18 +723,14 @@ class AnalogInputSensor(Sensor):
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
         super().recompute_capabilities()
-        description = self._cluster_handler.get(
-            AnalogInput.AttributeDefs.description.name
-        )
-        application_type = self._cluster_handler.get(
+        description = self._cluster.get(AnalogInput.AttributeDefs.description.name)
+        application_type = self._cluster.get(
             AnalogInput.AttributeDefs.application_type.name
         )
-        engineering_units = self._cluster_handler.get(
+        engineering_units = self._cluster.get(
             AnalogInput.AttributeDefs.engineering_units.name
         )
-        resolution = self._cluster_handler.get(
-            AnalogInput.AttributeDefs.resolution.name
-        )
+        resolution = self._cluster.get(AnalogInput.AttributeDefs.resolution.name)
 
         self._attr_fallback_name = description
 
@@ -763,19 +757,13 @@ class AnalogInputSensor(Sensor):
 
     def _is_supported(self) -> bool:
         """Return True if this sensor is supported."""
-        if (
-            self._cluster_handler.get(AnalogInput.AttributeDefs.description.name)
-            is None
-        ):
+        if self._cluster.get(AnalogInput.AttributeDefs.description.name) is None:
             return False
 
         # The units are determined by one of these
         if (
-            self._cluster_handler.get(AnalogInput.AttributeDefs.application_type.name)
-            is None
-            and self._cluster_handler.get(
-                AnalogInput.AttributeDefs.engineering_units.name
-            )
+            self._cluster.get(AnalogInput.AttributeDefs.application_type.name) is None
+            and self._cluster.get(AnalogInput.AttributeDefs.engineering_units.name)
             is None
         ):
             return False
@@ -837,13 +825,13 @@ class Battery(Sensor):
     def state(self) -> dict[str, Any]:
         """Return the state for battery sensors."""
         response = super().state
-        battery_size = self._cluster_handler.get("battery_size")
+        battery_size = self._cluster.get("battery_size")
         if battery_size is not None:
             response["battery_size"] = BATTERY_SIZES.get(battery_size, "Unknown")
-        battery_quantity = self._cluster_handler.get("battery_quantity")
+        battery_quantity = self._cluster.get("battery_quantity")
         if battery_quantity is not None:
             response["battery_quantity"] = battery_quantity
-        battery_voltage = self._cluster_handler.get("battery_voltage")
+        battery_voltage = self._cluster.get("battery_voltage")
         if battery_voltage is not None:
             response["battery_voltage"] = round(battery_voltage / 10, 2)
         return response
@@ -941,7 +929,7 @@ class BaseElectricalMeasurement(PollableSensor):
         """Return the state for this sensor."""
         response = super().state
         if (
-            measurement_type := self._cluster_handler.get(
+            measurement_type := self._cluster.get(
                 ElectricalMeasurement.AttributeDefs.measurement_type.name
             )
         ) is not None:
@@ -956,7 +944,7 @@ class BaseElectricalMeasurement(PollableSensor):
         if (max_attr_name := self._attr_max_attribute_name) is None:
             return response
 
-        if (max_v := self._cluster_handler.get(max_attr_name)) is not None:
+        if (max_v := self._cluster.get(max_attr_name)) is not None:
             response[max_attr_name] = self.formatter(max_v)
 
         return response
@@ -966,14 +954,14 @@ class BaseElectricalMeasurement(PollableSensor):
         if not self._multiplier_attribute_name:
             return super()._multiplier
 
-        multiplier = self._cluster_handler.get(self._multiplier_attribute_name)
+        multiplier = self._cluster.get(self._multiplier_attribute_name)
         if multiplier is not None:
             return multiplier
 
         for fallback_attr in self.POWER_MULTIPLIER_FALLBACK_ATTRS.get(
             self._multiplier_attribute_name, ()
         ):
-            fallback = self._cluster_handler.get(fallback_attr)
+            fallback = self._cluster.get(fallback_attr)
             if fallback is not None:
                 return fallback
         return 1
@@ -987,14 +975,14 @@ class BaseElectricalMeasurement(PollableSensor):
         if not self._divisor_attribute_name:
             return super()._divisor
 
-        divisor = self._cluster_handler.get(self._divisor_attribute_name)
+        divisor = self._cluster.get(self._divisor_attribute_name)
         if divisor is not None:
             return divisor or 1
 
         for fallback_attr in self.POWER_DIVISOR_FALLBACK_ATTRS.get(
             self._divisor_attribute_name, ()
         ):
-            fallback = self._cluster_handler.get(fallback_attr)
+            fallback = self._cluster.get(fallback_attr)
             if fallback is not None:
                 return fallback or 1
         return 1
@@ -4470,12 +4458,12 @@ class SmartEnergyMetering(PollableSensor):
 
     def _unit_of_measurement(self) -> int | None:
         """Return metering cluster unit of measurement."""
-        return self._cluster_handler.get(Metering.AttributeDefs.unit_of_measure.name)
+        return self._cluster.get(Metering.AttributeDefs.unit_of_measure.name)
 
     def _metering_device_type(self) -> str | int | None:
         """Return metering device type."""
         if (
-            metering_device_type := self._cluster_handler.get(
+            metering_device_type := self._cluster.get(
                 Metering.AttributeDefs.metering_device_type.name
             )
         ) is None:
@@ -4486,11 +4474,9 @@ class SmartEnergyMetering(PollableSensor):
 
     def _metering_status(self) -> enum.IntFlag | int | None:
         """Return metering status typed by metering device type."""
-        if (
-            status := self._cluster_handler.get(Metering.AttributeDefs.status.name)
-        ) is None:
+        if (status := self._cluster.get(Metering.AttributeDefs.status.name)) is None:
             return None
-        metering_device_type = self._cluster_handler.get(
+        metering_device_type = self._cluster.get(
             Metering.AttributeDefs.metering_device_type.name
         )
         if metering_device_type in self.METERING_DEVICE_TYPES_ELECTRIC:
@@ -4505,13 +4491,11 @@ class SmartEnergyMetering(PollableSensor):
 
     def _demand_formatting(self) -> int | None:
         """Return demand formatting."""
-        return self._cluster_handler.get(Metering.AttributeDefs.demand_formatting.name)
+        return self._cluster.get(Metering.AttributeDefs.demand_formatting.name)
 
     def _summation_formatting(self) -> int | None:
         """Return summation formatting."""
-        return self._cluster_handler.get(
-            Metering.AttributeDefs.summation_formatting.name
-        )
+        return self._cluster.get(Metering.AttributeDefs.summation_formatting.name)
 
     def _is_supported(self) -> bool:
         unit = self._unit_of_measurement()
@@ -4549,7 +4533,7 @@ class SmartEnergyMetering(PollableSensor):
 
     @property
     def _multiplier(self) -> int | float | None:
-        return self._cluster_handler.get(Metering.AttributeDefs.multiplier.name) or 1
+        return self._cluster.get(Metering.AttributeDefs.multiplier.name) or 1
 
     @_multiplier.setter
     def _multiplier(self, value: int | float | None) -> None:
@@ -4557,7 +4541,7 @@ class SmartEnergyMetering(PollableSensor):
 
     @property
     def _divisor(self) -> int | float | None:
-        return self._cluster_handler.get(Metering.AttributeDefs.divisor.name) or 1
+        return self._cluster.get(Metering.AttributeDefs.divisor.name) or 1
 
     @_divisor.setter
     def _divisor(self, value: int | float | None) -> None:
@@ -5746,11 +5730,8 @@ class ThermostatHVACAction(Sensor):
         """Return the current HVAC action."""
         response = super().state
         if (
-            self._cluster_handler.get(Thermostat.AttributeDefs.pi_heating_demand.name)
-            is None
-            and self._cluster_handler.get(
-                Thermostat.AttributeDefs.pi_cooling_demand.name
-            )
+            self._cluster.get(Thermostat.AttributeDefs.pi_heating_demand.name) is None
+            and self._cluster.get(Thermostat.AttributeDefs.pi_cooling_demand.name)
             is None
         ):
             response["state"] = self._rm_rs_action
@@ -5762,11 +5743,8 @@ class ThermostatHVACAction(Sensor):
     def native_value(self) -> str | None:
         """Return the current HVAC action."""
         if (
-            self._cluster_handler.get(Thermostat.AttributeDefs.pi_heating_demand.name)
-            is None
-            and self._cluster_handler.get(
-                Thermostat.AttributeDefs.pi_cooling_demand.name
-            )
+            self._cluster.get(Thermostat.AttributeDefs.pi_heating_demand.name) is None
+            and self._cluster.get(Thermostat.AttributeDefs.pi_cooling_demand.name)
             is None
         ):
             return self._rm_rs_action
@@ -5777,7 +5755,7 @@ class ThermostatHVACAction(Sensor):
         """Return the current HVAC action based on running mode and running state."""
 
         if (
-            running_state := self._cluster_handler.get(
+            running_state := self._cluster.get(
                 Thermostat.AttributeDefs.running_state.name
             )
         ) is None:
@@ -5797,9 +5775,7 @@ class ThermostatHVACAction(Sensor):
         if running_state & rs_cool:
             return HVACAction.COOLING
 
-        running_state = self._cluster_handler.get(
-            Thermostat.AttributeDefs.running_state.name
-        )
+        running_state = self._cluster.get(Thermostat.AttributeDefs.running_state.name)
         if running_state and running_state & (
             Thermostat.RunningState.Fan_State_On
             | Thermostat.RunningState.Fan_2nd_Stage_On
@@ -5807,14 +5783,12 @@ class ThermostatHVACAction(Sensor):
         ):
             return HVACAction.FAN
 
-        running_state = self._cluster_handler.get(
-            Thermostat.AttributeDefs.running_state.name
-        )
+        running_state = self._cluster.get(Thermostat.AttributeDefs.running_state.name)
         if running_state and running_state & Thermostat.RunningState.Idle:
             return HVACAction.IDLE
 
         if (
-            self._cluster_handler.get(Thermostat.AttributeDefs.system_mode.name)
+            self._cluster.get(Thermostat.AttributeDefs.system_mode.name)
             != Thermostat.SystemMode.Off
         ):
             return HVACAction.IDLE
@@ -5824,19 +5798,19 @@ class ThermostatHVACAction(Sensor):
     def _pi_demand_action(self) -> HVACAction:
         """Return the current HVAC action based on pi_demands."""
 
-        heating_demand = self._cluster_handler.get(
+        heating_demand = self._cluster.get(
             Thermostat.AttributeDefs.pi_heating_demand.name
         )
         if heating_demand is not None and heating_demand > 0:
             return HVACAction.HEATING
-        cooling_demand = self._cluster_handler.get(
+        cooling_demand = self._cluster.get(
             Thermostat.AttributeDefs.pi_cooling_demand.name
         )
         if cooling_demand is not None and cooling_demand > 0:
             return HVACAction.COOLING
 
         if (
-            self._cluster_handler.get(Thermostat.AttributeDefs.system_mode.name)
+            self._cluster.get(Thermostat.AttributeDefs.system_mode.name)
             != Thermostat.SystemMode.Off
         ):
             return HVACAction.IDLE
@@ -5963,17 +5937,13 @@ class SinopeHVACAction(ThermostatHVACAction):
     def _rm_rs_action(self) -> HVACAction:
         """Return the current HVAC action based on running mode and running state."""
 
-        running_mode = self._cluster_handler.get(
-            Thermostat.AttributeDefs.running_mode.name
-        )
+        running_mode = self._cluster.get(Thermostat.AttributeDefs.running_mode.name)
         if running_mode == Thermostat.RunningMode.Heat:
             return HVACAction.HEATING
         if running_mode == Thermostat.RunningMode.Cool:
             return HVACAction.COOLING
 
-        running_state = self._cluster_handler.get(
-            Thermostat.AttributeDefs.running_state.name
-        )
+        running_state = self._cluster.get(Thermostat.AttributeDefs.running_state.name)
         if running_state and running_state & (
             Thermostat.RunningState.Fan_State_On
             | Thermostat.RunningState.Fan_2nd_Stage_On
@@ -5981,7 +5951,7 @@ class SinopeHVACAction(ThermostatHVACAction):
         ):
             return HVACAction.FAN
         if (
-            self._cluster_handler.get(Thermostat.AttributeDefs.system_mode.name)
+            self._cluster.get(Thermostat.AttributeDefs.system_mode.name)
             != Thermostat.SystemMode.Off
             and running_mode == Thermostat.SystemMode.Off
         ):
@@ -6826,7 +6796,7 @@ class BitMapSensor(Sensor):
         """Return the state for this sensor."""
         response = super().state
         response["state"] = self.native_value
-        value = self._cluster_handler.get(self._attribute_name)
+        value = self._cluster.get(self._attribute_name)
         for bit in list(self._bitmap):
             if value is None:
                 response[bit.name] = False
@@ -6837,7 +6807,7 @@ class BitMapSensor(Sensor):
     def formatter(self, _value: int) -> str:
         """Summary of all attributes."""
 
-        value = self._cluster_handler.get(self._attribute_name)
+        value = self._cluster.get(self._attribute_name)
         state_attr = {}
 
         for bit in list(self._bitmap):

@@ -256,12 +256,8 @@ class Thermostat(PlatformEntity):
         self._preset: Preset | str = Preset.NONE
         self._presets: list[Preset | str] = []
 
-        self._thermostat_cluster_handler: Cluster = self.in_clusters[
-            CLUSTER_HANDLER_THERMOSTAT
-        ]
-        self._fan_cluster_handler: Cluster | None = self.in_clusters.get(
-            CLUSTER_HANDLER_FAN
-        )
+        self._thermostat_cluster: Cluster = self.in_clusters[CLUSTER_HANDLER_THERMOSTAT]
+        self._fan_cluster: Cluster | None = self.in_clusters.get(CLUSTER_HANDLER_FAN)
 
         self._supported_features = ClimateEntityFeature(0)
         self.recompute_capabilities()
@@ -278,7 +274,7 @@ class Thermostat(PlatformEntity):
         if HVACMode.HEAT_COOL in self.hvac_modes:
             self._supported_features |= ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
 
-        if self._fan_cluster_handler is not None:
+        if self._fan_cluster is not None:
             self._supported_features |= ClimateEntityFeature.FAN_MODE
 
     def on_add(self) -> None:
@@ -291,15 +287,15 @@ class Thermostat(PlatformEntity):
             AttributeWrittenEvent,
         ):
             self._on_remove_callbacks.append(
-                self._thermostat_cluster_handler.on_event(
+                self._thermostat_cluster.on_event(
                     event_type.event_type,
-                    self.handle_cluster_handler_attribute_updated,
+                    self.handle_cluster_attribute_updated,
                 )
             )
 
     def _thermostat_get(self, attr: str, default: Any | None = None) -> Any | None:
         """Get thermostat attribute value from cache."""
-        return self._thermostat_cluster_handler.get(attr, default)
+        return self._thermostat_cluster.get(attr, default)
 
     def _max_cool_setpoint_limit(self) -> int:
         """Get thermostat max cooling setpoint with absolute fallback."""
@@ -360,7 +356,7 @@ class Thermostat(PlatformEntity):
     async def _async_set_operation_mode(self, mode: SystemMode) -> bool:
         """Set thermostat operation mode."""
         await safe_write_attributes(
-            self._thermostat_cluster_handler,
+            self._thermostat_cluster,
             {ThermostatCluster.AttributeDefs.system_mode.name: mode},
         )
         return True
@@ -374,9 +370,7 @@ class Thermostat(PlatformEntity):
             if is_away
             else ThermostatCluster.AttributeDefs.occupied_heating_setpoint.name
         )
-        await safe_write_attributes(
-            self._thermostat_cluster_handler, {attr: temperature}
-        )
+        await safe_write_attributes(self._thermostat_cluster, {attr: temperature})
         return True
 
     async def _async_set_cooling_setpoint(
@@ -388,15 +382,13 @@ class Thermostat(PlatformEntity):
             if is_away
             else ThermostatCluster.AttributeDefs.occupied_cooling_setpoint.name
         )
-        await safe_write_attributes(
-            self._thermostat_cluster_handler, {attr: temperature}
-        )
+        await safe_write_attributes(self._thermostat_cluster, {attr: temperature})
         return True
 
     async def _get_occupancy(self) -> bool | None:
         """Read unreportable occupancy attribute."""
         results = await safe_read(
-            self._thermostat_cluster_handler,
+            self._thermostat_cluster,
             [ThermostatCluster.AttributeDefs.occupancy.name],
             allow_cache=False,
             only_cache=False,
@@ -509,7 +501,7 @@ class Thermostat(PlatformEntity):
     @functools.cached_property
     def fan_modes(self) -> list[str] | None:
         """Return supported FAN modes."""
-        if not self._fan_cluster_handler:
+        if not self._fan_cluster:
             return None
         return [FAN_AUTO, FAN_ON]
 
@@ -697,7 +689,7 @@ class Thermostat(PlatformEntity):
             return self.DEFAULT_MIN_TEMP
         return round(min(temps) / ZCL_TEMP, 1)
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
         event: AttributeReadEvent
         | AttributeReportedEvent
@@ -706,10 +698,10 @@ class Thermostat(PlatformEntity):
     ) -> None:
         """Handle attribute update from device."""
         self.device.gateway.async_create_task(
-            self._handle_cluster_handler_attribute_updated(event)
+            self._handle_cluster_attribute_updated(event)
         )
 
-    async def _handle_cluster_handler_attribute_updated(
+    async def _handle_cluster_attribute_updated(
         self,
         event: AttributeReadEvent
         | AttributeReportedEvent
@@ -732,7 +724,7 @@ class Thermostat(PlatformEntity):
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set fan mode."""
-        if self._fan_cluster_handler is None:
+        if self._fan_cluster is None:
             self.warning("Fan cluster handler is not available")
             return
 
@@ -743,7 +735,7 @@ class Thermostat(PlatformEntity):
         mode = FanMode.On if fan_mode == FAN_ON else FanMode.Auto
 
         await safe_write_attributes(
-            self._fan_cluster_handler,
+            self._fan_cluster,
             {FanCluster.AttributeDefs.fan_mode.name: mode},
         )
 
@@ -1049,7 +1041,7 @@ class SinopeTechnologiesThermostat(Thermostat):
         """Set occupancy."""
         mfg_code = self._device.manufacturer_code
         await safe_write_attributes(
-            self._thermostat_cluster_handler,
+            self._thermostat_cluster,
             {"set_occupancy": 0 if is_away else 1},
             manufacturer=mfg_code,
         )
@@ -1642,7 +1634,7 @@ class MoesThermostat(Thermostat):
         """Return only the heat mode, because the device can't be turned off."""
         return [HVACMode.HEAT]
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
         event: AttributeReadEvent
         | AttributeReportedEvent
@@ -1665,50 +1657,50 @@ class MoesThermostat(Thermostat):
                 self._preset = Preset.BOOST
             if event.value == 6:
                 self._preset = Preset.COMPLEX
-        super().handle_cluster_handler_attribute_updated(event)
+        super().handle_cluster_attribute_updated(event)
 
     async def async_preset_handler(self, preset: str, enable: bool = False) -> None:
         """Set the preset mode."""
         mfg_code = self._device.manufacturer_code
         if not enable:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 2},
                 manufacturer=mfg_code,
             )
         if preset == Preset.AWAY:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 0},
                 manufacturer=mfg_code,
             )
         if preset == Preset.SCHEDULE:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 1},
                 manufacturer=mfg_code,
             )
         if preset == Preset.COMFORT:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 3},
                 manufacturer=mfg_code,
             )
         if preset == Preset.ECO:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 4},
                 manufacturer=mfg_code,
             )
         if preset == Preset.BOOST:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 5},
                 manufacturer=mfg_code,
             )
         if preset == Preset.COMPLEX:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 6},
                 manufacturer=mfg_code,
             )
@@ -1848,7 +1840,7 @@ class BecaThermostat(Thermostat):
         """Return only the heat mode, because the device can't be turned off."""
         return [HVACMode.HEAT]
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
         event: AttributeReadEvent
         | AttributeReportedEvent
@@ -1869,44 +1861,44 @@ class BecaThermostat(Thermostat):
                 self._preset = Preset.BOOST
             if event.value == 7:
                 self._preset = Preset.TEMP_MANUAL
-        super().handle_cluster_handler_attribute_updated(event)
+        super().handle_cluster_attribute_updated(event)
 
     async def async_preset_handler(self, preset: str, enable: bool = False) -> None:
         """Set the preset mode."""
         mfg_code = self._device.manufacturer_code
         if not enable:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 2},
                 manufacturer=mfg_code,
             )
         if preset == Preset.AWAY:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 0},
                 manufacturer=mfg_code,
             )
         if preset == Preset.SCHEDULE:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 1},
                 manufacturer=mfg_code,
             )
         if preset == Preset.ECO:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 4},
                 manufacturer=mfg_code,
             )
         if preset == Preset.BOOST:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 5},
                 manufacturer=mfg_code,
             )
         if preset == Preset.TEMP_MANUAL:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 7},
                 manufacturer=mfg_code,
             )
@@ -2183,7 +2175,7 @@ class ZONNSMARTThermostat(Thermostat):
         ]
         self._supported_features |= ClimateEntityFeature.PRESET_MODE
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
         event: AttributeReadEvent
         | AttributeReportedEvent
@@ -2200,32 +2192,32 @@ class ZONNSMARTThermostat(Thermostat):
                 self._preset = self.PRESET_HOLIDAY
             if event.value == 4:
                 self._preset = self.PRESET_FROST
-        super().handle_cluster_handler_attribute_updated(event)
+        super().handle_cluster_attribute_updated(event)
 
     async def async_preset_handler(self, preset: str, enable: bool = False) -> None:
         """Set the preset mode."""
         mfg_code = self._device.manufacturer_code
         if not enable:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 1},
                 manufacturer=mfg_code,
             )
         if preset == Preset.SCHEDULE:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 0},
                 manufacturer=mfg_code,
             )
         if preset == self.PRESET_HOLIDAY:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 3},
                 manufacturer=mfg_code,
             )
         if preset == self.PRESET_FROST:
             return await safe_write_attributes(
-                self._thermostat_cluster_handler,
+                self._thermostat_cluster,
                 {"operation_preset": 4},
                 manufacturer=mfg_code,
             )

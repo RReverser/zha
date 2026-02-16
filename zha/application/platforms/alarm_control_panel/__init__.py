@@ -92,7 +92,7 @@ class AlarmControlPanel(PlatformEntity):
         )
 
         self._ias_ace_cluster: Cluster = clusters[0]
-        self._cluster_handler_unique_id = (
+        self._cluster_unique_id = (
             f"{endpoint.unique_id.replace('-', ':')}:0x{IasAce.cluster_id:04x}_CLIENT"
         )
 
@@ -124,9 +124,6 @@ class AlarmControlPanel(PlatformEntity):
             IasAce.ArmMode.Arm_Night_Sleep_Only: self._arm_night,
         }
 
-        # Compatibility shim for tests while handler removal is in progress.
-        self._cluster_handler: AlarmControlPanel = self
-
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
@@ -154,7 +151,7 @@ class AlarmControlPanel(PlatformEntity):
         """Emit zha_event payload compatible with legacy cluster handlers."""
         self.endpoint.emit_zha_event(
             {
-                UNIQUE_ID: self._cluster_handler_unique_id,
+                UNIQUE_ID: self._cluster_unique_id,
                 CLUSTER_ID: self._ias_ace_cluster.cluster_id,
                 COMMAND: command,
                 ARGS: args,
@@ -244,11 +241,11 @@ class AlarmControlPanel(PlatformEntity):
             self._alarm_status = IasAce.AlarmStatus.Emergency
             self._armed_state = IasAce.PanelStatus.In_Alarm
             self._emit_cluster_event(
-                f"{self._cluster_handler_unique_id}_{SIGNAL_ALARM_TRIGGERED}", []
+                f"{self._cluster_unique_id}_{SIGNAL_ALARM_TRIGGERED}", []
             )
         else:
             self._emit_cluster_event(
-                f"{self._cluster_handler_unique_id}_{SIGNAL_ARMED_STATE_CHANGED}", []
+                f"{self._cluster_unique_id}_{SIGNAL_ARMED_STATE_CHANGED}", []
             )
         self._emit_panel_status_changed()
 
