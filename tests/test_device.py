@@ -1,8 +1,10 @@
 """Test ZHA device switch."""
 
 import asyncio
+import copy
 import logging
 import time
+from typing import cast
 from unittest import mock
 from unittest.mock import call, patch
 
@@ -53,6 +55,7 @@ from zha.application.platforms.binary_sensor import IASZone
 from zha.application.platforms.light import Light
 from zha.application.platforms.sensor import LQISensor, RSSISensor
 from zha.application.platforms.switch import Switch
+from zha.const import STATE_CHANGED
 from zha.exceptions import ZHAException
 from zha.zigbee.device import (
     ClusterBinding,
@@ -826,6 +829,192 @@ async def test_device_firmware_version_syncing(zha_gateway: Gateway) -> None:
             )
         )
     ]
+
+
+async def test_async_initialize_drains_pending_entities(zha_gateway: Gateway) -> None:
+    """Repeated initialize calls should drain pending entities each pass."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    assert zha_device._pending_entities == []
+
+    await zha_device.async_initialize(from_cache=True)
+    assert zha_device._pending_entities == []
+
+    await zha_device.async_initialize(from_cache=True)
+    assert zha_device._pending_entities == []
+
+
+async def test_async_initialize_requeues_unprocessed_pending_on_failure(
+    zha_gateway: Gateway,
+) -> None:
+    """Only unprocessed entities are requeued if finalize fails."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    processed_entity = mock.Mock(spec=PlatformEntity)
+    processed_entity.PLATFORM = Platform.SENSOR
+    processed_entity.unique_id = "processed"
+    processed_entity.recompute_capabilities = mock.Mock()
+    processed_entity.is_supported.return_value = True
+    processed_entity.is_supported_in_list.return_value = True
+    processed_entity.on_remove = mock.AsyncMock()
+
+    failing_entity = mock.Mock(spec=PlatformEntity)
+    failing_entity.PLATFORM = Platform.SENSOR
+    failing_entity.unique_id = "failing"
+    failing_entity.recompute_capabilities.side_effect = RuntimeError("boom")
+    failing_entity.is_supported.return_value = True
+    failing_entity.is_supported_in_list.return_value = True
+    failing_entity.on_remove = mock.AsyncMock()
+
+    zha_device._pending_entities = [processed_entity, failing_entity]
+
+    with (
+        patch.object(zha_device, "_discover_new_entities"),
+        patch.object(zha_device, "_sync_pending_entity_cluster_requirements"),
+        pytest.raises(RuntimeError, match="boom"),
+    ):
+        await zha_device.async_initialize(from_cache=True)
+
+    assert zha_device._pending_entities == [failing_entity]
+
+
+async def test_async_initialize_does_not_replace_existing_entities_same_key(
+    zha_gateway: Gateway,
+) -> None:
+    """Re-discovery should not replace existing entities for the same key."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    entity_key = (Platform.SWITCH, f"{zigpy_dev.ieee}-3-6")
+    existing_entity = zha_device.platform_entities[entity_key]
+
+    await zha_device.async_initialize(from_cache=True)
+    assert zha_device.platform_entities[entity_key] is existing_entity
+
+    await zha_device.async_initialize(from_cache=True)
+    assert zha_device.platform_entities[entity_key] is existing_entity
+
+
+async def test_firmware_update_listener_registered_once_across_reinitialize(
+    zha_gateway: Gateway,
+) -> None:
+    """Repeated initialize should not accumulate firmware listeners."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/philips-sml001.json",
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    update_entity = get_entity(zha_device, platform=Platform.UPDATE)
+
+    listener_count_before = len(update_entity._listeners.get(STATE_CHANGED, []))
+    on_remove_count_before = len(zha_device._on_remove_callbacks)
+
+    await zha_device.async_initialize(from_cache=True)
+    await zha_device.async_initialize(from_cache=True)
+
+    assert len(update_entity._listeners.get(STATE_CHANGED, [])) == listener_count_before
+    assert len(zha_device._on_remove_callbacks) == on_remove_count_before
+
+
+async def test_repeated_initialize_keeps_cluster_report_config_stable(
+    zha_gateway: Gateway,
+) -> None:
+    """Repeated initialize should keep merged report config stable."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/philips-sml001.json",
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    report_config_before = {
+        endpoint_id: copy.deepcopy(endpoint._cluster_report_config)
+        for endpoint_id, endpoint in zha_device._endpoints.items()
+    }
+    assert any(report_config_before.values())
+
+    await zha_device.async_initialize(from_cache=True)
+    await zha_device.async_initialize(from_cache=True)
+
+    report_config_after = {
+        endpoint_id: copy.deepcopy(endpoint._cluster_report_config)
+        for endpoint_id, endpoint in zha_device._endpoints.items()
+    }
+    assert report_config_after == report_config_before
+
+
+async def test_repeated_initialize_keeps_cluster_init_attrs_stable(
+    zha_gateway: Gateway,
+) -> None:
+    """Repeated initialize should keep merged init attrs stable."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/philips-sml001.json",
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    init_attrs_before = {
+        endpoint_id: copy.deepcopy(endpoint._cluster_init_attrs)
+        for endpoint_id, endpoint in zha_device._endpoints.items()
+    }
+    assert any(init_attrs_before.values())
+
+    await zha_device.async_initialize(from_cache=True)
+    await zha_device.async_initialize(from_cache=True)
+
+    init_attrs_after = {
+        endpoint_id: copy.deepcopy(endpoint._cluster_init_attrs)
+        for endpoint_id, endpoint in zha_device._endpoints.items()
+    }
+    assert init_attrs_after == init_attrs_before
+
+
+async def test_primary_entity_compute_does_not_force_info_object_materialization(
+    zha_gateway: Gateway,
+) -> None:
+    """Primary entity computation should not access uncached info_object."""
+
+    class _NoInfoObjectEntity:
+        def __init__(self) -> None:
+            self.enabled = True
+            self._attr_primary: bool | None = None
+            self._attr_primary_weight = 1
+
+        @property
+        def primary(self) -> bool:
+            if self._attr_primary is None:
+                return False
+            return self._attr_primary
+
+        @primary.setter
+        def primary(self, value: bool | None) -> None:
+            self._attr_primary = value
+
+        @property
+        def primary_weight(self) -> int:
+            return self._attr_primary_weight
+
+        @property
+        def info_object(self) -> None:
+            raise RuntimeError("info_object should not be accessed")
+
+        async def on_remove(self) -> None:
+            return None
+
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    original_platform_entities = zha_device._platform_entities
+
+    try:
+        test_entity = _NoInfoObjectEntity()
+        zha_device._platform_entities = {
+            (Platform.SENSOR, "no-info"): cast(PlatformEntity, test_entity)
+        }
+        zha_device._compute_primary_entity()
+        assert test_entity.primary is True
+    finally:
+        zha_device._platform_entities = original_platform_entities
 
 
 async def test_quirks_v2_device_renaming(zha_gateway: Gateway) -> None:

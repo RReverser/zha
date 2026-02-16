@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 from collections import defaultdict
 from collections.abc import Callable, Iterable
+from contextlib import suppress
 import dataclasses
 from dataclasses import dataclass
 from enum import Enum
@@ -313,6 +314,8 @@ class Device(LogMixin, EventBase):
         self._identify_ch: Cluster | None = None
         self._basic_ch: Cluster | None = None
         self._firmware_version: str | None = None
+        self._firmware_update_listener_remove: Callable[[], None] | None = None
+        self._firmware_update_listener_entity_key: tuple[Platform, str] | None = None
 
         device_options = _gateway.config.config.device_options
         if self.is_mains_powered:
@@ -1214,27 +1217,42 @@ class Device(LogMixin, EventBase):
             except Exception:  # pylint: disable=broad-exception-caught
                 self.debug("Failed to initialize endpoint", exc_info=True)
 
-        # Compute the final entities
+        # Drain the pending queue for this pass. Any newly discovered entities from
+        # concurrent work will remain in `_pending_entities` for the next pass.
+        pending_entities, self._pending_entities = self._pending_entities, []
+
+        # Compute the final entities for this pass
         new_entities: dict[tuple[Platform, str], PlatformEntity] = {}
+        supported_entities: list[BaseEntity] = list(self._platform_entities.values())
+        processed_count = 0
+        try:
+            for entity in pending_entities:
+                entity.recompute_capabilities()
 
-        for entity in self._pending_entities:
-            entity.recompute_capabilities()
+                # Ignore unsupported entities
+                if not entity.is_supported() or not entity.is_supported_in_list(
+                    supported_entities
+                ):
+                    await entity.on_remove()
+                    continue
 
-            # Ignore unsupported entities
-            if not entity.is_supported() or not entity.is_supported_in_list(
-                new_entities.values()
-            ):
-                await entity.on_remove()
-                continue
+                key = (entity.PLATFORM, entity.unique_id)
 
-            key = (entity.PLATFORM, entity.unique_id)
+                # Keep existing registered entities as canonical. Re-discovered
+                # candidates for the same key are cleaned up and dropped.
+                if key in self._platform_entities or key in new_entities:
+                    await entity.on_remove()
+                    continue
 
-            # Ignore entities that already exist
-            if key in new_entities:
-                await entity.on_remove()
-                continue
-
-            new_entities[key] = entity
+                new_entities[key] = entity
+                supported_entities.append(entity)
+                processed_count += 1
+        except Exception:
+            # Requeue this entity and any unprocessed entities so they are not lost.
+            self._pending_entities = (
+                pending_entities[processed_count:] + self._pending_entities
+            )
+            raise
 
         if new_entities:
             _LOGGER.debug("Discovered new entities %r", new_entities)
@@ -1243,29 +1261,72 @@ class Device(LogMixin, EventBase):
         # At this point we can compute a primary entity
         self._compute_primary_entity()
 
-        # Sync the device's firmware version with the first platform entity
-        for (platform, _unique_id), entity in self.platform_entities.items():
-            if platform != Platform.UPDATE:
-                continue
-
-            assert isinstance(entity, BaseFirmwareUpdateEntity)
-            self._firmware_version = entity.installed_version
-
-            def entity_update_listener(event: EntityStateChangedEvent) -> None:
-                """Listen to firmware update entity changes."""
-                entity = self.get_platform_entity(event.platform, event.unique_id)
-                assert isinstance(entity, BaseFirmwareUpdateEntity)
-                self.async_update_firmware_version(entity.installed_version)
-
-            self._on_remove_callbacks.append(
-                entity.on_event(STATE_CHANGED, entity_update_listener)
-            )
-
-            break
+        # Sync firmware state with the update entity and ensure listener registration
+        # is idempotent across repeated initialize calls.
+        self._sync_firmware_update_listener()
 
         self.debug("power source: %s", self.power_source)
         self.status = DeviceStatus.INITIALIZED
         self.debug("completed initialization")
+
+    def _remove_firmware_update_listener(self) -> None:
+        """Remove the firmware update listener if one is currently registered."""
+        callback = self._firmware_update_listener_remove
+        if callback is None:
+            return
+
+        with suppress(ValueError):
+            self._on_remove_callbacks.remove(callback)
+
+        try:
+            callback()
+        except Exception:  # pylint: disable=broad-exception-caught
+            _LOGGER.warning(
+                "Failed to remove firmware listener callback for device %s",
+                self,
+                exc_info=True,
+            )
+        finally:
+            self._firmware_update_listener_remove = None
+            self._firmware_update_listener_entity_key = None
+
+    def _sync_firmware_update_listener(self) -> None:
+        """Sync firmware version and state listener with the update entity."""
+        update_key: tuple[Platform, str] | None = None
+        update_entity: BaseFirmwareUpdateEntity | None = None
+
+        for key, entity in self.platform_entities.items():
+            if key[0] != Platform.UPDATE:
+                continue
+            assert isinstance(entity, BaseFirmwareUpdateEntity)
+            update_key = key
+            update_entity = entity
+            break
+
+        if update_entity is None or update_key is None:
+            self._remove_firmware_update_listener()
+            return
+
+        self._firmware_version = update_entity.installed_version
+
+        if (
+            self._firmware_update_listener_entity_key == update_key
+            and self._firmware_update_listener_remove is not None
+        ):
+            return
+
+        self._remove_firmware_update_listener()
+
+        def entity_update_listener(event: EntityStateChangedEvent) -> None:
+            """Listen to firmware update entity changes."""
+            entity = self.get_platform_entity(event.platform, event.unique_id)
+            assert isinstance(entity, BaseFirmwareUpdateEntity)
+            self.async_update_firmware_version(entity.installed_version)
+
+        callback = update_entity.on_event(STATE_CHANGED, entity_update_listener)
+        self._on_remove_callbacks.append(callback)
+        self._firmware_update_listener_remove = callback
+        self._firmware_update_listener_entity_key = update_key
 
     async def on_remove(self) -> None:
         """Cancel tasks this device owns."""
@@ -1625,7 +1686,7 @@ class Device(LogMixin, EventBase):
         candidates = [
             e
             for e in self._platform_entities.values()
-            if e.enabled and hasattr(e, "info_object") and e._attr_primary is not False
+            if e.enabled and e._attr_primary is not False
         ]
         candidates.sort(reverse=True, key=lambda e: e.primary_weight)
 
@@ -1637,12 +1698,14 @@ class Device(LogMixin, EventBase):
 
         # We have a clear winner
         if not others or winner.primary_weight > others[0].primary_weight:
-            winner.primary = True
-            del winner.info_object
+            if winner._attr_primary is not True:
+                winner.primary = True
+                winner.__dict__.pop("info_object", None)
 
             for entity in others:
-                entity.primary = False
-                del entity.info_object
+                if entity._attr_primary is not False:
+                    entity.primary = False
+                    entity.__dict__.pop("info_object", None)
 
             return
 
@@ -1651,8 +1714,9 @@ class Device(LogMixin, EventBase):
         )
 
         for entity in candidates:
-            entity.primary = False
-            del entity.info_object
+            if entity._attr_primary is not False:
+                entity.primary = False
+                entity.__dict__.pop("info_object", None)
 
     def get_diagnostics_json(self):
         """Get ZHA device information."""

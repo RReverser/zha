@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import abstractmethod
 import asyncio
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from contextlib import suppress
 import dataclasses
 from enum import StrEnum
@@ -432,6 +432,17 @@ class BaseEntity(LogMixin, EventBase):
     def on_add(self) -> None:
         """Run when entity is added."""
         pass
+
+    def register_cluster_event_listeners(
+        self,
+        cluster: Cluster,
+        event_types: Iterable[str],
+        callback: Callable[[Any], Any],
+    ) -> None:
+        """Register cluster event listeners and track unsubscribe callbacks."""
+        self._on_remove_callbacks.extend(
+            cluster.on_event(event_type, callback) for event_type in event_types
+        )
 
     async def on_remove(self) -> None:
         """Cancel tasks and timers this entity owns."""

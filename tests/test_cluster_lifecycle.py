@@ -100,6 +100,23 @@ def test_set_cluster_init_attrs_cache_conflict(zha_gateway: Gateway) -> None:
     assert endpoint._cluster_init_attrs[cluster_key]["on_off"] is False
 
 
+def test_set_cluster_requirements_idempotent_across_repeated_passes(
+    zha_gateway: Gateway,
+) -> None:
+    """Repeated report/init requirement application stays stable."""
+    endpoint, zigpy_ep = _make_endpoint(zha_gateway, in_clusters=[OnOff.cluster_id])
+    cluster = zigpy_ep.on_off
+    endpoint.claim_clusters([cluster])
+
+    for _ in range(3):
+        endpoint.set_cluster_report_config(cluster, {"on_off": (1, 900, 1)}, set())
+        endpoint.set_cluster_init_attrs(cluster, {"on_off": True})
+
+    cluster_key = endpoint._cluster_key(cluster)
+    assert endpoint._cluster_report_config[cluster_key] == {"on_off": (1, 900, 1)}
+    assert endpoint._cluster_init_attrs[cluster_key] == {"on_off": True}
+
+
 async def test_endpoint_configure_emits_legacy_bind_and_reporting_events(
     zha_gateway: Gateway,
 ) -> None:

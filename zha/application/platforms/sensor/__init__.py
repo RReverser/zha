@@ -238,18 +238,16 @@ class Sensor(PlatformEntity):
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        for event_type in (
-            AttributeReadEvent,
-            AttributeReportedEvent,
-            AttributeUpdatedEvent,
-            AttributeWrittenEvent,
-        ):
-            self._on_remove_callbacks.append(
-                self._cluster.on_event(
-                    event_type.event_type,
-                    self.handle_cluster_attribute_updated,
-                )
-            )
+        self.register_cluster_event_listeners(
+            self._cluster,
+            (
+                AttributeReadEvent.event_type,
+                AttributeReportedEvent.event_type,
+                AttributeUpdatedEvent.event_type,
+                AttributeWrittenEvent.event_type,
+            ),
+            self.handle_cluster_attribute_updated,
+        )
 
     def _is_supported(self) -> bool:
         if (
