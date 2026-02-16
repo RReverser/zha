@@ -822,15 +822,17 @@ async def test_devices_from_files(
             ]
 
 
-async def test_cluster_handler_only_clusters_are_bound(zha_gateway: Gateway) -> None:
-    """Test CLUSTER_HANDLER_ONLY_CLUSTERS causes binds even without entities."""
+async def test_entityless_configure_required_clusters_are_bound(
+    zha_gateway: Gateway,
+) -> None:
+    """Test entityless configure-required clusters still cause binds."""
     zigpy_device = await zigpy_device_from_json(
         zha_gateway.application_controller,
         "tests/data/devices/signify-netherlands-b-v-rwl022.json",
     )
 
-    # The Philips remote cluster (0xFC00) is in CLUSTER_HANDLER_ONLY_CLUSTERS: it
-    # doesn't produce any entities but must still be bound
+    # The Philips remote cluster (0xFC00) doesn't produce entities but is in the
+    # entityless configure-required policy and must still be bound.
     philips_cluster = zigpy_device.endpoints[1].in_clusters[PHILLIPS_REMOTE_CLUSTER]
 
     await join_zigpy_device(zha_gateway, zigpy_device)

@@ -1016,11 +1016,57 @@ class Device(LogMixin, EventBase):
             if isinstance(entity, PlatformEntity)
         }
 
+        attr_is_known_cache: dict[tuple[str, str], bool] = {}
+
+        pending_report_config, pending_direct_report_attrs = (
+            self._collect_pending_report_config(
+                pending_entities=pending_entities,
+                attr_is_known_cache=attr_is_known_cache,
+            )
+        )
+        pending_init_attrs = self._collect_pending_init_attrs(
+            pending_entities=pending_entities,
+            attr_is_known_cache=attr_is_known_cache,
+        )
+        self._apply_pending_report_config(
+            pending_report_config=pending_report_config,
+            pending_direct_report_attrs=pending_direct_report_attrs,
+        )
+        self._apply_pending_init_attrs(pending_init_attrs=pending_init_attrs)
+
+    @staticmethod
+    def _cluster_handler_has_attribute(
+        cluster_handler: ClusterHandler,
+        attr: str,
+        attr_is_known_cache: dict[tuple[str, str], bool],
+    ) -> bool:
+        """Return whether this cluster handler can resolve an attribute name."""
+        cache_key = (cluster_handler.id, attr)
+        if cache_key in attr_is_known_cache:
+            return attr_is_known_cache[cache_key]
+
+        try:
+            cluster_handler.cluster.find_attribute(attr)
+            attr_is_known_cache[cache_key] = True
+        except KeyError:
+            attr_is_known_cache[cache_key] = False
+
+        return attr_is_known_cache[cache_key]
+
+    def _collect_pending_report_config(
+        self,
+        *,
+        pending_entities: dict[tuple[Platform, str], PlatformEntity],
+        attr_is_known_cache: dict[tuple[str, str], bool],
+    ) -> tuple[
+        dict[ClusterHandler, dict[str, tuple[int, int, int | float]]],
+        dict[ClusterHandler, set[str]],
+    ]:
+        """Collect and merge report config requirements from pending entities."""
         pending_report_config: dict[
             ClusterHandler, dict[str, tuple[int, int, int | float]]
         ] = defaultdict(dict)
         pending_direct_report_attrs: dict[ClusterHandler, set[str]] = defaultdict(set)
-        pending_init_attrs: dict[ClusterHandler, dict[str, bool]] = defaultdict(dict)
 
         for entity in pending_entities.values():
             for cluster_name, report_entries in entity.entity_report_config.items():
@@ -1031,22 +1077,50 @@ class Device(LogMixin, EventBase):
                 direct_report_attrs = entity.quirks_v2_direct_report_attrs.get(
                     cluster_name, set()
                 )
-                if not direct_report_attrs:
-                    continue
-
                 handler_report_map = pending_report_config[cluster_handler]
                 handler_direct_attrs = pending_direct_report_attrs[cluster_handler]
 
                 for entry in report_entries:
                     attr = cast(str, entry[REPORT_CONFIG_ATTR])
-                    if attr not in direct_report_attrs:
+                    if (
+                        attr not in direct_report_attrs
+                        and not self._cluster_handler_has_attribute(
+                            cluster_handler, attr, attr_is_known_cache
+                        )
+                    ):
                         continue
+
                     config = cast(
                         tuple[int, int, int | float], entry[REPORT_CONFIG_CONFIG]
                     )
-                    handler_report_map[attr] = config
-                    handler_direct_attrs.add(attr)
 
+                    if attr in direct_report_attrs:
+                        handler_report_map[attr] = config
+                        handler_direct_attrs.add(attr)
+                        continue
+
+                    if attr in handler_direct_attrs:
+                        continue
+
+                    if attr in handler_report_map:
+                        handler_report_map[attr] = _merge_aggressive_reporting_config(
+                            handler_report_map[attr], config
+                        )
+                    else:
+                        handler_report_map[attr] = config
+
+        return pending_report_config, pending_direct_report_attrs
+
+    def _collect_pending_init_attrs(
+        self,
+        *,
+        pending_entities: dict[tuple[Platform, str], PlatformEntity],
+        attr_is_known_cache: dict[tuple[str, str], bool],
+    ) -> dict[ClusterHandler, dict[str, bool]]:
+        """Collect and merge init-attr requirements from pending entities."""
+        pending_init_attrs: dict[ClusterHandler, dict[str, bool]] = defaultdict(dict)
+
+        for entity in pending_entities.values():
             for cluster_name, init_attrs in entity.entity_init_attrs.items():
                 cluster_handler = entity.cluster_handlers.get(cluster_name)
                 if cluster_handler is None:
@@ -1055,13 +1129,16 @@ class Device(LogMixin, EventBase):
                 direct_init_attrs = entity.quirks_v2_direct_init_attrs.get(
                     cluster_name, set()
                 )
-                if not direct_init_attrs:
-                    continue
-
                 handler_init_attrs = pending_init_attrs[cluster_handler]
                 for attr, use_cache in init_attrs.items():
-                    if attr not in direct_init_attrs:
+                    if (
+                        attr not in direct_init_attrs
+                        and not self._cluster_handler_has_attribute(
+                            cluster_handler, attr, attr_is_known_cache
+                        )
+                    ):
                         continue
+
                     if attr in handler_init_attrs:
                         handler_init_attrs[attr] = (
                             handler_init_attrs[attr] and use_cache
@@ -1069,6 +1146,17 @@ class Device(LogMixin, EventBase):
                     else:
                         handler_init_attrs[attr] = use_cache
 
+        return pending_init_attrs
+
+    def _apply_pending_report_config(
+        self,
+        *,
+        pending_report_config: dict[
+            ClusterHandler, dict[str, tuple[int, int, int | float]]
+        ],
+        pending_direct_report_attrs: dict[ClusterHandler, set[str]],
+    ) -> None:
+        """Apply merged report config requirements to cluster handlers."""
         for cluster_handler, report_map in pending_report_config.items():
             existing_report_map = {
                 entry["attr"]: entry["config"]
@@ -1096,6 +1184,10 @@ class Device(LogMixin, EventBase):
                 for attr, config in sorted(existing_report_map.items())
             )
 
+    def _apply_pending_init_attrs(
+        self, *, pending_init_attrs: dict[ClusterHandler, dict[str, bool]]
+    ) -> None:
+        """Apply merged init-attr requirements to cluster handlers."""
         for cluster_handler, init_attrs in pending_init_attrs.items():
             existing_init_attrs = dict(cluster_handler.ZCL_INIT_ATTRS)
             for attr, use_cache in init_attrs.items():

@@ -170,7 +170,6 @@ class AnalogInputClusterHandler(ClusterHandler):
         )
 
 
-@registries.BINDABLE_CLUSTERS.register(AnalogOutput.cluster_id)
 @registries.CLUSTER_HANDLER_REGISTRY.register(AnalogOutput.cluster_id)
 class AnalogOutputClusterHandler(ClusterHandler):
     """Analog Output cluster handler."""
@@ -261,7 +260,6 @@ class ApplianceControlClusterHandler(ClusterHandler):
     """Appliance Control cluster handler."""
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(Basic.cluster_id)
 @registries.CLUSTER_HANDLER_REGISTRY.register(Basic.cluster_id)
 class BasicClusterHandler(ClusterHandler):
     """Cluster handler to interact with the basic cluster."""
@@ -418,7 +416,6 @@ class LevelControlClientClusterHandler(ClientClusterHandler):
     """LevelControl client cluster."""
 
 
-@registries.BINDABLE_CLUSTERS.register(LevelControl.cluster_id)
 @registries.CLUSTER_HANDLER_REGISTRY.register(LevelControl.cluster_id)
 class LevelControlClusterHandler(ClusterHandler):
     """Cluster handler for the LevelControl Zigbee cluster."""
@@ -595,7 +592,6 @@ class OnOffClientClusterHandler(ClientClusterHandler):
         self.cluster.update_attribute(OnOff.AttributeDefs.on_off.id, t.Bool.false)
 
 
-@registries.BINDABLE_CLUSTERS.register(OnOff.cluster_id)
 @registries.CLUSTER_HANDLER_REGISTRY.register(OnOff.cluster_id)
 class OnOffClusterHandler(ClusterHandler):
     """Cluster handler for the OnOff Zigbee cluster."""

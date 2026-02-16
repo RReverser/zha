@@ -79,7 +79,6 @@ class SmartThingsHumidityClusterHandler(ClusterHandler):
     )
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(OSRAM_BUTTON_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(OSRAM_BUTTON_CLUSTER)
 class OsramButtonClusterHandler(ClusterHandler):
     """Osram button cluster handler."""
@@ -87,7 +86,6 @@ class OsramButtonClusterHandler(ClusterHandler):
     REPORT_CONFIG = ()
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(PHILIPS_CONTACT_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(PHILIPS_CONTACT_CLUSTER)
 class PhillipsContactClusterHandler(ClusterHandler):
     """Phillips contact cluster handler."""
@@ -98,7 +96,6 @@ class PhillipsContactClusterHandler(ClusterHandler):
     )
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(PHILLIPS_REMOTE_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(PHILLIPS_REMOTE_CLUSTER)
 class PhillipsRemoteClusterHandler(ClusterHandler):
     """Phillips remote cluster handler."""
@@ -106,7 +103,6 @@ class PhillipsRemoteClusterHandler(ClusterHandler):
     REPORT_CONFIG = ()
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(TUYA_MANUFACTURER_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(TUYA_MANUFACTURER_CLUSTER)
 class TuyaClusterHandler(ClusterHandler):
     """Cluster handler for the Tuya manufacturer Zigbee cluster."""
@@ -123,7 +119,6 @@ class TuyaClusterHandler(ClusterHandler):
             }
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(AQARA_OPPLE_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(AQARA_OPPLE_CLUSTER)
 class OppleRemoteClusterHandler(ClusterHandler):
     """Opple cluster handler."""
@@ -445,7 +440,6 @@ class InovelliConfigEntityClusterHandler(ClusterHandler):
         )
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(IKEA_AIR_PURIFIER_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(IKEA_AIR_PURIFIER_CLUSTER)
 class IkeaAirPurifierClusterHandler(ClusterHandler):
     """IKEA Air Purifier cluster handler."""
@@ -487,7 +481,6 @@ class IkeaAirPurifierClusterHandler(ClusterHandler):
         await self.get_attribute_value("fan_speed", from_cache=False)
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(IKEA_REMOTE_CLUSTER)
 @registries.CLIENT_CLUSTER_HANDLER_REGISTRY.register(IKEA_REMOTE_CLUSTER)
 class IkeaRemoteClientClusterHandler(ClientClusterHandler):
     """Ikea Matter remote cluster handler."""
@@ -501,7 +494,6 @@ class IkeaRemoteClientClusterHandler(ClientClusterHandler):
         pass
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(IKEA_SHORTCUT_V1_CLUSTER)
 @registries.CLIENT_CLUSTER_HANDLER_REGISTRY.register(IKEA_SHORTCUT_V1_CLUSTER)
 class IkeaSymfoniskRemoteClientClusterHandler(ClientClusterHandler):
     """Ikea Symfonisk remote cluster handler."""
@@ -522,7 +514,6 @@ class XiaomiVibrationAQ1ClusterHandler(MultistateInputClusterHandler):
     """Xiaomi DoorLock Cluster is in fact a MultiStateInput Cluster."""
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(SONOFF_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(SONOFF_CLUSTER)
 class SonoffPresenceSenorClusterHandler(ClusterHandler):
     """SonoffPresenceSensor cluster handler."""
@@ -596,7 +587,6 @@ class DanfossDiagnosticClusterHandler(DiagnosticClusterHandler):
     )
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(SINOPE_MANUFACTURER_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(SINOPE_MANUFACTURER_CLUSTER)
 class SinopeManufacturerClusterHandler(ClusterHandler):
     """Sinope Manufacturer cluster handler."""
@@ -653,7 +643,6 @@ class SinopeManufacturerClusterHandler(ClusterHandler):
         return cluster.endpoint.model in switches
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(LEGRAND_CABLE_OUTLET_CLUSTER)
 @registries.CLUSTER_HANDLER_REGISTRY.register(LEGRAND_CABLE_OUTLET_CLUSTER)
 class LegrandCableOutletClusterHandler(ClusterHandler):
     """Legrand cable outlet cluster handler."""

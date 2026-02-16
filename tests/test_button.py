@@ -414,7 +414,7 @@ async def test_cluster_handler_quirks_unnecessary_claiming(
     zigpy_device = registry.get_device(zigpy_device)
 
     # Suppress normal endpoint probing, as this will claim the Opple cluster handler
-    # already due to it being in the "CLUSTER_HANDLER_ONLY_CLUSTERS" registry.
+    # already due to entityless configure-required cluster policy.
     # We want to test the handler also gets claimed via quirks v2 attributes init.
     with patch("zha.application.discovery.discover_entities_for_endpoint"):
         zha_device = await join_zigpy_device(zha_gateway, zigpy_device)

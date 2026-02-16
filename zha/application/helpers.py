@@ -35,6 +35,7 @@ from zha.application.const import (
 )
 from zha.async_ import gather_with_limited_concurrency
 from zha.decorators import periodic
+from zha.zigbee.cluster_policies import BINDABLE_CLUSTER_IDS
 
 if TYPE_CHECKING:
     from zha.application.gateway import Gateway
@@ -93,17 +94,13 @@ async def get_matched_clusters(
     source_zha_device: Device, target_zha_device: Device
 ) -> list[BindingPair]:
     """Get matched input/output cluster pairs for 2 devices."""
-    from zha.zigbee.cluster_handlers.registries import (  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
-        BINDABLE_CLUSTERS,
-    )
-
     source_clusters = source_zha_device.async_get_std_clusters()
     target_clusters = target_zha_device.async_get_std_clusters()
     clusters_to_bind = []
 
     for endpoint_id in source_clusters:
         for cluster_id in source_clusters[endpoint_id][CLUSTER_TYPE_OUT]:
-            if cluster_id not in BINDABLE_CLUSTERS:
+            if cluster_id not in BINDABLE_CLUSTER_IDS:
                 continue
             if target_zha_device.nwk == 0x0000:
                 cluster_pair = BindingPair(
@@ -201,10 +198,6 @@ def convert_to_zcl_values(
 
 def async_is_bindable_target(source_zha_device: Device, target_zha_device: Device):
     """Determine if target is bindable to source."""
-    from zha.zigbee.cluster_handlers.registries import (  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
-        BINDABLE_CLUSTERS,
-    )
-
     if target_zha_device.nwk == 0x0000:
         return True
 
@@ -216,7 +209,7 @@ def async_is_bindable_target(source_zha_device: Device, target_zha_device: Devic
             matches = set(
                 source_clusters[endpoint_id][CLUSTER_TYPE_OUT].keys()
             ).intersection(target_clusters[t_endpoint_id][CLUSTER_TYPE_IN].keys())
-            if any(bindable in BINDABLE_CLUSTERS for bindable in matches):
+            if any(bindable in BINDABLE_CLUSTER_IDS for bindable in matches):
                 return True
     return False
 

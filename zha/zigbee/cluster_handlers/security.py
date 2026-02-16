@@ -246,7 +246,6 @@ class IasAceClientClusterHandler(ClientClusterHandler):
         """Handle the IAS ACE zone status command."""
 
 
-@registries.CLUSTER_HANDLER_ONLY_CLUSTERS.register(IasWd.cluster_id)
 @registries.CLUSTER_HANDLER_REGISTRY.register(IasWd.cluster_id)
 class IasWdClusterHandler(ClusterHandler):
     """IAS Warning Device cluster handler."""

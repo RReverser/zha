@@ -44,7 +44,6 @@ from zha.zigbee.cluster_handlers.const import (
     ATTRIBUTE_VALUE,
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_EVENT,
-    CLUSTER_HANDLER_ZDO,
     CLUSTER_ID,
     CLUSTER_READS_PER_REQ,
     COMMAND,
@@ -683,61 +682,6 @@ class ClusterHandler(LogMixin, EventBase):
 
             return wrapped_command
         return self.__getattribute__(name)
-
-
-class ZDOClusterHandler(LogMixin):
-    """Cluster handler for ZDO events."""
-
-    def __init__(self, device) -> None:
-        """Initialize ZDOClusterHandler."""
-        self.name = CLUSTER_HANDLER_ZDO
-        self._cluster = device.device.endpoints[0]
-        self._zha_device = device
-        self._status = ClusterHandlerStatus.CREATED
-        self._unique_id = f"{str(device.ieee)}:{device.name}_ZDO"
-
-    def on_add(self) -> None:
-        """Call when cluster handler is added."""
-        self._cluster.add_listener(self)
-
-    def on_remove(self) -> None:
-        """Call when cluster handler will be removed."""
-        self._cluster.remove_listener(self)
-
-    @property
-    def unique_id(self):
-        """Return the unique id for this cluster handler."""
-        return self._unique_id
-
-    @property
-    def cluster(self):
-        """Return the aigpy cluster for this cluster handler."""
-        return self._cluster
-
-    @property
-    def status(self):
-        """Return the status of the cluster handler."""
-        return self._status
-
-    def device_announce(self, zigpy_device):
-        """Device announce handler."""
-
-    def permit_duration(self, duration):
-        """Permit handler."""
-
-    async def async_initialize(self, from_cache):  # pylint: disable=unused-argument
-        """Initialize cluster handler."""
-        self._status = ClusterHandlerStatus.INITIALIZED
-
-    async def async_configure(self):
-        """Configure cluster handler."""
-        self._status = ClusterHandlerStatus.CONFIGURED
-
-    def log(self, level, msg, *args, **kwargs):
-        """Log a message."""
-        msg = f"[%s:ZDO](%s): {msg}"
-        args = (self._zha_device.nwk, self._zha_device.model) + args
-        _LOGGER.log(level, msg, *args, **kwargs)
 
 
 class ClientClusterHandler(ClusterHandler):

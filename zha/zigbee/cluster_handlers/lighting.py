@@ -23,7 +23,6 @@ class ColorClientClusterHandler(ClientClusterHandler):
     """Color client cluster handler."""
 
 
-@registries.BINDABLE_CLUSTERS.register(Color.cluster_id)
 @registries.CLUSTER_HANDLER_REGISTRY.register(Color.cluster_id)
 class ColorClusterHandler(ClusterHandler):
     """Color cluster handler."""
