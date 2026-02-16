@@ -1,0 +1,34 @@
+{
+  "ClusterAttributeUpdatedEvent_fields": [
+    "attribute_id",
+    "attribute_name",
+    "attribute_value",
+    "cluster_handler_unique_id",
+    "cluster_id",
+    "event_type",
+    "event"
+  ],
+  "ClusterBindEvent_fields": [
+    "cluster_name",
+    "cluster_id",
+    "success",
+    "cluster_handler_unique_id",
+    "event_type",
+    "event"
+  ],
+  "ClusterConfigureReportingEvent_fields": [
+    "cluster_name",
+    "cluster_id",
+    "attributes",
+    "cluster_handler_unique_id",
+    "event_type",
+    "event"
+  ],
+  "zha_event_payload_keys": [
+    "unique_id",
+    "cluster_id",
+    "command",
+    "args",
+    "params"
+  ]
+}

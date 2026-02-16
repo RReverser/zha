@@ -1,0 +1,5341 @@
+[
+  {
+    "cluster_id": 0,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.BasicClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": [
+          "__init__"
+        ]
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.PowerConfigurationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "battery_voltage",
+            "config": [
+              3600,
+              10800,
+              1
+            ]
+          },
+          {
+            "attr": "battery_percentage_remaining",
+            "config": [
+              3600,
+              10800,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "battery_percentage_remaining": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.PowerConfigurationClusterHandler",
+          "config": [
+            3600,
+            10800,
+            1
+          ]
+        }
+      ],
+      "battery_voltage": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.PowerConfigurationClusterHandler",
+          "config": [
+            3600,
+            10800,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 2,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.DeviceTemperatureClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "current_temperature",
+            "config": [
+              30,
+              900,
+              50
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "current_temperature": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.DeviceTemperatureClusterHandler",
+          "config": [
+            30,
+            900,
+            50
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 3,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.IdentifyClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 4,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.GroupsClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 5,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.ScenesClientClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 5,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.ScenesClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 6,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.OnOffClientClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 6,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.OnOffClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "on_off",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "start_up_on_off": true
+        },
+        "dynamic_rules": [
+          "__init__"
+        ]
+      }
+    ],
+    "report_attrs": {
+      "on_off": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.OnOffClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "start_up_on_off": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.OnOffClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 7,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.OnOffConfigurationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 8,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.LevelControlClientClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 8,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.LevelControlClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "current_level",
+            "config": [
+              1,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "on_off_transition_time": true,
+          "on_level": true,
+          "on_transition_time": true,
+          "off_transition_time": true,
+          "default_move_rate": true,
+          "start_up_current_level": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "current_level": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.LevelControlClusterHandler",
+          "config": [
+            1,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "default_move_rate": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.LevelControlClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "off_transition_time": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.LevelControlClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "on_level": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.LevelControlClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "on_off_transition_time": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.LevelControlClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "on_transition_time": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.LevelControlClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "start_up_current_level": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.LevelControlClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 9,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.AlarmsClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 10,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.TimeClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 11,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.RSSILocationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 12,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "description": true,
+          "max_present_value": true,
+          "min_present_value": true,
+          "out_of_service": true,
+          "reliability": true,
+          "resolution": true,
+          "status_flags": true,
+          "engineering_units": true,
+          "application_type": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "application_type": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "description": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "engineering_units": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "max_present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "min_present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "out_of_service": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "reliability": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "resolution": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "status_flags": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogInputClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 13,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "min_present_value": true,
+          "max_present_value": true,
+          "resolution": true,
+          "relinquish_default": true,
+          "description": true,
+          "engineering_units": true,
+          "application_type": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "application_type": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "description": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "engineering_units": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "max_present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "min_present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "relinquish_default": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "resolution": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogOutputClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 14,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.AnalogValueClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.AnalogValueClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 15,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.BinaryInputClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "description": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.BinaryInputClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "description": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.BinaryInputClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 16,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.BinaryOutputClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "description": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.BinaryOutputClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "description": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.BinaryOutputClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 17,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.BinaryValueClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.BinaryValueClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 18,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.MultistateInputClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.MultistateInputClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 19,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.MultistateOutputClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.MultistateOutputClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 20,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.MultistateValueClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "present_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.MultistateValueClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 21,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.CommissioningClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 22,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.PartitionClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 25,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.OtaClientClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {
+          "current_file_version": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {
+      "current_file_version": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.OtaClientClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 25,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.OtaClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {
+          "current_file_version": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {
+      "current_file_version": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.general.OtaClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 26,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.PowerProfileClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 27,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.ApplianceControlClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 33,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.general.GreenPowerProxyClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 256,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.closures.ShadeClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 257,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.closures.DoorLockClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "lock_state",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      },
+      {
+        "feature_key": "xiaomi.aqara_vibration_aq1",
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.XiaomiVibrationAQ1ClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "present_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "lock_state": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.DoorLockClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "present_value": [
+        {
+          "feature_key": "xiaomi.aqara_vibration_aq1",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.XiaomiVibrationAQ1ClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 258,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClientClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 258,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "current_position_lift_percentage",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_position_tilt_percentage",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "window_covering_type": true,
+          "window_covering_mode": true,
+          "config_status": true,
+          "installed_closed_limit_lift": true,
+          "installed_closed_limit_tilt": true,
+          "installed_open_limit_lift": true,
+          "installed_open_limit_tilt": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "current_position_lift_percentage": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_position_tilt_percentage": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "config_status": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "installed_closed_limit_lift": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "installed_closed_limit_tilt": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "installed_open_limit_lift": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "installed_open_limit_tilt": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "window_covering_mode": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "window_covering_type": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.closures.WindowCoveringClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 512,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.hvac.PumpClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 513,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "local_temperature",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "occupied_cooling_setpoint",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "occupied_heating_setpoint",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "unoccupied_cooling_setpoint",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "unoccupied_heating_setpoint",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "running_mode",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "running_state",
+            "config": [
+              30,
+              900,
+              5
+            ]
+          },
+          {
+            "attr": "system_mode",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "occupancy",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "pi_cooling_demand",
+            "config": [
+              30,
+              900,
+              5
+            ]
+          },
+          {
+            "attr": "pi_heating_demand",
+            "config": [
+              30,
+              900,
+              5
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "abs_min_heat_setpoint_limit": true,
+          "abs_max_heat_setpoint_limit": true,
+          "abs_min_cool_setpoint_limit": true,
+          "abs_max_cool_setpoint_limit": true,
+          "ctrl_sequence_of_oper": false,
+          "max_cool_setpoint_limit": true,
+          "max_heat_setpoint_limit": true,
+          "min_cool_setpoint_limit": true,
+          "min_heat_setpoint_limit": true,
+          "local_temperature_calibration": true,
+          "setpoint_change_source": true
+        },
+        "dynamic_rules": []
+      },
+      {
+        "feature_key": "danfoss.ally_thermostat",
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "local_temperature",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "occupied_cooling_setpoint",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "occupied_heating_setpoint",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "unoccupied_cooling_setpoint",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "unoccupied_heating_setpoint",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "running_mode",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "running_state",
+            "config": [
+              30,
+              900,
+              5
+            ]
+          },
+          {
+            "attr": "system_mode",
+            "config": [
+              30,
+              900,
+              25
+            ]
+          },
+          {
+            "attr": "occupancy",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "pi_cooling_demand",
+            "config": [
+              30,
+              900,
+              5
+            ]
+          },
+          {
+            "attr": "pi_heating_demand",
+            "config": [
+              30,
+              900,
+              5
+            ]
+          },
+          {
+            "attr": "open_window_detection",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "heat_required",
+            "config": [
+              1,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "mounting_mode_active",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "load_estimate",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "adaptation_run_status",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "preheat_status",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "preheat_time",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "abs_min_heat_setpoint_limit": true,
+          "abs_max_heat_setpoint_limit": true,
+          "abs_min_cool_setpoint_limit": true,
+          "abs_max_cool_setpoint_limit": true,
+          "ctrl_sequence_of_oper": false,
+          "max_cool_setpoint_limit": true,
+          "max_heat_setpoint_limit": true,
+          "min_cool_setpoint_limit": true,
+          "min_heat_setpoint_limit": true,
+          "local_temperature_calibration": true,
+          "setpoint_change_source": true,
+          "external_open_window_detected": true,
+          "window_open_feature": true,
+          "exercise_day_of_week": true,
+          "exercise_trigger_time": true,
+          "mounting_mode_control": false,
+          "orientation": true,
+          "external_measured_room_sensor": false,
+          "radiator_covered": true,
+          "heat_available": true,
+          "load_balancing_enable": true,
+          "load_room_mean": false,
+          "control_algorithm_scale_factor": true,
+          "regulation_setpoint_offset": true,
+          "adaptation_run_control": true,
+          "adaptation_run_settings": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "adaptation_run_status": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "heat_required": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            1,
+            900,
+            1
+          ]
+        }
+      ],
+      "load_estimate": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "local_temperature": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        }
+      ],
+      "mounting_mode_active": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "occupancy": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "occupied_cooling_setpoint": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        }
+      ],
+      "occupied_heating_setpoint": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        }
+      ],
+      "open_window_detection": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "pi_cooling_demand": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            5
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            5
+          ]
+        }
+      ],
+      "pi_heating_demand": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            5
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            5
+          ]
+        }
+      ],
+      "preheat_status": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "preheat_time": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "running_mode": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        }
+      ],
+      "running_state": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            5
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            5
+          ]
+        }
+      ],
+      "system_mode": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        }
+      ],
+      "unoccupied_cooling_setpoint": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        }
+      ],
+      "unoccupied_heating_setpoint": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "config": [
+            30,
+            900,
+            25
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "abs_max_cool_setpoint_limit": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "abs_max_heat_setpoint_limit": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "abs_min_cool_setpoint_limit": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "abs_min_heat_setpoint_limit": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "adaptation_run_control": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "adaptation_run_settings": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "control_algorithm_scale_factor": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "ctrl_sequence_of_oper": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": false
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": false
+        }
+      ],
+      "exercise_day_of_week": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "exercise_trigger_time": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "external_measured_room_sensor": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": false
+        }
+      ],
+      "external_open_window_detected": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "heat_available": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "load_balancing_enable": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "load_room_mean": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": false
+        }
+      ],
+      "local_temperature_calibration": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "max_cool_setpoint_limit": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "max_heat_setpoint_limit": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "min_cool_setpoint_limit": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "min_heat_setpoint_limit": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "mounting_mode_control": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": false
+        }
+      ],
+      "orientation": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "radiator_covered": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "regulation_setpoint_offset": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "setpoint_change_source": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.ThermostatClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "window_open_feature": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossThermostatClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 514,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.hvac.FanClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "fan_mode",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "fan_mode_sequence": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "fan_mode": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.FanClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "fan_mode_sequence": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.FanClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 515,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.hvac.DehumidificationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 516,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.hvac.UserInterfaceClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {
+          "keypad_lockout": true
+        },
+        "dynamic_rules": []
+      },
+      {
+        "feature_key": "danfoss.ally_thermostat",
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossUserInterfaceClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {
+          "keypad_lockout": true,
+          "viewing_direction": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {
+      "keypad_lockout": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.hvac.UserInterfaceClusterHandler",
+          "cache_ok": true
+        },
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossUserInterfaceClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "viewing_direction": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossUserInterfaceClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 768,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.lighting.ColorClientClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 768,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+        "bindable": true,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "current_x",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_y",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "color_temperature",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "color_mode": false,
+          "color_temp_physical_min": true,
+          "color_temp_physical_max": true,
+          "color_capabilities": true,
+          "color_loop_active": false,
+          "start_up_color_temperature": true,
+          "options": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "color_temperature": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_x": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_y": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "color_capabilities": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "color_loop_active": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "cache_ok": false
+        }
+      ],
+      "color_mode": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "cache_ok": false
+        }
+      ],
+      "color_temp_physical_max": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "color_temp_physical_min": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "options": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "start_up_color_temperature": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.lighting.ColorClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 769,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.lighting.BallastClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1024,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.IlluminanceMeasurementClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.IlluminanceMeasurementClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1025,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.IlluminanceLevelSensingClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "level_status",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "level_status": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.IlluminanceLevelSensingClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1026,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.TemperatureMeasurementClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              50
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.TemperatureMeasurementClusterHandler",
+          "config": [
+            30,
+            900,
+            50
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1027,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.PressureMeasurementClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.PressureMeasurementClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1028,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.FlowMeasurementClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.FlowMeasurementClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1029,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.RelativeHumidityClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              100
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.RelativeHumidityClusterHandler",
+          "config": [
+            30,
+            900,
+            100
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1030,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.OccupancySensingClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "occupancy",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": [
+          "__init__"
+        ]
+      }
+    ],
+    "report_attrs": {
+      "occupancy": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.OccupancySensingClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1031,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.LeafWetnessClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              100
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.LeafWetnessClusterHandler",
+          "config": [
+            30,
+            900,
+            100
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1032,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.SoilMoistureClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              100
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.SoilMoistureClusterHandler",
+          "config": [
+            30,
+            900,
+            100
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1034,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.ElectricalConductivityClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.ElectricalConductivityClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1035,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.WindSpeedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              0.01
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.WindSpeedClusterHandler",
+          "config": [
+            30,
+            900,
+            0.01
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1036,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.CarbonMonoxideConcentrationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              1e-06
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.CarbonMonoxideConcentrationClusterHandler",
+          "config": [
+            30,
+            900,
+            1e-06
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1037,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.CarbonDioxideConcentrationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              1e-06
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.CarbonDioxideConcentrationClusterHandler",
+          "config": [
+            30,
+            900,
+            1e-06
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1066,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.PM25ClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              0.1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.PM25ClusterHandler",
+          "config": [
+            30,
+            900,
+            0.1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1067,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.measurement.FormaldehydeConcentrationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              1e-06
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.measurement.FormaldehydeConcentrationClusterHandler",
+          "config": [
+            30,
+            900,
+            1e-06
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1280,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.security.IASZoneClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {
+          "zone_status": false,
+          "zone_state": true,
+          "zone_type": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {
+      "zone_state": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.security.IASZoneClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "zone_status": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.security.IASZoneClusterHandler",
+          "cache_ok": false
+        }
+      ],
+      "zone_type": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.security.IASZoneClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 1281,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.security.IasAceClientClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1282,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.security.IasWdClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1536,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.GenericTunnelClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1537,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.BacnetProtocolTunnelClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1538,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.AnalogInputRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1539,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.AnalogInputExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1540,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.AnalogOutputRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1541,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.AnalogOutputExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1542,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.AnalogValueRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1543,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.AnalogValueExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1544,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.BinaryInputRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1545,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.BinaryInputExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1546,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.BinaryOutputRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1547,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.BinaryOutputExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1548,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.BinaryValueRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1549,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.BinaryValueExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1550,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.MultiStateInputRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1551,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.MultiStateInputExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1552,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.MultiStateOutputRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1553,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.MultiStateOutputExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1554,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.MultiStateValueRegularClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1555,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.protocol.MultiStateValueExtendedClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1792,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.PriceClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1793,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.DrlcClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1794,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "instantaneous_demand",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_summ_delivered",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_tier1_summ_delivered",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_tier2_summ_delivered",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_tier3_summ_delivered",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_tier4_summ_delivered",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_tier5_summ_delivered",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_tier6_summ_delivered",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "current_summ_received",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "status",
+            "config": [
+              1,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "demand_formatting": true,
+          "divisor": true,
+          "metering_device_type": true,
+          "multiplier": true,
+          "summation_formatting": true,
+          "unit_of_measure": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "current_summ_delivered": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_summ_received": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_tier1_summ_delivered": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_tier2_summ_delivered": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_tier3_summ_delivered": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_tier4_summ_delivered": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_tier5_summ_delivered": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "current_tier6_summ_delivered": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "instantaneous_demand": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "status": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "config": [
+            1,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "demand_formatting": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "metering_device_type": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "summation_formatting": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "unit_of_measure": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.smartenergy.MeteringClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 1795,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.MessagingClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1796,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.TunnelingClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1797,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.PrepaymentClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1798,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.EnergyManagementClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1799,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.CalendarClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1800,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.DeviceManagementClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1801,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.EventsClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 1802,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.MduPairingClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 2048,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.smartenergy.KeyEstablishmentClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 2816,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.homeautomation.ApplianceIdentificationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 2817,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.homeautomation.MeterIdentificationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 2818,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.homeautomation.ApplianceEventAlertsClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 2819,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.homeautomation.ApplianceStatisticsClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 2820,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "ac_voltage_multiplier",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "ac_voltage_divisor",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "ac_current_multiplier",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "ac_current_divisor",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "ac_power_multiplier",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "ac_power_divisor",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "power_multiplier",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "power_divisor",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "active_power",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "active_power_ph_b",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "active_power_ph_c",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "total_active_power",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "apparent_power",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "rms_current",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "rms_current_ph_b",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "rms_current_ph_c",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "rms_voltage",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "rms_voltage_ph_b",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "rms_voltage_ph_c",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "ac_frequency",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_voltage_multiplier",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_voltage_divisor",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_current_multiplier",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_current_divisor",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_power_multiplier",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_power_divisor",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_voltage",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_current",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "dc_power",
+            "config": [
+              5,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {
+          "ac_frequency_divisor": true,
+          "ac_frequency_max": true,
+          "ac_frequency_multiplier": true,
+          "active_power_max": true,
+          "active_power_max_ph_b": true,
+          "active_power_max_ph_c": true,
+          "measurement_type": true,
+          "power_factor": true,
+          "power_factor_ph_b": true,
+          "power_factor_ph_c": true,
+          "rms_current_max": true,
+          "rms_current_max_ph_b": true,
+          "rms_current_max_ph_c": true,
+          "rms_voltage_max": true,
+          "rms_voltage_max_ph_b": true,
+          "rms_voltage_max_ph_c": true,
+          "dc_voltage_divisor": true,
+          "dc_voltage_multiplier": true,
+          "dc_current_divisor": true,
+          "dc_current_multiplier": true,
+          "dc_power_divisor": true,
+          "dc_power_multiplier": true
+        },
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "ac_current_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "ac_current_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "ac_frequency": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "ac_power_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "ac_power_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "ac_voltage_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "ac_voltage_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "active_power": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "active_power_ph_b": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "active_power_ph_c": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "apparent_power": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_current": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_current_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_current_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_power": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_power_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_power_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_voltage": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_voltage_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "dc_voltage_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "power_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "power_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "rms_current": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "rms_current_ph_b": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "rms_current_ph_c": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "rms_voltage": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "rms_voltage_ph_b": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "rms_voltage_ph_c": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ],
+      "total_active_power": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "config": [
+            5,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {
+      "ac_frequency_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "ac_frequency_max": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "ac_frequency_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "active_power_max": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "active_power_max_ph_b": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "active_power_max_ph_c": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "dc_current_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "dc_current_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "dc_power_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "dc_power_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "dc_voltage_divisor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "dc_voltage_multiplier": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "measurement_type": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "power_factor": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "power_factor_ph_b": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "power_factor_ph_c": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "rms_current_max": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "rms_current_max_ph_b": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "rms_current_max_ph_c": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "rms_voltage_max": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "rms_voltage_max_ph_b": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ],
+      "rms_voltage_max_ph_c": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.homeautomation.ElectricalMeasurementClusterHandler",
+          "cache_ok": true
+        }
+      ]
+    }
+  },
+  {
+    "cluster_id": 2821,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.homeautomation.DiagnosticClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      },
+      {
+        "feature_key": "danfoss.ally_thermostat",
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossDiagnosticClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "sw_error_code",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "motor_step_counter",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "motor_step_counter": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossDiagnosticClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "sw_error_code": [
+        {
+          "feature_key": "danfoss.ally_thermostat",
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.DanfossDiagnosticClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 4096,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.lightlink.LightLinkClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 61184,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.TuyaClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": [
+          "__init__"
+        ]
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64512,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.PhillipsRemoteClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64514,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SmartThingsAccelerationClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "acceleration",
+            "config": [
+              1,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "x_axis",
+            "config": [
+              1,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "y_axis",
+            "config": [
+              1,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "z_axis",
+            "config": [
+              1,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "acceleration": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SmartThingsAccelerationClusterHandler",
+          "config": [
+            1,
+            900,
+            1
+          ]
+        }
+      ],
+      "x_axis": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SmartThingsAccelerationClusterHandler",
+          "config": [
+            1,
+            900,
+            1
+          ]
+        }
+      ],
+      "y_axis": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SmartThingsAccelerationClusterHandler",
+          "config": [
+            1,
+            900,
+            1
+          ]
+        }
+      ],
+      "z_axis": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SmartThingsAccelerationClusterHandler",
+          "config": [
+            1,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64518,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.PhillipsContactClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [
+          {
+            "attr": "contact",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "tamper",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "contact": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.PhillipsContactClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "tamper": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.PhillipsContactClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64529,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SonoffPresenceSenorClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": [
+          "__init__"
+        ]
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64561,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.InovelliNotificationClientClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64561,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.InovelliConfigEntityClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": [
+          "__init__"
+        ]
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64576,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.LegrandCableOutletClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64581,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SmartThingsHumidityClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": false,
+        "report_config": [
+          {
+            "attr": "measured_value",
+            "config": [
+              30,
+              900,
+              50
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "measured_value": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SmartThingsHumidityClusterHandler",
+          "config": [
+            30,
+            900,
+            50
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64637,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [
+          {
+            "attr": "filter_run_time",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "replace_filter",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "filter_life_time",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "disable_led",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "air_quality_25pm",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "child_lock",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "fan_mode",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "fan_speed",
+            "config": [
+              0,
+              900,
+              1
+            ]
+          },
+          {
+            "attr": "device_run_time",
+            "config": [
+              30,
+              900,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {
+      "air_quality_25pm": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "child_lock": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "device_run_time": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "disable_led": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "fan_mode": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "fan_speed": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ],
+      "filter_life_time": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "filter_run_time": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            30,
+            900,
+            1
+          ]
+        }
+      ],
+      "replace_filter": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaAirPurifierClusterHandler",
+          "config": [
+            0,
+            900,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64639,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaSymfoniskRemoteClientClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64640,
+    "direction": "client",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.IkeaRemoteClientClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64704,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.OppleRemoteClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": [
+          "__init__"
+        ]
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 64768,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.OsramButtonClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [],
+        "zcl_init_attrs": {},
+        "dynamic_rules": []
+      }
+    ],
+    "report_attrs": {},
+    "init_attrs": {}
+  },
+  {
+    "cluster_id": 65281,
+    "direction": "server",
+    "entries": [
+      {
+        "feature_key": null,
+        "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SinopeManufacturerClusterHandler",
+        "bindable": false,
+        "cluster_handler_only": true,
+        "report_config": [
+          {
+            "attr": "action_report",
+            "config": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "zcl_init_attrs": {},
+        "dynamic_rules": [
+          "__init__"
+        ]
+      }
+    ],
+    "report_attrs": {
+      "action_report": [
+        {
+          "feature_key": null,
+          "class": "zha.zigbee.cluster_handlers.manufacturerspecific.SinopeManufacturerClusterHandler",
+          "config": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "init_attrs": {}
+  }
+]

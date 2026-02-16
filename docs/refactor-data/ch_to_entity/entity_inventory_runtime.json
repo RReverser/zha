@@ -1,0 +1,6204 @@
+[
+  {
+    "class": "AlarmControlPanel",
+    "module": "zha.application.platforms.alarm_control_panel",
+    "platform": "alarm_control_panel",
+    "registered_cluster_ids": [
+      1281
+    ],
+    "match": {
+      "cluster_handlers": [],
+      "client_cluster_handlers": [
+        "ias_ace"
+      ],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Accelerometer",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64514
+    ],
+    "match": {
+      "cluster_handlers": [
+        "accelerometer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraE1CurtainMotorOpenedByHandBinarySensor",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.curtain.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraLinkageAlarmState",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.sensor_smoke.acn03"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederErrorDetected",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatCalibrated",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatExternalSensor",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatValveAlarm",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatWindowOpen",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "BinaryInput",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      15
+    ],
+    "match": {
+      "cluster_handlers": [
+        "binary_input"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "BinaryInputWithDescription",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      15
+    ],
+    "match": {
+      "cluster_handlers": [
+        "binary_input"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossHeatRequired",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossMountingModeActive",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossPreheatStatus",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "FrostLock",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      61184
+    ],
+    "match": {
+      "cluster_handlers": [
+        "tuya_manufacturer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "_TZE200_htnnfasr"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "HueOccupancy",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      1030
+    ],
+    "match": {
+      "cluster_handlers": [
+        "philips_occupancy"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "IASZone",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      1280
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ias_zone"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "IkeaMotion",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [],
+      "client_cluster_handlers": [
+        "on_off"
+      ],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "IKEA of Sweden"
+      ],
+      "models": [
+        "TRADFRI motion sensor"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "binary_sensor",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Occupancy",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      1030
+    ],
+    "match": {
+      "cluster_handlers": [
+        "occupancy"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Opening",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [],
+      "client_cluster_handlers": [
+        "on_off"
+      ],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": [
+        [
+          260,
+          0
+        ],
+        [
+          260,
+          1
+        ],
+        [
+          260,
+          4
+        ],
+        [
+          260,
+          6
+        ],
+        [
+          260,
+          259
+        ],
+        [
+          260,
+          260
+        ],
+        [
+          260,
+          261
+        ],
+        [
+          260,
+          2048
+        ],
+        [
+          260,
+          2064
+        ],
+        [
+          260,
+          2080
+        ],
+        [
+          260,
+          2096
+        ],
+        [
+          49246,
+          2048
+        ],
+        [
+          49246,
+          2064
+        ],
+        [
+          49246,
+          2080
+        ],
+        [
+          49246,
+          2096
+        ],
+        [
+          49246,
+          2112
+        ]
+      ],
+      "feature_priority": [
+        "binary_sensor",
+        0
+      ]
+    }
+  },
+  {
+    "class": "PhilipsMotion",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [],
+      "client_cluster_handlers": [
+        "on_off"
+      ],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Philips"
+      ],
+      "models": [
+        "SML001",
+        "SML002"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "binary_sensor",
+        1
+      ]
+    }
+  },
+  {
+    "class": "ReplaceFilter",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64637
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ikea_airpurifier"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SinopeLeakStatus",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      1280
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ias_zone"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "WL4200",
+        "WL4200S"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "XiaomiPlugConsumerConnected",
+    "module": "zha.application.platforms.binary_sensor",
+    "platform": "binary_sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.plug.maeu01",
+        "lumi.plug.mmeu01"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederFeedButton",
+    "module": "zha.application.platforms.button",
+    "platform": "button",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraSelfTestButton",
+    "module": "zha.application.platforms.button",
+    "platform": "button",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.sensor_smoke.acn03"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "FrostLockResetButton",
+    "module": "zha.application.platforms.button",
+    "platform": "button",
+    "registered_cluster_ids": [
+      61184
+    ],
+    "match": {
+      "cluster_handlers": [
+        "tuya_manufacturer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "_TZE200_htnnfasr"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "IdentifyButton",
+    "module": "zha.application.platforms.button",
+    "platform": "button",
+    "registered_cluster_ids": [
+      3
+    ],
+    "match": {
+      "cluster_handlers": [
+        "identify"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "NoPresenceStatusResetButton",
+    "module": "zha.application.platforms.button",
+    "platform": "button",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.motion.ac01"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "BecaThermostat",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "_TZE200_b6wax7g0"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        2
+      ]
+    }
+  },
+  {
+    "class": "CentralitePearl",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [
+        "fan"
+      ],
+      "manufacturers": [
+        "Centralite"
+      ],
+      "models": [
+        "3157100",
+        "3157100-E"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        2
+      ]
+    }
+  },
+  {
+    "class": "MoesThermostat",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "_TYST11_2atgpdho",
+        "_TYST11_ckud7u2l",
+        "_TYST11_cwnjrr72",
+        "_TYST11_ywdxldoj",
+        "_TZE200_2atgpdho",
+        "_TZE200_4eeyebrt",
+        "_TZE200_8whxpsiw",
+        "_TZE200_9sfg7gm0",
+        "_TZE200_ckud7u2l",
+        "_TZE200_cpmgn2cf",
+        "_TZE200_cwnjrr72",
+        "_TZE200_pvvbommb",
+        "_TZE200_ywdxldoj"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        2
+      ]
+    }
+  },
+  {
+    "class": "SinopeTechnologiesThermostat",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "sinope_manufacturer_specific",
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Sinope Technologies"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "StelproFanHeater",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Stelpro"
+      ],
+      "models": [
+        "SORB"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        2
+      ]
+    }
+  },
+  {
+    "class": "Thermostat",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [
+        "fan"
+      ],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        1
+      ]
+    }
+  },
+  {
+    "class": "ZONNSMARTThermostat",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "_TZE200_7yoranx2",
+        "_TZE200_e9ba97vf",
+        "_TZE200_hue3yfsn",
+        "_TZE200_husqqvux",
+        "_TZE200_kds0pmmv",
+        "_TZE200_kly8gjlz",
+        "_TZE200_lnbfnyxd",
+        "_TZE200_mudxchsu"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        2
+      ]
+    }
+  },
+  {
+    "class": "ZehnderThermostat",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "ZEHNDER GROUP VAUX ANDIGNY",
+        "ZEHNDER GROUP VAUX ANDIGNY      "
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        2
+      ]
+    }
+  },
+  {
+    "class": "ZenWithinThermostat",
+    "module": "zha.application.platforms.climate",
+    "platform": "climate",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [
+        "fan"
+      ],
+      "manufacturers": [
+        "LUX",
+        "Zen Within"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        2
+      ]
+    }
+  },
+  {
+    "class": "Cover",
+    "module": "zha.application.platforms.cover",
+    "platform": "cover",
+    "registered_cluster_ids": [
+      258
+    ],
+    "match": {
+      "cluster_handlers": [
+        "window_covering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "KeenVent",
+    "module": "zha.application.platforms.cover",
+    "platform": "cover",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "level",
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Keen Home Inc"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "light_or_switch_or_shade",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Shade",
+    "module": "zha.application.platforms.cover",
+    "platform": "cover",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [
+        "level",
+        "shade"
+      ],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": [
+        [
+          260,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "light_or_switch_or_shade",
+        0
+      ]
+    }
+  },
+  {
+    "class": "DeviceScannerEntity",
+    "module": "zha.application.platforms.device_tracker",
+    "platform": "device_tracker",
+    "registered_cluster_ids": [
+      1
+    ],
+    "match": {
+      "cluster_handlers": [
+        "power"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": [
+        [
+          260,
+          32768
+        ]
+      ],
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Fan",
+    "module": "zha.application.platforms.fan",
+    "platform": "fan",
+    "registered_cluster_ids": [
+      514
+    ],
+    "match": {
+      "cluster_handlers": [
+        "fan"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        -1
+      ]
+    }
+  },
+  {
+    "class": "IkeaFan",
+    "module": "zha.application.platforms.fan",
+    "platform": "fan",
+    "registered_cluster_ids": [
+      64637
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ikea_airpurifier"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "STARKVIND Air purifier",
+        "STARKVIND Air purifier table"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "KofFan",
+    "module": "zha.application.platforms.fan",
+    "platform": "fan",
+    "registered_cluster_ids": [
+      514
+    ],
+    "match": {
+      "cluster_handlers": [
+        "fan"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "HBUniversalCFRemote",
+        "HDC52EastwindFan"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "thermostat_fan",
+        1
+      ]
+    }
+  },
+  {
+    "class": "ForceOnLight",
+    "module": "zha.application.platforms.light",
+    "platform": "light",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [
+        "level",
+        "light_color"
+      ],
+      "manufacturers": [
+        "Jasco",
+        "Jasco Products",
+        "Quotra-Vision",
+        "eWeLight",
+        "eWeLink"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": [
+        [
+          260,
+          256
+        ],
+        [
+          260,
+          257
+        ],
+        [
+          260,
+          258
+        ],
+        [
+          260,
+          265
+        ],
+        [
+          260,
+          267
+        ],
+        [
+          260,
+          268
+        ],
+        [
+          260,
+          269
+        ],
+        [
+          49246,
+          0
+        ],
+        [
+          49246,
+          256
+        ],
+        [
+          49246,
+          272
+        ],
+        [
+          49246,
+          512
+        ],
+        [
+          49246,
+          528
+        ],
+        [
+          49246,
+          544
+        ]
+      ],
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "light_or_switch_or_shade",
+        1
+      ]
+    }
+  },
+  {
+    "class": "HueLight",
+    "module": "zha.application.platforms.light",
+    "platform": "light",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [
+        "level",
+        "light_color"
+      ],
+      "manufacturers": [
+        "Philips",
+        "Signify Netherlands B.V."
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": [
+        [
+          260,
+          256
+        ],
+        [
+          260,
+          257
+        ],
+        [
+          260,
+          258
+        ],
+        [
+          260,
+          265
+        ],
+        [
+          260,
+          267
+        ],
+        [
+          260,
+          268
+        ],
+        [
+          260,
+          269
+        ],
+        [
+          49246,
+          0
+        ],
+        [
+          49246,
+          256
+        ],
+        [
+          49246,
+          272
+        ],
+        [
+          49246,
+          512
+        ],
+        [
+          49246,
+          528
+        ],
+        [
+          49246,
+          544
+        ]
+      ],
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "light_or_switch_or_shade",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Light",
+    "module": "zha.application.platforms.light",
+    "platform": "light",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [
+        "level",
+        "light_color"
+      ],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": [
+        [
+          260,
+          256
+        ],
+        [
+          260,
+          257
+        ],
+        [
+          260,
+          258
+        ],
+        [
+          260,
+          265
+        ],
+        [
+          260,
+          267
+        ],
+        [
+          260,
+          268
+        ],
+        [
+          260,
+          269
+        ],
+        [
+          49246,
+          0
+        ],
+        [
+          49246,
+          256
+        ],
+        [
+          49246,
+          272
+        ],
+        [
+          49246,
+          512
+        ],
+        [
+          49246,
+          528
+        ],
+        [
+          49246,
+          544
+        ]
+      ],
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "light_or_switch_or_shade",
+        0
+      ]
+    }
+  },
+  {
+    "class": "MinTransitionLight",
+    "module": "zha.application.platforms.light",
+    "platform": "light",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [
+        "level",
+        "light_color"
+      ],
+      "manufacturers": [
+        "sengled"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": [
+        [
+          260,
+          256
+        ],
+        [
+          260,
+          257
+        ],
+        [
+          260,
+          258
+        ],
+        [
+          260,
+          265
+        ],
+        [
+          260,
+          267
+        ],
+        [
+          260,
+          268
+        ],
+        [
+          260,
+          269
+        ],
+        [
+          49246,
+          0
+        ],
+        [
+          49246,
+          256
+        ],
+        [
+          49246,
+          272
+        ],
+        [
+          49246,
+          512
+        ],
+        [
+          49246,
+          528
+        ],
+        [
+          49246,
+          544
+        ]
+      ],
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "light_or_switch_or_shade",
+        1
+      ]
+    }
+  },
+  {
+    "class": "DoorLock",
+    "module": "zha.application.platforms.lock",
+    "platform": "lock",
+    "registered_cluster_ids": [
+      257
+    ],
+    "match": {
+      "cluster_handlers": [
+        "door_lock"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AnalogOutputNumber",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      13
+    ],
+    "match": {
+      "cluster_handlers": [
+        "analog_output"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraMotionDetectionInterval",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.motion.ac02",
+        "lumi.motion.agl04"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederPortionWeight",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederServingSize",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatAwayTemp",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "BoschThermostatLocalTempCalibration",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "RBSH-RTH0-BAT-ZB-EU",
+        "RBSH-RTH0-ZB-EU",
+        "RBSH-TRV0-ZB-EU",
+        "RBSH-TRV1-ZB-EU"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "local_temperature_calibration",
+        1
+      ]
+    }
+  },
+  {
+    "class": "DanfossExerciseTriggerTime",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossExternalMeasuredRoomSensor",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossLoadRoomMean",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossRegulationSetpointOffset",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DefaultMoveRateConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      8
+    ],
+    "match": {
+      "cluster_handlers": [
+        "level"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "FilterLifeTime",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64637
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ikea_airpurifier"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliAutoShutoffTimer",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliButtonDelay",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDefaultAllLEDOffColor",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDefaultAllLEDOffIntensity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDefaultAllLEDOnColor",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDefaultAllLEDOnIntensity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDoubleTapDownLevel",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDoubleTapUpLevel",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliLoadLevelIndicatorTimeout",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliLocalDefaultLevel",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliLocalDimmingDownSpeed",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliLocalDimmingUpSpeed",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliLocalRampRateOffToOn",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliLocalRampRateOnToOff",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliMaximumLoadDimmingLevel",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliMinimumLoadDimmingLevel",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliQuickStartTime",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "VZM35-SN"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliRemoteDefaultLevel",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliRemoteDimmingDownSpeed",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliRemoteDimmingSpeedOffToOn",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliRemoteDimmingSpeedOnToOff",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliRemoteDimmingUpSpeed",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliStartupDefaultLevel",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "MaxHeatSetpointLimit",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "MinHeatSetpointLimit",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "OffTransitionTimeConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      8
+    ],
+    "match": {
+      "cluster_handlers": [
+        "level"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "OnLevelConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      8
+    ],
+    "match": {
+      "cluster_handlers": [
+        "level"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "OnOffTransitionTimeConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      8
+    ],
+    "match": {
+      "cluster_handlers": [
+        "level"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "OnTransitionTimeConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      8
+    ],
+    "match": {
+      "cluster_handlers": [
+        "level"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SinopeDimmerOnLevelConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      65281
+    ],
+    "match": {
+      "cluster_handlers": [
+        "sinope_manufacturer_specific"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "DM2500ZB",
+        "DM2500ZB-G2",
+        "DM2550ZB",
+        "DM2550ZB-G2"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SinopeLightLEDOffIntensityConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      65281
+    ],
+    "match": {
+      "cluster_handlers": [
+        "sinope_manufacturer_specific"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "DM2500ZB",
+        "DM2500ZB-G2",
+        "DM2550ZB",
+        "DM2550ZB-G2",
+        "SW2500ZB",
+        "SW2500ZB-G2"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SinopeLightLEDOnIntensityConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      65281
+    ],
+    "match": {
+      "cluster_handlers": [
+        "sinope_manufacturer_specific"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "DM2500ZB",
+        "DM2500ZB-G2",
+        "DM2550ZB",
+        "DM2550ZB-G2",
+        "SW2500ZB",
+        "SW2500ZB-G2"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SonoffPresenceSenorTimeout",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      1030
+    ],
+    "match": {
+      "cluster_handlers": [
+        "occupancy"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "SNZB-03P",
+        "SNZB-06P"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SonoffThermostatLocalTempCalibration",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "TRVZB"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "local_temperature_calibration",
+        1
+      ]
+    }
+  },
+  {
+    "class": "StartUpColorTemperatureConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      768
+    ],
+    "match": {
+      "cluster_handlers": [
+        "light_color"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "StartUpCurrentLevelConfigurationEntity",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      8
+    ],
+    "match": {
+      "cluster_handlers": [
+        "level"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ThermostatLocalTempCalibration",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "local_temperature_calibration",
+        0
+      ]
+    }
+  },
+  {
+    "class": "TiRouterTransmitPower",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      0
+    ],
+    "match": {
+      "cluster_handlers": [
+        "basic"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "TexasInstruments"
+      ],
+      "models": [
+        "ti.router"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "TimerDurationMinutes",
+    "module": "zha.application.platforms.number",
+    "platform": "number",
+    "registered_cluster_ids": [
+      61184
+    ],
+    "match": {
+      "cluster_handlers": [
+        "tuya_manufacturer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "_TZE200_htnnfasr"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraApproachDistance",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.motion.ac01"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraMagnetAC01DetectionDistance",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.magnet.ac01"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraMonitoringMode",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.motion.ac01"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraMotionSensitivity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.motion.ac01",
+        "lumi.motion.ac02",
+        "lumi.motion.agl04"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederMode",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraT2RelayDecoupledMode",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.switch.acn047"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraT2RelayStartupOnOff",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.switch.acn047"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraT2RelaySwitchMode",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.switch.acn047"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraT2RelaySwitchType",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.switch.acn047"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatPreset",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossAdaptationRunControl",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossControlAlgorithmScaleFactor",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossExerciseDayOfTheWeek",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossOrientation",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossViewingDirection",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      516
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat_ui"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DefaultSirenLevelSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      1282
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ias_wd"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DefaultStrobeLevelSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      1282
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ias_wd"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DefaultStrobeSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      1282
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ias_wd"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DefaultToneSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      1282
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ias_wd"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "HueV1MotionSensitivity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      1030
+    ],
+    "match": {
+      "cluster_handlers": [
+        "philips_occupancy"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Philips",
+        "Signify Netherlands B.V."
+      ],
+      "models": [
+        "SML001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "HueV2MotionSensitivity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      1030
+    ],
+    "match": {
+      "cluster_handlers": [
+        "philips_occupancy"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Philips",
+        "Signify Netherlands B.V."
+      ],
+      "models": [
+        "SML002",
+        "SML003",
+        "SML004"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDimmingModeEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "VZM31-SN",
+        "VZM36"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliFanLedScalingModeEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "VZM35-SN"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliFanSwitchTypeEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "VZM35-SN"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliLedScalingModeEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliNonNeutralOutputEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliOutputModeEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliSwitchTypeEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "VZM31-SN"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "KeypadLockout",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      516
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat_ui"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "MoesBacklightModeSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      61184
+    ],
+    "match": {
+      "cluster_handlers": [
+        "tuya_manufacturer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "tuya.plug_manufacturer_attributes"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SinopeLightLEDOffColorSelect",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      65281
+    ],
+    "match": {
+      "cluster_handlers": [
+        "sinope_manufacturer_specific"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "DM2500ZB",
+        "DM2500ZB-G2",
+        "DM2550ZB",
+        "DM2550ZB-G2",
+        "SW2500ZB",
+        "SW2500ZB-G2"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SinopeLightLEDOnColorSelect",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      65281
+    ],
+    "match": {
+      "cluster_handlers": [
+        "sinope_manufacturer_specific"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "DM2500ZB",
+        "DM2500ZB-G2",
+        "DM2550ZB",
+        "DM2550ZB-G2",
+        "SW2500ZB",
+        "SW2500ZB-G2"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SonoffPresenceDetectionSensitivity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      1030
+    ],
+    "match": {
+      "cluster_handlers": [
+        "occupancy"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "SNZB-03P",
+        "SNZB-06P"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "StartupOnOffSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "TuyaBacklightModeSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "tuya.plug_on_off_attributes"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "TuyaManufacturerPowerOnStateSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      61184
+    ],
+    "match": {
+      "cluster_handlers": [
+        "tuya_manufacturer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "tuya.plug_manufacturer_attributes"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "TuyaPowerOnStateSelectEntity",
+    "module": "zha.application.platforms.select",
+    "platform": "select",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "tuya.plug_on_off_attributes"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AnalogInputSensor",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      12
+    ],
+    "match": {
+      "cluster_handlers": [
+        "analog_input"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraCurtainHookStateSensor",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.curtain.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraCurtainMotorPowerSourceSensor",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      0
+    ],
+    "match": {
+      "cluster_handlers": [
+        "basic"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.curtain.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederLastFeedingSize",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederLastFeedingSource",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederPortionsDispensed",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederWeightDispensed",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraSmokeDensityDbm",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.sensor_smoke.acn03"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Battery",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1
+    ],
+    "match": {
+      "cluster_handlers": [
+        "power"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "CarbonDioxideConcentration",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1037
+    ],
+    "match": {
+      "cluster_handlers": [
+        "carbon_dioxide_concentration"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "CarbonMonoxideConcentration",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1036
+    ],
+    "match": {
+      "cluster_handlers": [
+        "carbon_monoxide_concentration"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossAdaptationRunStatus",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossLoadEstimate",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossMotorStepCounter",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2821
+    ],
+    "match": {
+      "cluster_handlers": [
+        "diagnostic"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossOpenWindowDetection",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossPreheatTime",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossSoftwareErrorCode",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2821
+    ],
+    "match": {
+      "cluster_handlers": [
+        "diagnostic"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DeviceTemperature",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2
+    ],
+    "match": {
+      "cluster_handlers": [
+        "device_temperature"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DigiAnalogInput",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      12
+    ],
+    "match": {
+      "cluster_handlers": [
+        "analog_input"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Digi"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalConductivity",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1034
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_conductivity"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementActivePowerPhB",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementActivePowerPhC",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementApparentPower",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementDCCurrent",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementDCPower",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementDCVoltage",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementFrequency",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementPowerFactor",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementPowerFactorPhB",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementPowerFactorPhC",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementRMSCurrent",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementRMSCurrentPhB",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementRMSCurrentPhC",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementRMSVoltage",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementRMSVoltagePhB",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementRMSVoltagePhC",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ElectricalMeasurementTotalActivePower",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Flow",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1028
+    ],
+    "match": {
+      "cluster_handlers": [
+        "flow"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "FormaldehydeConcentration",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1067
+    ],
+    "match": {
+      "cluster_handlers": [
+        "formaldehyde_concentration"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "GenericVOCLevel",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1070
+    ],
+    "match": {
+      "cluster_handlers": [
+        "cluster_handler_0x042e"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Humidity",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1029
+    ],
+    "match": {
+      "cluster_handlers": [
+        "humidity"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "IkeaDeviceRunTime",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64637
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ikea_airpurifier"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "IkeaFilterRunTime",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64637
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ikea_airpurifier"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Illuminance",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1024
+    ],
+    "match": {
+      "cluster_handlers": [
+        "illuminance"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliInternalTemperature",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliOverheated",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "LQISensor",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      0
+    ],
+    "match": {
+      "cluster_handlers": [
+        "basic"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "LeafWetness",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1031
+    ],
+    "match": {
+      "cluster_handlers": [
+        "leaf_wetness"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "PM25",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1066
+    ],
+    "match": {
+      "cluster_handlers": [
+        "pm25"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "PPBVOCLevel",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1070
+    ],
+    "match": {
+      "cluster_handlers": [
+        "voc_level"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airmonitor.acn01"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "voc_level",
+        1
+      ]
+    }
+  },
+  {
+    "class": "PiHeatingDemand",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "PolledElectricalMeasurement",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "PolledSmartEnergySummation",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "TICMeter",
+        "TS011F",
+        "ZLinky_TIC"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "smart_energy_summation",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Pressure",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1027
+    ],
+    "match": {
+      "cluster_handlers": [
+        "pressure"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "RSSISensor",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      0
+    ],
+    "match": {
+      "cluster_handlers": [
+        "basic"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ReportingElectricalMeasurement",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      2820
+    ],
+    "match": {
+      "cluster_handlers": [
+        "electrical_measurement"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "INSPELNING Smart plug",
+        "SP 234",
+        "VZM31-SN",
+        "outletv4"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SetpointChangeSource",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SetpointChangeSourceTimestamp",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SinopeHVACAction",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Sinope Technologies"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "hvac_action",
+        1
+      ]
+    }
+  },
+  {
+    "class": "SmartEnergyMetering",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SmartEnergySummation",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "smart_energy_summation",
+        0
+      ]
+    }
+  },
+  {
+    "class": "SmartEnergySummationReceived",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SmartThingsHumidity",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64581
+    ],
+    "match": {
+      "cluster_handlers": [
+        "cluster_handler_0xfc45"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SoilMoisture",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1032
+    ],
+    "match": {
+      "cluster_handlers": [
+        "soil_moisture"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SonoffPresenceSenorIlluminationStatus",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      64529
+    ],
+    "match": {
+      "cluster_handlers": [
+        "sonoff_manufacturer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "SNZB-06P"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Temperature",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1026
+    ],
+    "match": {
+      "cluster_handlers": [
+        "temperature"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ThermostatHVACAction",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "hvac_action",
+        0
+      ]
+    }
+  },
+  {
+    "class": "Tier1SmartEnergySummation",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "TICMeter",
+        "ZLinky_TIC"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "smart_energy_summation",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Tier2SmartEnergySummation",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "TICMeter",
+        "ZLinky_TIC"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "smart_energy_summation",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Tier3SmartEnergySummation",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "TICMeter",
+        "ZLinky_TIC"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "smart_energy_summation",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Tier4SmartEnergySummation",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "TICMeter",
+        "ZLinky_TIC"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "smart_energy_summation",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Tier5SmartEnergySummation",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "TICMeter",
+        "ZLinky_TIC"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "smart_energy_summation",
+        1
+      ]
+    }
+  },
+  {
+    "class": "Tier6SmartEnergySummation",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1794
+    ],
+    "match": {
+      "cluster_handlers": [
+        "smartenergy_metering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "TICMeter",
+        "ZLinky_TIC"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "smart_energy_summation",
+        1
+      ]
+    }
+  },
+  {
+    "class": "TimeLeft",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      61184
+    ],
+    "match": {
+      "cluster_handlers": [
+        "tuya_manufacturer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "_TZE200_htnnfasr"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "VOCLevel",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1070
+    ],
+    "match": {
+      "cluster_handlers": [
+        "voc_level"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "voc_level",
+        0
+      ]
+    }
+  },
+  {
+    "class": "WindSpeed",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      1035
+    ],
+    "match": {
+      "cluster_handlers": [
+        "wind_speed"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "WindowCoveringTypeSensor",
+    "module": "zha.application.platforms.sensor",
+    "platform": "sensor",
+    "registered_cluster_ids": [
+      258
+    ],
+    "match": {
+      "cluster_handlers": [
+        "window_covering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Siren",
+    "module": "zha.application.platforms.siren",
+    "platform": "siren",
+    "registered_cluster_ids": [
+      1282
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ias_wd"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraBuzzerManualAlarm",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.sensor_smoke.acn03"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraBuzzerManualMute",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.sensor_smoke.acn03"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraE1CurtainMotorHooksLockedSwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.curtain.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraHeartbeatIndicator",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.sensor_smoke.acn03"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraLinkageAlarm",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.sensor_smoke.acn03"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederChildLock",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraPetFeederLEDIndicator",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "aqara.feeder.acn001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatChildLock",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatValveDetection",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "AqaraThermostatWindowDetection",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.airrtc.agl001"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "BinaryOutputSwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      16
+    ],
+    "match": {
+      "cluster_handlers": [
+        "binary_output"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "ChildLock",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64637
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ikea_airpurifier"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "STARKVIND Air purifier",
+        "STARKVIND Air purifier table"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossAdaptationRunSettings",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossExternalOpenWindowDetected",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossHeatAvailable",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossLoadBalancingEnable",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossMountingModeControl",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossRadiatorCovered",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DanfossWindowOpenFeature",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      513
+    ],
+    "match": {
+      "cluster_handlers": [
+        "thermostat"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "danfoss.ally_thermostat"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "DisableLed",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64637
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ikea_airpurifier"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "STARKVIND Air purifier",
+        "STARKVIND Air purifier table"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "HueMotionTriggerIndicatorSwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      0
+    ],
+    "match": {
+      "cluster_handlers": [
+        "basic"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "Philips",
+        "Signify Netherlands B.V."
+      ],
+      "models": [
+        "SML001",
+        "SML002",
+        "SML003",
+        "SML004"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliAuxSwitchScenes",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliBindingOffToOnSyncLevel",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDisableDoubleTapClearNotificationsMode",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDoubleTapDownEnabled",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliDoubleTapUpEnabled",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliFirmwareProgressLED",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliInvertSwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliLocalProtection",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliOnOffLEDMode",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliRelayClickInOnOffMode",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliSmartBulbMode",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "InovelliSmartFanMode",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64561
+    ],
+    "match": {
+      "cluster_handlers": [
+        "inovelli_vzm31sn_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "VZM35-SN"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "OnOffWindowDetectionFunctionConfigurationEntity",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      61184
+    ],
+    "match": {
+      "cluster_handlers": [
+        "tuya_manufacturer"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": [
+        "_TZE200_b6wax7g0"
+      ],
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "P1MotionTriggerIndicatorSwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.motion.ac02"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "SinopeLightDoubleTapFullSwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      65281
+    ],
+    "match": {
+      "cluster_handlers": [
+        "sinope_manufacturer_specific"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "DM2500ZB",
+        "DM2500ZB-G2",
+        "DM2550ZB",
+        "DM2550ZB-G2"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "Switch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": [
+        "light_or_switch_or_shade",
+        -1
+      ]
+    }
+  },
+  {
+    "class": "TuyaChildLockSwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      6
+    ],
+    "match": {
+      "cluster_handlers": [
+        "on_off"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": [
+        "tuya.plug_on_off_attributes"
+      ],
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "WindowCoveringInversionSwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      258
+    ],
+    "match": {
+      "cluster_handlers": [
+        "window_covering"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "XiaomiPlugPowerOutageMemorySwitch",
+    "module": "zha.application.platforms.switch",
+    "platform": "switch",
+    "registered_cluster_ids": [
+      64704
+    ],
+    "match": {
+      "cluster_handlers": [
+        "opple_cluster"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": [
+        "lumi.plug.maeu01",
+        "lumi.plug.mmeu01"
+      ],
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "FirmwareUpdateEntity",
+    "module": "zha.application.platforms.update",
+    "platform": "update",
+    "registered_cluster_ids": [
+      25
+    ],
+    "match": {
+      "cluster_handlers": [],
+      "client_cluster_handlers": [
+        "ota"
+      ],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  },
+  {
+    "class": "FirmwareUpdateServerEntity",
+    "module": "zha.application.platforms.update",
+    "platform": "update",
+    "registered_cluster_ids": [
+      25
+    ],
+    "match": {
+      "cluster_handlers": [
+        "ota"
+      ],
+      "client_cluster_handlers": [],
+      "optional_cluster_handlers": [],
+      "manufacturers": null,
+      "models": null,
+      "exposed_features": null,
+      "profile_device_types": null,
+      "not_profile_device_types": null,
+      "feature_priority": null
+    }
+  }
+]
