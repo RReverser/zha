@@ -836,13 +836,13 @@ async def test_async_initialize_drains_pending_entities(zha_gateway: Gateway) ->
     zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
     zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
 
-    assert zha_device._pending_entities == []
+    assert zha_device._pending_entities == {}
 
     await zha_device.async_initialize(from_cache=True)
-    assert zha_device._pending_entities == []
+    assert zha_device._pending_entities == {}
 
     await zha_device.async_initialize(from_cache=True)
-    assert zha_device._pending_entities == []
+    assert zha_device._pending_entities == {}
 
 
 async def test_async_initialize_requeues_unprocessed_pending_on_failure(
@@ -868,7 +868,10 @@ async def test_async_initialize_requeues_unprocessed_pending_on_failure(
     failing_entity.is_supported_in_list.return_value = True
     failing_entity.on_remove = mock.AsyncMock()
 
-    zha_device._pending_entities = [processed_entity, failing_entity]
+    zha_device._pending_entities = {
+        (processed_entity.PLATFORM, processed_entity.unique_id): processed_entity,
+        (failing_entity.PLATFORM, failing_entity.unique_id): failing_entity,
+    }
 
     with (
         patch.object(zha_device, "_discover_new_entities"),
@@ -877,7 +880,69 @@ async def test_async_initialize_requeues_unprocessed_pending_on_failure(
     ):
         await zha_device.async_initialize(from_cache=True)
 
-    assert zha_device._pending_entities == [failing_entity]
+    assert list(zha_device._pending_entities.values()) == [failing_entity]
+
+
+async def test_async_initialize_requeue_excludes_previously_rejected_entities(
+    zha_gateway: Gateway,
+) -> None:
+    """Rejected entities should not be requeued when a later entity fails."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    rejected_entity = mock.Mock(spec=PlatformEntity)
+    rejected_entity.PLATFORM = Platform.SENSOR
+    rejected_entity.unique_id = "rejected"
+    rejected_entity.recompute_capabilities = mock.Mock()
+    rejected_entity.is_supported.return_value = False
+    rejected_entity.is_supported_in_list.return_value = False
+    rejected_entity.on_remove = mock.AsyncMock()
+
+    failing_entity = mock.Mock(spec=PlatformEntity)
+    failing_entity.PLATFORM = Platform.SENSOR
+    failing_entity.unique_id = "failing"
+    failing_entity.recompute_capabilities.side_effect = RuntimeError("boom")
+    failing_entity.is_supported.return_value = True
+    failing_entity.is_supported_in_list.return_value = True
+    failing_entity.on_remove = mock.AsyncMock()
+
+    zha_device._pending_entities = {
+        (rejected_entity.PLATFORM, rejected_entity.unique_id): rejected_entity,
+        (failing_entity.PLATFORM, failing_entity.unique_id): failing_entity,
+    }
+
+    with (
+        patch.object(zha_device, "_discover_new_entities"),
+        patch.object(zha_device, "_sync_pending_entity_cluster_requirements"),
+        pytest.raises(RuntimeError, match="boom"),
+    ):
+        await zha_device.async_initialize(from_cache=True)
+
+    assert list(zha_device._pending_entities.values()) == [failing_entity]
+    assert rejected_entity.on_remove.await_count == 1
+
+
+async def test_async_configure_repeated_calls_do_not_grow_pending_entities(
+    zha_gateway: Gateway,
+) -> None:
+    """Repeated configure should not cause pending-entity growth."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/philips-sml001.json",
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    assert zha_device._pending_entities == {}
+
+    await zha_device.async_configure()
+    pending_count_after_first = len(zha_device._pending_entities)
+    assert pending_count_after_first > 0
+
+    await zha_device.async_configure()
+    assert len(zha_device._pending_entities) == pending_count_after_first
+
+    await zha_device.async_configure()
+    assert len(zha_device._pending_entities) == pending_count_after_first
 
 
 async def test_async_initialize_does_not_replace_existing_entities_same_key(
@@ -1514,7 +1579,9 @@ async def test_device_on_remove_pending_entity_failure(
     zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
 
     update_entity = get_entity(zha_device, platform=Platform.UPDATE)
-    zha_device._pending_entities.append(update_entity)
+    zha_device._pending_entities[(update_entity.PLATFORM, update_entity.unique_id)] = (
+        update_entity
+    )
 
     with patch.object(
         update_entity,

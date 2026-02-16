@@ -371,7 +371,7 @@ class SwitchGroup(GroupEntity, BaseSwitch):
         super().__init__(group)
         self._state: bool
         self._on_off_cluster = group.zigpy_group.endpoint[OnOff.cluster_id]
-        if hasattr(self, "info_object"):
+        if "info_object" in self.__dict__:
             delattr(self, "info_object")
         self.update()
 

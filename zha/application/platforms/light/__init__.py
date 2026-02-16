@@ -1515,7 +1515,7 @@ class LightGroup(BaseLightEntity, GroupEntity):
         self._color_mode = ColorMode.UNKNOWN
         self._internal_supported_color_modes = {ColorMode.ONOFF}
 
-        if hasattr(self, "info_object"):
+        if "info_object" in self.__dict__:
             delattr(self, "info_object")
         self.update()
 

@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 import asyncio
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 from collections.abc import Callable, Iterable
 from contextlib import suppress
 import dataclasses
@@ -331,8 +331,10 @@ class Device(LogMixin, EventBase):
         self._checkins_missed_count: int = 0
         self._on_network: bool = True
 
-        self._platform_entities: dict[tuple[Platform, str], PlatformEntity] = {}
-        self._pending_entities: list[PlatformEntity] = []
+        self._platform_entities: dict[tuple[Platform, str], BaseEntity] = {}
+        self._pending_entities: OrderedDict[tuple[Platform, str], BaseEntity] = (
+            OrderedDict()
+        )
         self.semaphore: asyncio.Semaphore = asyncio.Semaphore(3)
 
         self._on_remove_callbacks: list[Callable[[], None]] = []
@@ -647,11 +649,11 @@ class Device(LogMixin, EventBase):
         return self._firmware_version
 
     @property
-    def platform_entities(self) -> dict[tuple[Platform, str], PlatformEntity]:
+    def platform_entities(self) -> dict[tuple[Platform, str], BaseEntity]:
         """Return the platform entities for this device."""
         return self._platform_entities
 
-    def get_platform_entity(self, platform: Platform, unique_id: str) -> PlatformEntity:
+    def get_platform_entity(self, platform: Platform, unique_id: str) -> BaseEntity:
         """Get a platform entity by unique id."""
         entity = self._platform_entities.get((platform, unique_id))
         if entity is None:
@@ -1022,19 +1024,47 @@ class Device(LogMixin, EventBase):
             # Apply any metadata changes from quirks v2
             self._apply_entity_metadata_changes(entity)
 
-            entity.on_add()
-            self._pending_entities.append(entity)
+            self._enqueue_pending_entity(entity)
+
+    @staticmethod
+    def _entity_queue_key(entity: BaseEntity) -> tuple[Platform, str]:
+        """Return the canonical key used for queueing and registration."""
+        return (entity.PLATFORM, entity.unique_id)
+
+    @staticmethod
+    def _pending_queue_key(entity: BaseEntity) -> tuple[Platform, str]:
+        """Return a pending-queue key that preserves same-id class variants.
+
+        Some discovery paths emit multiple candidate classes with the same
+        `(platform, unique_id)` and rely on finalization support checks to pick
+        the winner. Include class identity in the pending key so repeated
+        discovery passes dedupe by candidate class while keeping these variants.
+        """
+        return (
+            entity.PLATFORM,
+            f"{entity.unique_id}::{entity.__class__.__module__}.{entity.__class__.__qualname__}",
+        )
+
+    def _enqueue_pending_entity(self, entity: BaseEntity) -> None:
+        """Enqueue a newly discovered entity if not already registered/pending."""
+        if self._entity_queue_key(entity) in self._platform_entities:
+            return
+
+        pending_key = self._pending_queue_key(entity)
+        if pending_key in self._pending_entities:
+            return
+
+        entity.on_add()
+        self._pending_entities[pending_key] = entity
 
     def _sync_pending_entity_cluster_requirements(self) -> None:
         """Apply pending entity report/init requirements to endpoint clusters."""
         if not self._pending_entities:
             return
 
-        # De-duplicate by platform+unique_id to avoid double-applying merges when
-        # discovery runs in both configure and initialize phases.
         pending_entities: dict[tuple[Platform, str], PlatformEntity] = {
-            (entity.PLATFORM, entity.unique_id): entity
-            for entity in self._pending_entities
+            entity_key: entity
+            for entity_key, entity in self._pending_entities.items()
             if isinstance(entity, PlatformEntity)
         }
 
@@ -1219,14 +1249,18 @@ class Device(LogMixin, EventBase):
 
         # Drain the pending queue for this pass. Any newly discovered entities from
         # concurrent work will remain in `_pending_entities` for the next pass.
-        pending_entities, self._pending_entities = self._pending_entities, []
+        pending_entities, self._pending_entities = (
+            self._pending_entities,
+            OrderedDict(),
+        )
+        pending_entity_items = list(pending_entities.items())
 
         # Compute the final entities for this pass
-        new_entities: dict[tuple[Platform, str], PlatformEntity] = {}
+        new_entities: dict[tuple[Platform, str], BaseEntity] = {}
         supported_entities: list[BaseEntity] = list(self._platform_entities.values())
         processed_count = 0
         try:
-            for entity in pending_entities:
+            for _, entity in pending_entity_items:
                 entity.recompute_capabilities()
 
                 # Ignore unsupported entities
@@ -1234,24 +1268,36 @@ class Device(LogMixin, EventBase):
                     supported_entities
                 ):
                     await entity.on_remove()
-                    continue
+                else:
+                    key = self._entity_queue_key(entity)
 
-                key = (entity.PLATFORM, entity.unique_id)
-
-                # Keep existing registered entities as canonical. Re-discovered
-                # candidates for the same key are cleaned up and dropped.
-                if key in self._platform_entities or key in new_entities:
-                    await entity.on_remove()
-                    continue
-
-                new_entities[key] = entity
-                supported_entities.append(entity)
+                    # Keep existing registered entities as canonical. Re-discovered
+                    # candidates for the same key are cleaned up and dropped.
+                    if key in self._platform_entities or key in new_entities:
+                        await entity.on_remove()
+                    else:
+                        new_entities[key] = entity
+                        supported_entities.append(entity)
                 processed_count += 1
         except Exception:
             # Requeue this entity and any unprocessed entities so they are not lost.
-            self._pending_entities = (
-                pending_entities[processed_count:] + self._pending_entities
+            requeued_entities: OrderedDict[tuple[Platform, str], BaseEntity] = (
+                OrderedDict(pending_entity_items[processed_count:])
             )
+            for key, entity in self._pending_entities.items():
+                if key in requeued_entities:
+                    dropped_entity = requeued_entities[key]
+                    try:
+                        await dropped_entity.on_remove()
+                    except Exception:
+                        _LOGGER.warning(
+                            "Failed to remove dropped pending entity %s for device %s",
+                            dropped_entity,
+                            self,
+                            exc_info=True,
+                        )
+                requeued_entities[key] = entity
+            self._pending_entities = requeued_entities
             raise
 
         if new_entities:
@@ -1352,7 +1398,7 @@ class Device(LogMixin, EventBase):
                     exc_info=True,
                 )
 
-        for entity in self._pending_entities:
+        for entity in self._pending_entities.values():
             try:
                 await entity.on_remove()
             except Exception:

@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager, suppress
 from dataclasses import dataclass
 from datetime import timedelta
 from enum import Enum
+from functools import partial
 import logging
 import time
 from typing import Any, Final, Self, TypeVar, cast
@@ -184,6 +185,7 @@ class Gateway(AsyncUtilMixin, EventBase):
 
         self.shutting_down: bool = False
         self._reload_task: asyncio.Task | None = None
+        self._startup_fetch_task: asyncio.Task | None = None
 
         self.global_updater: GlobalUpdater = GlobalUpdater(self)
         self._device_availability_checker: DeviceAvailabilityChecker = (
@@ -380,17 +382,55 @@ class Gateway(AsyncUtilMixin, EventBase):
 
         async def fetch_updated_state() -> None:
             """Fetch updated state for mains powered devices."""
-            if self.config.config.device_options.enable_mains_startup_polling:
-                async with self.request_priority(t.PacketPriority.LOW):
-                    await self.async_fetch_updated_state_mains()
-            else:
-                _LOGGER.debug("Polling of mains powered devices at startup is disabled")
-            _LOGGER.debug("Allowing polled requests")
-            self.config.allow_polling = True
+            try:
+                if self.config.config.device_options.enable_mains_startup_polling:
+                    async with self.request_priority(t.PacketPriority.LOW):
+                        await self.async_fetch_updated_state_mains()
+                else:
+                    _LOGGER.debug(
+                        "Polling of mains powered devices at startup is disabled"
+                    )
+            except Exception:  # pylint: disable=broad-exception-caught
+                _LOGGER.warning(
+                    "Failed to fetch startup state for mains powered devices",
+                    exc_info=True,
+                )
+            finally:
+                _LOGGER.debug("Allowing polled requests")
+                self.config.allow_polling = True
 
         # background the fetching of state for mains powered devices
-        self.async_create_background_task(
-            fetch_updated_state(), "zha.gateway-fetch_updated_state"
+        if self._startup_fetch_task is None or self._startup_fetch_task.done():
+            self._startup_fetch_task = self.async_create_background_task(
+                fetch_updated_state(), "zha.gateway-fetch_updated_state"
+            )
+            self._startup_fetch_task.add_done_callback(self._startup_fetch_done)
+
+    def _startup_fetch_done(self, task: asyncio.Task) -> None:
+        """Track completion for startup mains polling task and consume exceptions."""
+        if self._startup_fetch_task is task:
+            self._startup_fetch_task = None
+
+        with suppress(asyncio.CancelledError):
+            if (exc := task.exception()) is not None:
+                _LOGGER.warning(
+                    "Unhandled exception in startup mains polling task",
+                    exc_info=exc,
+                )
+
+    def _device_init_task_done(self, ieee: EUI64, task: asyncio.Task) -> None:
+        """Remove device init task mapping only if this task is still current."""
+        current = self._device_init_tasks.get(ieee)
+        if current is task:
+            self._device_init_tasks.pop(ieee, None)
+
+    def _schedule_group_reconciliation(self, zha_group: Group, reason: str) -> None:
+        """Schedule async group-entity reconciliation for membership changes."""
+        self.track_task(
+            create_eager_task(
+                zha_group.async_reconcile_discovered_entities(),
+                name=f"Gateway.group_reconcile_{reason}_0x{zha_group.group_id:04x}",
+            )
         )
 
     def device_joined(self, device: zigpy.device.Device) -> None:
@@ -443,7 +483,7 @@ class Gateway(AsyncUtilMixin, EventBase):
             name=f"device_initialized_task_{str(device.ieee)}:0x{device.nwk:04x}",
             eager_start=True,
         )
-        init_task.add_done_callback(lambda _: self._device_init_tasks.pop(device.ieee))
+        init_task.add_done_callback(partial(self._device_init_task_done, device.ieee))
 
     def device_left(self, device: zigpy.device.Device) -> None:
         """Handle device leaving the network."""
@@ -463,9 +503,7 @@ class Gateway(AsyncUtilMixin, EventBase):
         # need to handle endpoint correctly on groups
         zha_group = self.get_or_create_group(zigpy_group)
         zha_group.clear_caches()
-
-        for entity in discovery.discover_group_entities(zha_group):
-            entity.on_add()
+        self._schedule_group_reconciliation(zha_group, "member_removed")
 
         zha_group.info("group_member_removed - endpoint: %s", endpoint)
         self._emit_group_gateway_message(zigpy_group, ZHA_GW_MSG_GROUP_MEMBER_REMOVED)
@@ -477,9 +515,7 @@ class Gateway(AsyncUtilMixin, EventBase):
         # need to handle endpoint correctly on groups
         zha_group = self.get_or_create_group(zigpy_group)
         zha_group.clear_caches()
-
-        for entity in discovery.discover_group_entities(zha_group):
-            entity.on_add()
+        self._schedule_group_reconciliation(zha_group, "member_added")
 
         zha_group.info("group_member_added - endpoint: %s", endpoint)
         self._emit_group_gateway_message(zigpy_group, ZHA_GW_MSG_GROUP_MEMBER_ADDED)
@@ -494,8 +530,16 @@ class Gateway(AsyncUtilMixin, EventBase):
     def group_removed(self, zigpy_group: zigpy.group.Group) -> None:
         """Handle zigpy group removed event."""
         self._emit_group_gateway_message(zigpy_group, ZHA_GW_MSG_GROUP_REMOVED)
-        zha_group = self._groups.pop(zigpy_group.group_id)
+        zha_group = self._groups.pop(zigpy_group.group_id, None)
+        if zha_group is None:
+            return
         zha_group.info("group_removed")
+        self.track_task(
+            create_eager_task(
+                zha_group.on_remove(),
+                name=f"Gateway.group_removed_0x{zigpy_group.group_id:04x}",
+            )
+        )
 
     def _emit_group_gateway_message(  # pylint: disable=unused-argument
         self,
@@ -738,6 +782,10 @@ class Gateway(AsyncUtilMixin, EventBase):
             return
 
         self.shutting_down = True
+
+        if self._startup_fetch_task and not self._startup_fetch_task.done():
+            self._startup_fetch_task.cancel()
+        self._startup_fetch_task = None
 
         self.global_updater.stop()
         self._device_availability_checker.stop()

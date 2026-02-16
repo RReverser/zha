@@ -8,7 +8,7 @@ import json
 import logging
 import pathlib
 import time
-from typing import Any
+from typing import Any, cast
 from unittest.mock import AsyncMock
 
 from zigpy.application import ControllerApplication
@@ -222,7 +222,7 @@ def reset_clusters(clusters: list[zigpy.zcl.Cluster]) -> None:
 def find_entity(device: Device, platform: Platform) -> PlatformEntity:
     """Find an entity for the specified platform on the given device."""
     for entity in device.platform_entities.values():
-        if platform == entity.PLATFORM:
+        if platform == entity.PLATFORM and isinstance(entity, PlatformEntity):
             return entity
 
     raise KeyError(
@@ -275,7 +275,7 @@ def get_entity(
     qualifier_func: Callable[[BaseEntity], bool] = lambda e: True,
 ) -> PlatformEntity:
     """Get the first entity of the specified platform on the given device."""
-    results = []
+    results: list[BaseEntity] = []
 
     for entity in device.platform_entities.values():
         if platform != entity.PLATFORM:
@@ -305,7 +305,7 @@ def get_entity(
             f"Multiple {entity_type} entities found for platform {platform!r} on device {device}: {results}"
         )
 
-    return results[0]
+    return cast(PlatformEntity, results[0])
 
 
 async def group_entity_availability_test(

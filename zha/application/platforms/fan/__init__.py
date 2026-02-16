@@ -352,7 +352,7 @@ class FanGroup(BaseFan, GroupEntity):
         super().__init__(group)
         self._percentage = None
         self._preset_mode = None
-        if hasattr(self, "info_object"):
+        if "info_object" in self.__dict__:
             delattr(self, "info_object")
         self.update()
 

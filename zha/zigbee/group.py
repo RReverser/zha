@@ -6,6 +6,7 @@ import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cached_property
+import importlib
 import logging
 from typing import TYPE_CHECKING, Any
 
@@ -116,7 +117,7 @@ class GroupMember(LogMixin):
         return [
             platform_entity
             for platform_entity in self._device.platform_entities.values()
-            if hasattr(platform_entity, "endpoint")
+            if isinstance(platform_entity, PlatformEntity)
             and platform_entity.endpoint.id == self.endpoint_id
         ]
 
@@ -158,6 +159,7 @@ class Group(LogMixin):
         self._zigpy_group = zigpy_group
         self._group_entities: dict[str, GroupEntity] = {}
         self._entity_unsubs: dict[str, Callable] = {}
+        self._reconcile_lock = asyncio.Lock()
 
     @property
     def name(self) -> str:
@@ -233,9 +235,18 @@ class Group(LogMixin):
 
     def unregister_group_entity(self, group_entity: GroupEntity) -> None:
         """Unregister a group entity."""
-        if group_entity.unique_id in self._group_entities:
-            self._group_entities.pop(group_entity.unique_id)
-            self._entity_unsubs.pop(group_entity.unique_id)()
+        self._group_entities.pop(group_entity.unique_id, None)
+        unsub = self._entity_unsubs.pop(group_entity.unique_id, None)
+        if unsub is None:
+            return
+        try:
+            unsub()
+        except Exception:
+            _LOGGER.warning(
+                "Failed to run group unsubscribe callback for %s",
+                group_entity.unique_id,
+                exc_info=True,
+            )
 
     def _handle_maybe_update_group_members(self, event: EntityStateChangedEvent):
         """Handle the maybe update group members event."""
@@ -253,12 +264,50 @@ class Group(LogMixin):
 
     def clear_caches(self) -> None:
         """Clear cached properties."""
-        if hasattr(self, "all_member_entity_unique_ids"):
+        if "all_member_entity_unique_ids" in self.__dict__:
             delattr(self, "all_member_entity_unique_ids")
-        if hasattr(self, "info_object"):
+        if "info_object" in self.__dict__:
             delattr(self, "info_object")
-        if hasattr(self, "members"):
+        if "members" in self.__dict__:
             delattr(self, "members")
+
+    async def async_reconcile_discovered_entities(self) -> None:
+        """Reconcile currently registered group entities with discovery output."""
+        # Late-load discovery to avoid circular import with zha.application.discovery.
+        discovery: Any = importlib.import_module("zha.application.discovery")
+
+        async with self._reconcile_lock:
+            # Skip reconciliation for stale group objects that have already been removed
+            # from the gateway mapping.
+            if self.gateway.groups.get(self.group_id) is not self:
+                return
+
+            self.clear_caches()
+            discovered_entities = {
+                entity.unique_id: entity
+                for entity in discovery.discover_group_entities(self)
+            }
+
+            for unique_id, group_entity in tuple(self._group_entities.items()):
+                if unique_id in discovered_entities:
+                    continue
+                try:
+                    await group_entity.on_remove()
+                except Exception:
+                    _LOGGER.warning(
+                        "Failed to remove stale group entity %s",
+                        group_entity,
+                        exc_info=True,
+                    )
+                    # Ensure stale entries are detached even on removal failures.
+                    self.unregister_group_entity(group_entity)
+
+            for unique_id, group_entity in discovered_entities.items():
+                if unique_id in self._group_entities:
+                    continue
+                group_entity.on_add()
+
+            self.update_entity_subscriptions()
 
     def update_entity_subscriptions(self) -> None:
         """Update the entity event subscriptions.
@@ -272,11 +321,11 @@ class Group(LogMixin):
         """
         self.clear_caches()
 
-        group_entity_ids = list(self._group_entities.keys())
-        processed_platform_entity_ids = []
+        group_entity_ids = set(self._group_entities)
+        processed_platform_entity_ids: set[str] = set()
         for group_entity in self._group_entities.values():
             for platform_entity in self.get_platform_entities(group_entity.PLATFORM):
-                processed_platform_entity_ids.append(platform_entity.unique_id)
+                processed_platform_entity_ids.add(platform_entity.unique_id)
                 if platform_entity.unique_id not in self._entity_unsubs:
                     self._entity_unsubs[platform_entity.unique_id] = (
                         platform_entity.on_event(
@@ -284,16 +333,12 @@ class Group(LogMixin):
                             group_entity.debounced_update,
                         )
                     )
-        all_ids = group_entity_ids + processed_platform_entity_ids
-        existing_unsub_ids = self._entity_unsubs.keys()
-        processed_unsubs = []
-        for unsub_id in existing_unsub_ids:
-            if unsub_id not in all_ids:
-                self._entity_unsubs[unsub_id]()
-                processed_unsubs.append(unsub_id)
-
-        for unsub_id in processed_unsubs:
-            self._entity_unsubs.pop(unsub_id)
+        all_ids = group_entity_ids | processed_platform_entity_ids
+        for unsub_id in tuple(self._entity_unsubs):
+            if unsub_id in all_ids:
+                continue
+            unsub = self._entity_unsubs.pop(unsub_id)
+            unsub()
 
     async def async_add_members(self, members: list[GroupMemberReference]) -> None:
         """Add members to this group."""
@@ -362,3 +407,15 @@ class Group(LogMixin):
                     group_entity,
                     exc_info=True,
                 )
+
+        for unsub_id, unsub in tuple(self._entity_unsubs.items()):
+            try:
+                unsub()
+            except Exception:
+                _LOGGER.warning(
+                    "Failed to run group unsubscribe callback for %s",
+                    unsub_id,
+                    exc_info=True,
+                )
+            finally:
+                self._entity_unsubs.pop(unsub_id, None)

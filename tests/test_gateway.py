@@ -38,6 +38,7 @@ from zha.application.gateway import (
 from zha.application.helpers import ZHAData
 from zha.application.platforms import GroupEntity
 from zha.application.platforms.light.const import EFFECT_OFF, LightEntityFeature
+from zha.const import STATE_CHANGED
 from zha.zigbee.device import Device
 from zha.zigbee.group import Group, GroupMemberReference
 
@@ -557,6 +558,39 @@ async def test_gateway_device_initialized(
     )
 
 
+async def test_device_initialized_done_callback_does_not_remove_replacement_task(
+    zha_gateway: Gateway,
+) -> None:
+    """Previous task completion must not remove the replacement task entry."""
+    zigpy_dev_basic = create_mock_zigpy_device(zha_gateway, ZIGPY_DEVICE_BASIC)
+    call_count = 0
+
+    async def delayed_device_initialized(_):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            try:
+                await asyncio.sleep(0.2)
+            except asyncio.CancelledError:
+                await asyncio.sleep(0.05)
+                raise
+        else:
+            await asyncio.sleep(0.2)
+
+    zha_gateway.async_device_initialized = delayed_device_initialized
+
+    zha_gateway.device_initialized(zigpy_dev_basic)
+    await asyncio.sleep(0)
+    zha_gateway.device_initialized(zigpy_dev_basic)
+
+    await asyncio.sleep(0.07)
+    assert zigpy_dev_basic.ieee in zha_gateway._device_init_tasks
+    assert not zha_gateway._device_init_tasks[zigpy_dev_basic.ieee].done()
+
+    await zha_gateway.async_block_till_done()
+    assert zigpy_dev_basic.ieee not in zha_gateway._device_init_tasks
+
+
 def test_gateway_raw_device_initialized(
     zha_gateway: Gateway,
 ) -> None:
@@ -674,6 +708,40 @@ async def test_pollers_skip(
 
     assert "Global updater interval skipped" in caplog.text
     assert "Device availability checker interval skipped" in caplog.text
+
+
+async def test_initialize_devices_fetch_failure_still_enables_polling(
+    zha_gateway: Gateway,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Startup polling failures should still re-enable polling."""
+    zha_gateway.config.allow_polling = False
+    zha_gateway.async_fetch_updated_state_mains = AsyncMock(
+        side_effect=RuntimeError("poll fail")
+    )
+
+    await zha_gateway.async_initialize_devices_and_entities()
+    await zha_gateway.async_block_till_done(wait_background_tasks=True)
+
+    assert zha_gateway.config.allow_polling is True
+    assert "Failed to fetch startup state for mains powered devices" in caplog.text
+
+
+async def test_initialize_devices_fetch_failure_is_logged_without_unretrieved_task_warning(
+    zha_gateway: Gateway,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Startup polling failure should be consumed and logged once."""
+    zha_gateway.config.allow_polling = False
+    zha_gateway.async_fetch_updated_state_mains = AsyncMock(
+        side_effect=RuntimeError("poll fail")
+    )
+
+    await zha_gateway.async_initialize_devices_and_entities()
+    await zha_gateway.async_block_till_done(wait_background_tasks=True)
+
+    assert "Task exception was never retrieved" not in caplog.text
+    assert zha_gateway._startup_fetch_task is None
 
 
 async def test_global_updater_guards(
@@ -950,3 +1018,166 @@ async def test_group_on_remove_entity_failure(
 
     assert "Failed to remove group entity" in caplog.text
     assert "Group entity removal failed" in caplog.text
+
+
+async def test_group_member_removed_event_cleans_member_subscriptions_when_entity_removed(
+    zha_gateway: Gateway,
+) -> None:
+    """External member removal should clear stale member subscriptions."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+
+    group_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+    member_entity = get_entity(device_light_1, platform=Platform.LIGHT)
+    assert any(
+        getattr(listener.callback, "__self__", None) is group_entity
+        for listener in member_entity._listeners.get(STATE_CHANGED, [])
+    )
+
+    zha_group.zigpy_group.members.pop((device_light_2.ieee, 1), None)
+    zha_gateway.group_member_removed(
+        zha_group.zigpy_group, device_light_2.device.endpoints[1]
+    )
+    await zha_gateway.async_block_till_done()
+
+    assert zha_group.group_entities == {}
+    assert not any(
+        getattr(listener.callback, "__self__", None) is group_entity
+        for listener in member_entity._listeners.get(STATE_CHANGED, [])
+    )
+
+
+async def test_group_on_remove_clears_member_entity_subscriptions(
+    zha_gateway: Gateway,
+) -> None:
+    """Group removal should clear member subscriptions owned by the group."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+
+    group_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+    member_entity = get_entity(device_light_1, platform=Platform.LIGHT)
+
+    await zha_group.on_remove()
+
+    assert zha_group._entity_unsubs == {}
+    assert zha_group.group_entities == {}
+    assert not any(
+        getattr(listener.callback, "__self__", None) is group_entity
+        for listener in member_entity._listeners.get(STATE_CHANGED, [])
+    )
+
+
+async def test_group_removed_event_triggers_group_cleanup(
+    zha_gateway: Gateway,
+) -> None:
+    """Gateway group_removed should schedule group cleanup callbacks."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+
+    group_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+    member_entity = get_entity(device_light_1, platform=Platform.LIGHT)
+
+    zha_gateway.group_removed(zha_group.zigpy_group)
+    await zha_gateway.async_block_till_done()
+
+    assert zha_group.group_id not in zha_gateway.groups
+    assert zha_group._entity_unsubs == {}
+    assert not any(
+        getattr(listener.callback, "__self__", None) is group_entity
+        for listener in member_entity._listeners.get(STATE_CHANGED, [])
+    )
+
+
+async def test_group_reconcile_handles_partial_group_entity_cleanup(
+    zha_gateway: Gateway,
+) -> None:
+    """Reconcile should not crash when stale entity cleanup already removed unsubs."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+
+    group_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+    # Drop below discovery threshold so reconcile removes stale group entities.
+    zha_group.zigpy_group.members.pop((device_light_2.ieee, 1), None)
+
+    async def flaky_remove() -> None:
+        # Simulate partial cleanup performed before raising.
+        zha_group._entity_unsubs.pop(group_entity.unique_id, None)
+        raise RuntimeError("remove failed after partial cleanup")
+
+    with patch.object(group_entity, "on_remove", side_effect=flaky_remove):
+        await zha_group.async_reconcile_discovered_entities()
+
+    assert zha_group.group_entities == {}
+
+
+async def test_group_reconcile_skips_removed_group(
+    zha_gateway: Gateway,
+) -> None:
+    """Reconcile should be a no-op for stale group objects removed from gateway."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+
+    # Simulate a stale group object that has already been removed from gateway.
+    zha_gateway.groups.pop(zha_group.group_id, None)
+    zha_group.group_entities.clear()
+    zha_group._entity_unsubs.clear()
+
+    await zha_group.async_reconcile_discovered_entities()
+
+    assert zha_group.group_entities == {}
+    assert zha_group._entity_unsubs == {}

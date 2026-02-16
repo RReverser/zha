@@ -185,7 +185,6 @@ def discover_group_entities(group: Group) -> Iterator[GroupEntity]:
             group.name,
             group.group_id,
         )
-        group.group_entities.clear()
         return
 
     # We only create groups with two or more devices
