@@ -82,7 +82,7 @@ from zha.const import STATE_CHANGED
 from zha.event import EventBase
 from zha.exceptions import ZHAException
 from zha.mixins import LogMixin
-from zha.zigbee.cluster_handlers import ClusterHandler, ZDOClusterHandler
+from zha.zigbee.cluster_handlers import ClusterHandler, ClusterHandlerStatus
 from zha.zigbee.endpoint import Endpoint
 
 if TYPE_CHECKING:
@@ -309,9 +309,13 @@ class Device(LogMixin, EventBase):
 
         self._on_remove_callbacks: list[Callable[[], None]] = []
 
-        self._zdo_handler: ZDOClusterHandler = ZDOClusterHandler(self)
-        self._zdo_handler.on_add()
-        self._on_remove_callbacks.append(self._zdo_handler.on_remove)
+        self._zdo_cluster = self._zigpy_device.endpoints[0]
+        self._zdo_status = ClusterHandlerStatus.CREATED
+        self._zdo_unique_id = f"{str(self.ieee)}:{self.name}_ZDO"
+        self._zdo_cluster.add_listener(self)
+        self._on_remove_callbacks.append(
+            lambda: self._zdo_cluster.remove_listener(self)
+        )
 
         self.status: DeviceStatus = DeviceStatus.CREATED
 
@@ -575,9 +579,19 @@ class Device(LogMixin, EventBase):
             self._identify_ch = cluster_handler
 
     @property
-    def zdo_cluster_handler(self) -> ZDOClusterHandler:
-        """Return ZDO cluster handler."""
-        return self._zdo_handler
+    def zdo_cluster(self):
+        """Return the zigpy ZDO cluster."""
+        return self._zdo_cluster
+
+    @property
+    def zdo_status(self) -> ClusterHandlerStatus:
+        """Return ZDO listener lifecycle status."""
+        return self._zdo_status
+
+    @property
+    def zdo_unique_id(self) -> str:
+        """Return ZDO unique id used by legacy diagnostics/tests."""
+        return self._zdo_unique_id
 
     @property
     def endpoints(self) -> dict[int, Endpoint]:
@@ -827,8 +841,8 @@ class Device(LogMixin, EventBase):
     async def async_configure(self) -> None:
         """Configure the device."""
         self.debug("started configuration")
-        await self._zdo_handler.async_configure()
-        self._zdo_handler.debug("'async_configure' stage succeeded")
+        self._zdo_status = ClusterHandlerStatus.CONFIGURED
+        self.debug("'async_configure' stage succeeded for ZDO")
 
         if isinstance(self._zigpy_device, zigpy.quirks.BaseCustomDevice):
             self.debug("applying quirks custom device configuration")
@@ -881,8 +895,8 @@ class Device(LogMixin, EventBase):
                 continue
 
             if meta.cluster_id is not None and not any(
-                cluster_handler.cluster.cluster_id == meta.cluster_id
-                for cluster_handler in entity.cluster_handlers.values()
+                cluster.cluster_id == meta.cluster_id
+                for cluster in entity.clusters.values()
             ):
                 continue
 
@@ -908,9 +922,9 @@ class Device(LogMixin, EventBase):
                 continue
 
             if meta.cluster_id is not None and not any(
-                cluster_handler.cluster.cluster_id == meta.cluster_id
-                and cluster_handler.cluster.cluster_type == meta.cluster_type
-                for cluster_handler in entity.cluster_handlers.values()
+                cluster.cluster_id == meta.cluster_id
+                and cluster.cluster_type == meta.cluster_type
+                for cluster in entity.clusters.values()
             ):
                 continue
 
@@ -981,8 +995,8 @@ class Device(LogMixin, EventBase):
 
         self._discover_new_entities()
 
-        await self._zdo_handler.async_initialize(from_cache)
-        self._zdo_handler.debug("'async_initialize' stage succeeded")
+        self._zdo_status = ClusterHandlerStatus.INITIALIZED
+        self.debug("'async_initialize' stage succeeded for ZDO")
 
         # We intentionally do not use `gather` here! This is so that if, for example,
         # three `device.async_initialize()`s are spawned, only three concurrent requests

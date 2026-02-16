@@ -11,11 +11,7 @@ from zigpy.profiles import zha
 from zigpy.zcl.clusters.general import PowerConfiguration
 
 from zha.application import Platform
-from zha.application.platforms import (
-    ClusterHandlerMatch,
-    PlatformEntity,
-    register_entity,
-)
+from zha.application.platforms import ClusterMatch, PlatformEntity, register_entity
 from zha.application.platforms.sensor import Battery
 from zha.decorators import periodic
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
@@ -55,8 +51,8 @@ class DeviceScannerEntity(PlatformEntity):
     _attr_fallback_name: str = "Device scanner"
     __polling_interval: int
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_POWER_CONFIGURATION}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_POWER_CONFIGURATION}),
         profile_device_types=frozenset(
             {(zha.PROFILE_ID, SMARTTHINGS_ARRIVAL_SENSOR_DEVICE_TYPE)}
         ),

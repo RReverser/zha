@@ -57,16 +57,53 @@ from zha.application import Platform
 from zha.application.discovery import discover_device_entities
 from zha.application.gateway import Gateway
 from zha.application.helpers import DeviceOverridesConfiguration
-from zha.application.platforms import PlatformEntity, binary_sensor, sensor
+from zha.application.platforms import (
+    ENTITY_REGISTRY,
+    PlatformEntity,
+    binary_sensor,
+    sensor,
+)
 from zha.application.platforms.light import HueLight
 from zha.application.platforms.number import BaseNumber, NumberMode
 from zha.zigbee.cluster_handlers.const import PHILLIPS_REMOTE_CLUSTER
+from zha.zigbee.endpoint import Endpoint
 
 
 def _get_identify_cluster(zigpy_device):
     for endpoint in list(zigpy_device.endpoints.values())[1:]:
         if hasattr(endpoint, "identify"):
             return endpoint.identify
+
+
+def test_cluster_match_no_legacy_cluster_handler_fallback_names() -> None:
+    """Ensure all entity matches use `cluster_0xNNNN` fallback names."""
+    unique_entity_classes = {
+        entity_class
+        for entity_classes in ENTITY_REGISTRY.values()
+        for entity_class in entity_classes
+    }
+
+    for entity_class in unique_entity_classes:
+        match = entity_class._cluster_match
+        if match is None:
+            continue
+
+        for cluster_name in (
+            set(match.in_clusters)
+            | set(match.out_clusters)
+            | set(match.optional_in_clusters)
+        ):
+            assert not cluster_name.startswith("cluster_handler_0x")
+
+
+def test_endpoint_cluster_name_fallback_uses_cluster_prefix() -> None:
+    """Ensure unnamed clusters use the `cluster_0xNNNN` fallback name."""
+
+    class _Cluster:
+        cluster_id = 0xFC45
+        ep_attribute = None
+
+    assert Endpoint.resolve_cluster_name(_Cluster()) == "cluster_0xfc45"
 
 
 @pytest.mark.parametrize("override_platform", [Platform.SWITCH, Platform.LIGHT])

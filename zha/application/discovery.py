@@ -28,7 +28,7 @@ from zha.application.platforms import (  # noqa: F401 pylint: disable=unused-imp
     ENTITY_REGISTRY,
     GROUP_ENTITY_REGISTRY,
     BaseEntity,
-    ClusterHandlerMatch,
+    ClusterMatch,
     PlatformEntity,
     PlatformFeatureGroup,
     alarm_control_panel,
@@ -409,7 +409,7 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
         PlatformFeatureGroup | None,
         defaultdict[
             int,  # Weight
-            list[tuple[ClusterHandlerMatch, type[PlatformEntity]]],
+            list[tuple[ClusterMatch, type[PlatformEntity]]],
         ],
     ] = defaultdict(lambda: defaultdict(list))
 
@@ -420,18 +420,14 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
         # To speed up lookups, we key ENTITY_REGISTRY by cluster ID. First, we find all
         # compatible entities and their matching criteria.
         for entity_class in ENTITY_REGISTRY.get(cluster.cluster_id, []):
-            match = entity_class._cluster_handler_match
+            match = entity_class._cluster_match
             if match is None:
                 continue
 
-            if not match.cluster_handlers.issubset(
-                endpoint.cluster_handlers_by_name.keys()
-            ):
+            if not match.in_clusters.issubset(endpoint.in_clusters_by_name):
                 continue
 
-            if not match.client_cluster_handlers.issubset(
-                endpoint.client_cluster_handlers_by_name.keys()
-            ):
+            if not match.out_clusters.issubset(endpoint.out_clusters_by_name):
                 continue
 
             if (
@@ -490,7 +486,7 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
         # system when competing entities are part of the same feature group
         if platform_override is not None and feature is not None:
             override_by_priority: defaultdict[
-                int, list[tuple[ClusterHandlerMatch, type[PlatformEntity]]]
+                int, list[tuple[ClusterMatch, type[PlatformEntity]]]
             ] = defaultdict(list)
 
             for priority, priority_matches in matches_by_priority.items():
@@ -525,37 +521,36 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
         matches = matches_by_priority[highest_priority]
 
         for match, entity_class in matches:
-            server_handlers = set(match.cluster_handlers)
+            in_clusters = set(match.in_clusters)
 
-            for optional in match.optional_cluster_handlers:
-                if optional in endpoint.cluster_handlers_by_name:
-                    server_handlers.add(optional)
+            for optional in match.optional_in_clusters:
+                if optional in endpoint.in_clusters_by_name:
+                    in_clusters.add(optional)
 
-            client_handlers = set(match.client_cluster_handlers)
+            out_clusters = set(match.out_clusters)
 
-            server_cluster_handlers = [
-                endpoint.cluster_handlers_by_name[name] for name in server_handlers
+            in_cluster_handlers = [
+                endpoint.cluster_handlers_by_name[name] for name in in_clusters
             ]
-            client_cluster_handlers = [
-                endpoint.client_cluster_handlers_by_name[name]
-                for name in client_handlers
+            out_cluster_handlers = [
+                endpoint.client_cluster_handlers_by_name[name] for name in out_clusters
             ]
 
             # Claim on endpoint
-            endpoint.claim_cluster_handlers(server_cluster_handlers)
-            endpoint.claim_cluster_handlers(client_cluster_handlers)
+            endpoint.claim_cluster_handlers(in_cluster_handlers)
+            endpoint.claim_cluster_handlers(out_cluster_handlers)
 
             _LOGGER.debug(
                 "'%s' platform -> '%s' using %s + %s",
                 entity_class.PLATFORM,
                 entity_class.__name__,
-                [ch.name for ch in server_cluster_handlers],
-                [ch.name for ch in client_cluster_handlers],
+                [ch.name for ch in in_cluster_handlers],
+                [ch.name for ch in out_cluster_handlers],
             )
 
             # XXX: Combining server and client cluster handlers should not be done
             cluster_handlers: list[ClusterHandler | ClientClusterHandler] = (
-                server_cluster_handlers + client_cluster_handlers  # type: ignore[operator]
+                in_cluster_handlers + out_cluster_handlers  # type: ignore[operator]
             )
 
             yield entity_class(

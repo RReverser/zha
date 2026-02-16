@@ -1409,8 +1409,8 @@ async def test_zha_send_event_from_quirk(zha_gateway: Gateway):
     ]
 
 
-async def test_zdo_cluster_handler(zha_gateway: Gateway):
-    """Test that a quirk can send an event."""
+async def test_zdo_cluster_state_on_device(zha_gateway: Gateway):
+    """Test that ZDO listener state is managed on `Device`."""
     zigpy_device = create_mock_zigpy_device(
         zha_gateway,
         {
@@ -1435,11 +1435,6 @@ async def test_zdo_cluster_handler(zha_gateway: Gateway):
 
     zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
 
-    assert zha_device.zdo_cluster_handler is not None
-    assert zha_device.zdo_cluster_handler.status == ClusterHandlerStatus.INITIALIZED
-    assert zha_device.zdo_cluster_handler.cluster is not None
-    assert zha_device.zdo_cluster_handler.cluster == zigpy_device.endpoints[0]
-    assert (
-        zha_device.zdo_cluster_handler.unique_id
-        == f"{str(zha_device.ieee)}:{zha_device.name}_ZDO"
-    )
+    assert zha_device.zdo_status == ClusterHandlerStatus.INITIALIZED
+    assert zha_device.zdo_cluster == zigpy_device.endpoints[0]
+    assert zha_device.zdo_unique_id == f"{str(zha_device.ieee)}:{zha_device.name}_ZDO"

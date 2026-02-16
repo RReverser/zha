@@ -14,7 +14,7 @@ from zha.application import Platform
 from zha.application.platforms import (
     BaseEntity,
     BaseEntityInfo,
-    ClusterHandlerMatch,
+    ClusterMatch,
     GroupEntity,
     PlatformEntity,
     PlatformFeatureGroup,
@@ -250,8 +250,8 @@ class BaseFan(BaseEntity):
 class Fan(BaseFan, PlatformEntity):
     """Representation of a ZHA fan."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_FAN}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
         # We prefer Thermostat entities if possible
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, -1),
     )
@@ -379,8 +379,8 @@ class IkeaFan(BaseFan, PlatformEntity):
         | FanEntityFeature.TURN_ON
     )
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"ikea_airpurifier"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"ikea_airpurifier"}),
         models=frozenset({"STARKVIND Air purifier", "STARKVIND Air purifier table"}),
     )
 
@@ -477,8 +477,8 @@ class KofFan(Fan):
         | FanEntityFeature.TURN_ON
     )
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_FAN}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
         models=frozenset({"HBUniversalCFRemote", "HDC52EastwindFan"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 1),
     )

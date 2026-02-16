@@ -8,11 +8,7 @@ from zigpy.zcl.clusters.closures import DoorLock as DoorLockCluster
 from zigpy.zcl.foundation import Status
 
 from zha.application import Platform
-from zha.application.platforms import (
-    ClusterHandlerMatch,
-    PlatformEntity,
-    register_entity,
-)
+from zha.application.platforms import ClusterMatch, PlatformEntity, register_entity
 from zha.application.platforms.lock.const import (
     STATE_LOCKED,
     STATE_UNLOCKED,
@@ -39,9 +35,7 @@ class DoorLock(PlatformEntity):
     _attr_translation_key: str = "door_lock"
     _attr_primary_weight = 5
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_DOORLOCK})
-    )
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_DOORLOCK}))
 
     def __init__(
         self,

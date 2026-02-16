@@ -27,6 +27,8 @@ from zha.mixins import LogMixin
 from zha.zigbee.cluster_handlers import ClusterHandlerInfo
 
 if TYPE_CHECKING:
+    from zigpy.zcl import Cluster
+
     from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
@@ -68,12 +70,12 @@ class PlatformFeatureGroup(StrEnum):
 
 
 @dataclasses.dataclass(frozen=True)
-class ClusterHandlerMatch:
-    """Declares cluster handler requirements for an entity class."""
+class ClusterMatch:
+    """Declares cluster requirements for an entity class."""
 
-    cluster_handlers: frozenset[str] = frozenset()
-    client_cluster_handlers: frozenset[str] = frozenset()
-    optional_cluster_handlers: frozenset[str] = frozenset()
+    in_clusters: frozenset[str] = frozenset()
+    out_clusters: frozenset[str] = frozenset()
+    optional_in_clusters: frozenset[str] = frozenset()
 
     # Strict filters: if present, device info must match
     manufacturers: frozenset[str] | None = None
@@ -439,7 +441,7 @@ class PlatformEntity(BaseEntity):
     _migrate_platform_unique_ids: tuple[tuple[UniqueIdMigration, str]] | None = None
 
     # Auto-discovery for the entity
-    _cluster_handler_match: ClusterHandlerMatch | None
+    _cluster_match: ClusterMatch | None
 
     def __init__(
         self,
@@ -469,9 +471,18 @@ class PlatformEntity(BaseEntity):
 
         self._cluster_handlers: list[ClusterHandler] = cluster_handlers
         self.cluster_handlers: dict[str, ClusterHandler] = {}
+        self.in_clusters: dict[str, Cluster] = {}
+        self.out_clusters: dict[str, Cluster] = {}
+        self.clusters: dict[str, Cluster] = {}
 
         for cluster_handler in cluster_handlers:
             self.cluster_handlers[cluster_handler.name] = cluster_handler
+            cluster_name = endpoint.resolve_cluster_name(cluster_handler.cluster)
+            if cluster_handler.cluster.is_client:
+                self.out_clusters[cluster_name] = cluster_handler.cluster
+            else:
+                self.in_clusters[cluster_name] = cluster_handler.cluster
+            self.clusters[cluster_name] = cluster_handler.cluster
 
         self._device: Device = device
         self._endpoint = endpoint

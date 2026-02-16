@@ -54,7 +54,7 @@ from zha.application.platforms import (
     BaseEntity,
     BaseEntityInfo,
     BaseIdentifiers,
-    ClusterHandlerMatch,
+    ClusterMatch,
     EntityCategory,
     PlatformEntity,
     PlatformFeatureGroup,
@@ -596,8 +596,8 @@ class DigiAnalogInput(Sensor):
     _attribute_name = "present_value"
     _attr_translation_key: str = "analog_input"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ANALOG_INPUT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ANALOG_INPUT}),
         manufacturers=frozenset({"Digi"}),
     )
 
@@ -610,8 +610,8 @@ class AnalogInputSensor(Sensor):
     _unique_id_suffix = "analog_input"
     _attr_state_class = SensorStateClass.MEASUREMENT
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ANALOG_INPUT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ANALOG_INPUT}),
     )
 
     def recompute_capabilities(self) -> None:
@@ -672,8 +672,8 @@ class Battery(Sensor):
         "battery_voltage",
     }
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_POWER_CONFIGURATION}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_POWER_CONFIGURATION}),
     )
 
     def _is_supported(self) -> bool:
@@ -783,8 +783,8 @@ class ElectricalMeasurementActivePower(BaseElectricalMeasurement):
 class ReportingElectricalMeasurement(ElectricalMeasurementActivePower):
     """Unpolled active power measurement."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
         models=frozenset({"VZM31-SN", "SP 234", "outletv4", "INSPELNING Smart plug"}),
     )
 
@@ -795,8 +795,8 @@ class PolledElectricalMeasurement(ElectricalMeasurementActivePower):
 
     _use_custom_polling: bool = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -810,8 +810,8 @@ class ElectricalMeasurementActivePowerPhB(ElectricalMeasurementActivePower):
     _attr_max_attribute_name = "active_power_max_ph_b"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -825,8 +825,8 @@ class ElectricalMeasurementActivePowerPhC(ElectricalMeasurementActivePower):
     _attr_max_attribute_name = "active_power_max_ph_c"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -839,8 +839,8 @@ class ElectricalMeasurementTotalActivePower(ElectricalMeasurementActivePower):
     _attr_translation_key: str = "total_active_power"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -855,8 +855,8 @@ class ElectricalMeasurementApparentPower(BaseElectricalMeasurement):
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.APPARENT_POWER
     _attr_native_unit_of_measurement = UnitOfApparentPower.VOLT_AMPERE
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -872,8 +872,8 @@ class ElectricalMeasurementRMSCurrent(BaseElectricalMeasurement):
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.CURRENT
     _attr_native_unit_of_measurement = UnitOfElectricCurrent.AMPERE
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -887,8 +887,8 @@ class ElectricalMeasurementRMSCurrentPhB(ElectricalMeasurementRMSCurrent):
     _attr_max_attribute_name: str = "rms_current_max_ph_b"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -902,8 +902,8 @@ class ElectricalMeasurementRMSCurrentPhC(ElectricalMeasurementRMSCurrent):
     _attr_max_attribute_name: str = "rms_current_max_ph_c"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -919,8 +919,8 @@ class ElectricalMeasurementRMSVoltage(BaseElectricalMeasurement):
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.VOLTAGE
     _attr_native_unit_of_measurement = UnitOfElectricPotential.VOLT
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -934,8 +934,8 @@ class ElectricalMeasurementRMSVoltagePhB(ElectricalMeasurementRMSVoltage):
     _attr_max_attribute_name = "rms_voltage_max_ph_b"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -949,8 +949,8 @@ class ElectricalMeasurementRMSVoltagePhC(ElectricalMeasurementRMSVoltage):
     _attr_max_attribute_name = "rms_voltage_max_ph_c"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -967,8 +967,8 @@ class ElectricalMeasurementFrequency(BaseElectricalMeasurement):
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.FREQUENCY
     _attr_native_unit_of_measurement = UnitOfFrequency.HERTZ
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -981,8 +981,8 @@ class ElectricalMeasurementPowerFactor(BaseElectricalMeasurement):
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.POWER_FACTOR
     _attr_native_unit_of_measurement = PERCENTAGE
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -995,8 +995,8 @@ class ElectricalMeasurementPowerFactorPhB(ElectricalMeasurementPowerFactor):
     _attr_translation_key: str = "power_factor_ph_b"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -1009,8 +1009,8 @@ class ElectricalMeasurementPowerFactorPhC(ElectricalMeasurementPowerFactor):
     _attr_translation_key: str = "power_factor_ph_c"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -1027,8 +1027,8 @@ class ElectricalMeasurementDCVoltage(BaseElectricalMeasurement):
     _multiplier_attribute_name = "dc_voltage_multiplier"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -1045,8 +1045,8 @@ class ElectricalMeasurementDCCurrent(BaseElectricalMeasurement):
     _multiplier_attribute_name = "dc_current_multiplier"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -1063,8 +1063,8 @@ class ElectricalMeasurementDCPower(BaseElectricalMeasurement):
     _multiplier_attribute_name = "dc_power_multiplier"
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
     )
 
 
@@ -1079,8 +1079,8 @@ class Humidity(Sensor):
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_HUMIDITY}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_HUMIDITY}),
     )
 
 
@@ -1095,10 +1095,8 @@ class SmartThingsHumidity(Sensor):
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset(
-            {f"cluster_handler_0x{SMARTTHINGS_HUMIDITY_CLUSTER:04x}"}
-        ),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({f"cluster_0x{SMARTTHINGS_HUMIDITY_CLUSTER:04x}"}),
     )
 
 
@@ -1114,8 +1112,8 @@ class SoilMoisture(Sensor):
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SOIL_MOISTURE}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SOIL_MOISTURE}),
     )
 
 
@@ -1131,8 +1129,8 @@ class LeafWetness(Sensor):
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_LEAF_WETNESS}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_LEAF_WETNESS}),
     )
 
 
@@ -1146,8 +1144,8 @@ class Illuminance(Sensor):
     _attr_native_unit_of_measurement = LIGHT_LUX
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ILLUMINANCE}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ILLUMINANCE}),
     )
 
     def formatter(self, value: int) -> int | None:
@@ -1185,8 +1183,8 @@ class SmartEnergyMetering(PollableSensor):
     }
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
     )
 
     _ENTITY_DESCRIPTION_MAP = {
@@ -1337,8 +1335,8 @@ class SmartEnergySummation(SmartEnergyMetering):
     _attr_translation_key: str = "summation_delivered"
     _attr_suggested_display_precision: int = 3
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
         feature_priority=(PlatformFeatureGroup.SMART_ENERGY_SUMMATION, 0),
     )
 
@@ -1424,8 +1422,8 @@ class PolledSmartEnergySummation(SmartEnergySummation):
 
     _use_custom_polling: bool = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
         models=frozenset({"TS011F", "ZLinky_TIC", "TICMeter"}),
         feature_priority=(PlatformFeatureGroup.SMART_ENERGY_SUMMATION, 1),
     )
@@ -1440,8 +1438,8 @@ class Tier1SmartEnergySummation(PolledSmartEnergySummation):
     _unique_id_suffix = "tier1_summation_delivered"
     _attr_translation_key: str = "tier1_summation_delivered"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
         models=frozenset({"ZLinky_TIC", "TICMeter"}),
         feature_priority=(PlatformFeatureGroup.SMART_ENERGY_SUMMATION, 1),
     )
@@ -1456,8 +1454,8 @@ class Tier2SmartEnergySummation(PolledSmartEnergySummation):
     _unique_id_suffix = "tier2_summation_delivered"
     _attr_translation_key: str = "tier2_summation_delivered"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
         models=frozenset({"ZLinky_TIC", "TICMeter"}),
         feature_priority=(PlatformFeatureGroup.SMART_ENERGY_SUMMATION, 1),
     )
@@ -1472,8 +1470,8 @@ class Tier3SmartEnergySummation(PolledSmartEnergySummation):
     _unique_id_suffix = "tier3_summation_delivered"
     _attr_translation_key: str = "tier3_summation_delivered"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
         models=frozenset({"ZLinky_TIC", "TICMeter"}),
         feature_priority=(PlatformFeatureGroup.SMART_ENERGY_SUMMATION, 1),
     )
@@ -1488,8 +1486,8 @@ class Tier4SmartEnergySummation(PolledSmartEnergySummation):
     _unique_id_suffix = "tier4_summation_delivered"
     _attr_translation_key: str = "tier4_summation_delivered"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
         models=frozenset({"ZLinky_TIC", "TICMeter"}),
         feature_priority=(PlatformFeatureGroup.SMART_ENERGY_SUMMATION, 1),
     )
@@ -1504,8 +1502,8 @@ class Tier5SmartEnergySummation(PolledSmartEnergySummation):
     _unique_id_suffix = "tier5_summation_delivered"
     _attr_translation_key: str = "tier5_summation_delivered"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
         models=frozenset({"ZLinky_TIC", "TICMeter"}),
         feature_priority=(PlatformFeatureGroup.SMART_ENERGY_SUMMATION, 1),
     )
@@ -1520,8 +1518,8 @@ class Tier6SmartEnergySummation(PolledSmartEnergySummation):
     _unique_id_suffix = "tier6_summation_delivered"
     _attr_translation_key: str = "tier6_summation_delivered"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
         models=frozenset({"ZLinky_TIC", "TICMeter"}),
         feature_priority=(PlatformFeatureGroup.SMART_ENERGY_SUMMATION, 1),
     )
@@ -1545,8 +1543,8 @@ class SmartEnergySummationReceived(PolledSmartEnergySummation):
     """
     _skip_creation_if_no_attr_cache = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_SMARTENERGY_METERING}),
     )
 
 
@@ -1561,8 +1559,8 @@ class Pressure(Sensor):
     _attr_native_unit_of_measurement = UnitOfPressure.HPA
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_PRESSURE}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_PRESSURE}),
     )
 
 
@@ -1577,8 +1575,8 @@ class Flow(Sensor):
     _attr_native_unit_of_measurement = UnitOfVolumeFlowRate.CUBIC_METERS_PER_HOUR
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_FLOW}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_FLOW}),
     )
 
 
@@ -1593,8 +1591,8 @@ class Temperature(Sensor):
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_TEMPERATURE}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_TEMPERATURE}),
     )
 
 
@@ -1611,8 +1609,8 @@ class DeviceTemperature(Sensor):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_DEVICE_TEMPERATURE}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_DEVICE_TEMPERATURE}),
     )
 
 
@@ -1627,8 +1625,8 @@ class InovelliInternalTemperature(Sensor):
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_INOVELLI}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
     )
 
 
@@ -1649,8 +1647,8 @@ class InovelliOverheated(EnumSensor):
     _enum = InovelliOverheatedState
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_INOVELLI}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
     )
 
 
@@ -1666,8 +1664,8 @@ class CarbonDioxideConcentration(Sensor):
     _attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"carbon_dioxide_concentration"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"carbon_dioxide_concentration"}),
     )
 
 
@@ -1683,8 +1681,8 @@ class CarbonMonoxideConcentration(Sensor):
     _attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"carbon_monoxide_concentration"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"carbon_monoxide_concentration"}),
     )
 
 
@@ -1700,8 +1698,8 @@ class VOCLevel(Sensor):
     _attr_native_unit_of_measurement = CONCENTRATION_MICROGRAMS_PER_CUBIC_METER
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"voc_level"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"voc_level"}),
         feature_priority=(PlatformFeatureGroup.VOC_LEVEL, 0),
     )
 
@@ -1718,8 +1716,8 @@ class GenericVOCLevel(Sensor):
     _attr_native_unit_of_measurement = CONCENTRATION_MICROGRAMS_PER_CUBIC_METER
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"cluster_handler_0x042e"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"cluster_0x042e"}),
     )
 
 
@@ -1737,8 +1735,8 @@ class PPBVOCLevel(Sensor):
     _attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_BILLION
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"voc_level"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"voc_level"}),
         models=frozenset({"lumi.airmonitor.acn01"}),
         feature_priority=(PlatformFeatureGroup.VOC_LEVEL, 1),
     )
@@ -1755,8 +1753,8 @@ class PM25(Sensor):
     _attr_native_unit_of_measurement = CONCENTRATION_MICROGRAMS_PER_CUBIC_METER
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"pm25"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"pm25"}),
     )
 
 
@@ -1769,8 +1767,8 @@ class ElectricalConductivity(Sensor):
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = UnitOfConductivity.MICROSIEMENS_PER_CM
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ELECTRICAL_CONDUCTIVITY}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_CONDUCTIVITY}),
     )
 
 
@@ -1786,8 +1784,8 @@ class FormaldehydeConcentration(Sensor):
     _attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
     _attr_primary_weight = 1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"formaldehyde_concentration"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"formaldehyde_concentration"}),
     )
 
 
@@ -1798,8 +1796,8 @@ class ThermostatHVACAction(Sensor):
     _unique_id_suffix = "hvac_action"
     _attr_translation_key: str = "hvac_action"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         feature_priority=(PlatformFeatureGroup.HVAC_ACTION, 0),
     )
 
@@ -1886,8 +1884,8 @@ class ThermostatHVACAction(Sensor):
 class SinopeHVACAction(ThermostatHVACAction):
     """Sinope Thermostat HVAC action sensor."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         manufacturers=frozenset({"Sinope Technologies"}),
         feature_priority=(PlatformFeatureGroup.HVAC_ACTION, 1),
     )
@@ -1930,8 +1928,8 @@ class RSSISensor(Sensor):
     _attr_entity_registry_enabled_default = False
     _attr_translation_key: str = "rssi"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_BASIC}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_BASIC}),
     )
 
     def __init__(
@@ -2009,8 +2007,8 @@ class LQISensor(RSSISensor):
     _attr_native_unit_of_measurement = None
     _attr_translation_key = "lqi"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_BASIC}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_BASIC}),
     )
 
     @property
@@ -2036,8 +2034,8 @@ class TimeLeft(Sensor):
     _attr_translation_key: str = "timer_time_left"
     _attr_native_unit_of_measurement = UnitOfTime.MINUTES
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"tuya_manufacturer"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"tuya_manufacturer"}),
         manufacturers=frozenset({"_TZE200_htnnfasr"}),
     )
 
@@ -2053,8 +2051,8 @@ class IkeaDeviceRunTime(Sensor):
     _attr_native_unit_of_measurement = UnitOfTime.MINUTES
     _attr_entity_category: EntityCategory = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"ikea_airpurifier"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"ikea_airpurifier"}),
     )
 
 
@@ -2069,8 +2067,8 @@ class IkeaFilterRunTime(Sensor):
     _attr_native_unit_of_measurement = UnitOfTime.MINUTES
     _attr_entity_category: EntityCategory = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"ikea_airpurifier"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"ikea_airpurifier"}),
     )
 
 
@@ -2090,8 +2088,8 @@ class AqaraPetFeederLastFeedingSource(EnumSensor):
     _attr_translation_key: str = "last_feeding_source"
     _enum = AqaraFeedingSource
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"opple_cluster"}),
         models=frozenset({"aqara.feeder.acn001"}),
     )
 
@@ -2104,8 +2102,8 @@ class AqaraPetFeederLastFeedingSize(Sensor):
     _unique_id_suffix = "last_feeding_size"
     _attr_translation_key: str = "last_feeding_size"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"opple_cluster"}),
         models=frozenset({"aqara.feeder.acn001"}),
     )
 
@@ -2119,8 +2117,8 @@ class AqaraPetFeederPortionsDispensed(Sensor):
     _attr_translation_key: str = "portions_dispensed_today"
     _attr_state_class: SensorStateClass = SensorStateClass.TOTAL_INCREASING
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"opple_cluster"}),
         models=frozenset({"aqara.feeder.acn001"}),
     )
 
@@ -2135,8 +2133,8 @@ class AqaraPetFeederWeightDispensed(Sensor):
     _attr_native_unit_of_measurement = UnitOfMass.GRAMS
     _attr_state_class: SensorStateClass = SensorStateClass.TOTAL_INCREASING
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"opple_cluster"}),
         models=frozenset({"aqara.feeder.acn001"}),
     )
 
@@ -2152,8 +2150,8 @@ class AqaraSmokeDensityDbm(Sensor):
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
     _attr_suggested_display_precision = 3
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.sensor_smoke.acn03"}),
     )
 
@@ -2174,8 +2172,8 @@ class SonoffPresenceSenorIlluminationStatus(EnumSensor):
     _attr_translation_key: str = "last_illumination_state"
     _enum = SonoffIlluminationStates
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"sonoff_manufacturer"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"sonoff_manufacturer"}),
         models=frozenset({"SNZB-06P"}),
     )
 
@@ -2196,8 +2194,8 @@ class PiHeatingDemand(Sensor):
     _attr_suggested_display_precision = 0
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
     )
 
 
@@ -2222,8 +2220,8 @@ class SetpointChangeSource(EnumSensor):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _enum = SetpointChangeSourceEnum
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
     )
 
 
@@ -2240,8 +2238,8 @@ class SetpointChangeSourceTimestamp(TimestampSensor):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_device_class = SensorDeviceClass.TIMESTAMP
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
     )
 
     def formatter(self, value: types.UTCTime) -> datetime:
@@ -2259,8 +2257,8 @@ class WindowCoveringTypeSensor(EnumSensor):
     _attr_translation_key: str = "window_covering_type"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_COVER}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_COVER}),
     )
 
 
@@ -2274,8 +2272,8 @@ class AqaraCurtainMotorPowerSourceSensor(EnumSensor):
     _attr_translation_key: str = "power_source"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_BASIC}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_BASIC}),
         models=frozenset({"lumi.curtain.agl001"}),
     )
 
@@ -2299,8 +2297,8 @@ class AqaraCurtainHookStateSensor(EnumSensor):
     _attr_translation_key: str = "hooks_state"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.curtain.agl001"}),
     )
 
@@ -2368,8 +2366,8 @@ class DanfossOpenWindowDetection(EnumSensor):
     _attr_translation_key: str = "open_window_detected"
     _enum = danfoss_thermostat.DanfossOpenWindowDetectionEnum
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2383,8 +2381,8 @@ class DanfossLoadEstimate(Sensor):
     _attr_translation_key: str = "load_estimate"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2399,8 +2397,8 @@ class DanfossAdaptationRunStatus(BitMapSensor):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _bitmap = danfoss_thermostat.DanfossAdaptationRunStatusBitmap
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2415,8 +2413,8 @@ class DanfossPreheatTime(Sensor):
     _attr_entity_registry_enabled_default = False
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2431,8 +2429,8 @@ class DanfossSoftwareErrorCode(BitMapSensor):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _bitmap = danfoss_thermostat.DanfossSoftwareErrorCodeBitmap
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_DIAGNOSTIC}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_DIAGNOSTIC}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2446,8 +2444,8 @@ class DanfossMotorStepCounter(Sensor):
     _attr_translation_key: str = "motor_stepcount"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_DIAGNOSTIC}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_DIAGNOSTIC}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2463,6 +2461,6 @@ class WindSpeed(Sensor):
     _attr_native_unit_of_measurement = UnitOfSpeed.METERS_PER_SECOND
     _attr_primary_weight = 2
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_WIND_SPEED}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_WIND_SPEED}),
     )

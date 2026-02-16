@@ -19,7 +19,7 @@ from zigpy.zcl.clusters.hvac import (
 from zha.application import Platform
 from zha.application.platforms import (
     BaseEntityInfo,
-    ClusterHandlerMatch,
+    ClusterMatch,
     PlatformEntity,
     PlatformFeatureGroup,
     register_entity,
@@ -101,9 +101,9 @@ class Thermostat(PlatformEntity):
         ATTR_UNOCCP_HEAT_SETPT,
     }
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
-        optional_cluster_handlers=frozenset({CLUSTER_HANDLER_FAN}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        optional_in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
         # We prefer Thermostat entities over Fan entities if possible
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 1),
     )
@@ -527,8 +527,8 @@ class SinopeTechnologiesThermostat(Thermostat):
     manufacturer = 0x119C
     __polling_interval: int
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset(
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset(
             {CLUSTER_HANDLER_THERMOSTAT, "sinope_manufacturer_specific"}
         ),
         manufacturers=frozenset({"Sinope Technologies"}),
@@ -634,9 +634,9 @@ class SinopeTechnologiesThermostat(Thermostat):
 class ZenWithinThermostat(Thermostat):
     """Zen Within Thermostat implementation."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
-        optional_cluster_handlers=frozenset({CLUSTER_HANDLER_FAN}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        optional_in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
         manufacturers=frozenset({"Zen Within", "LUX"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
     )
@@ -646,8 +646,8 @@ class ZenWithinThermostat(Thermostat):
 class ZehnderThermostat(Thermostat):
     """Zehnder thermostat to adapt AUTO mode behavior."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         manufacturers=frozenset(
             {"ZEHNDER GROUP VAUX ANDIGNY      ", "ZEHNDER GROUP VAUX ANDIGNY"}
         ),
@@ -716,9 +716,9 @@ class ZehnderThermostat(Thermostat):
 class CentralitePearl(Thermostat):
     """Centralite Pearl Thermostat implementation."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
-        optional_cluster_handlers=frozenset({CLUSTER_HANDLER_FAN}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        optional_in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
         manufacturers=frozenset({"Centralite"}),
         models=frozenset({"3157100", "3157100-E"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
@@ -748,8 +748,8 @@ MOES_MANUFACTURERS = frozenset(
 class MoesThermostat(Thermostat):
     """Moes Thermostat implementation."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         manufacturers=MOES_MANUFACTURERS,
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
     )
@@ -831,8 +831,8 @@ class MoesThermostat(Thermostat):
 class BecaThermostat(Thermostat):
     """Beca Thermostat implementation."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         manufacturers=frozenset({"_TZE200_b6wax7g0"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
     )
@@ -907,8 +907,8 @@ class BecaThermostat(Thermostat):
 class StelproFanHeater(Thermostat):
     """Stelpro Fan Heater implementation."""
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         manufacturers=frozenset({"Stelpro"}),
         models=frozenset({"SORB"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
@@ -945,8 +945,8 @@ class ZONNSMARTThermostat(Thermostat):
     PRESET_HOLIDAY = "holiday"
     PRESET_FROST = "frost protect"
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         manufacturers=ZONNSMART_MANUFACTURERS,
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
     )

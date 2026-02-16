@@ -13,7 +13,7 @@ from zigpy.zcl.clusters.security import IasAce
 from zha.application import Platform
 from zha.application.platforms import (
     BaseEntityInfo,
-    ClusterHandlerMatch,
+    ClusterMatch,
     PlatformEntity,
     register_entity,
 )
@@ -60,8 +60,8 @@ class AlarmControlPanel(PlatformEntity):
     _attr_translation_key: str = "alarm_control_panel"
     PLATFORM = Platform.ALARM_CONTROL_PANEL
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        client_cluster_handlers=frozenset({CLUSTER_HANDLER_IAS_ACE}),
+    _cluster_match = ClusterMatch(
+        out_clusters=frozenset({CLUSTER_HANDLER_IAS_ACE}),
     )
 
     def __init__(

@@ -98,12 +98,39 @@ class Endpoint:
     @functools.cached_property
     def cluster_handlers_by_name(self) -> dict[str, ClusterHandler]:
         """Return cluster handlers indexed by name."""
-        return {ch.name: ch for ch in self._all_cluster_handlers.values()}
+        return {
+            self.resolve_cluster_name(ch.cluster): ch
+            for ch in self._all_cluster_handlers.values()
+        }
 
     @functools.cached_property
     def client_cluster_handlers_by_name(self) -> dict[str, ClientClusterHandler]:
         """Return client cluster handlers indexed by name."""
-        return {ch.name: ch for ch in self._client_cluster_handlers.values()}
+        return {
+            self.resolve_cluster_name(ch.cluster): ch
+            for ch in self._client_cluster_handlers.values()
+        }
+
+    @functools.cached_property
+    def in_clusters_by_name(self) -> dict[str, Any]:
+        """Return input clusters indexed by cluster match name."""
+        return {
+            self.resolve_cluster_name(cluster): cluster
+            for cluster in (ch.cluster for ch in self._all_cluster_handlers.values())
+        }
+
+    @functools.cached_property
+    def out_clusters_by_name(self) -> dict[str, Any]:
+        """Return output clusters indexed by cluster match name."""
+        return {
+            self.resolve_cluster_name(cluster): cluster
+            for cluster in (ch.cluster for ch in self._client_cluster_handlers.values())
+        }
+
+    @staticmethod
+    def resolve_cluster_name(cluster: Any) -> str:
+        """Resolve canonical cluster match name from a zigpy cluster."""
+        return cluster.ep_attribute or f"cluster_0x{cluster.cluster_id:04x}"
 
     @functools.cached_property
     def unique_id(self) -> str:

@@ -24,7 +24,7 @@ from zha.application.platforms import (
     DEFAULT_UPDATE_GROUP_FROM_CHILD_DELAY,
     BaseEntity,
     BaseEntityInfo,
-    ClusterHandlerMatch,
+    ClusterMatch,
     GroupEntity,
     PlatformEntity,
     PlatformFeatureGroup,
@@ -752,11 +752,9 @@ class Light(BaseClusterHandlerLight, PlatformEntity):
     _REFRESH_INTERVAL = (2700, 4500)
     __polling_interval: int
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_cluster_handlers=frozenset(
-            {CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}
-        ),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}),
         profile_device_types=LIGHT_PROFILE_DEVICE_TYPES,
         feature_priority=(PlatformFeatureGroup.LIGHT_OR_SWITCH_OR_SHADE, 0),
     )
@@ -1042,11 +1040,9 @@ class HueLight(Light):
 
     _REFRESH_INTERVAL = (180, 300)
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_cluster_handlers=frozenset(
-            {CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}
-        ),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}),
         manufacturers=frozenset({"Philips", "Signify Netherlands B.V."}),
         profile_device_types=LIGHT_PROFILE_DEVICE_TYPES,
         # We want this entity to be preferred over the base light
@@ -1060,11 +1056,9 @@ class ForceOnLight(Light):
 
     _FORCE_ON = True
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_cluster_handlers=frozenset(
-            {CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}
-        ),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}),
         manufacturers=frozenset(
             {
                 "Jasco",
@@ -1087,11 +1081,9 @@ class MinTransitionLight(Light):
     # Transitions are counted in 1/10th of a second increments, so this is the smallest
     _DEFAULT_MIN_TRANSITION_TIME = 0.1
 
-    _cluster_handler_match = ClusterHandlerMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_cluster_handlers=frozenset(
-            {CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}
-        ),
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}),
         manufacturers=DEFAULT_MIN_TRANSITION_MANUFACTURERS,
         profile_device_types=LIGHT_PROFILE_DEVICE_TYPES,
         # We want this entity to be preferred over the base light
