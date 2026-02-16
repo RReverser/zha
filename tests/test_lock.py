@@ -1,6 +1,6 @@
 """Test zha lock."""
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import zigpy.profiles.zha
 from zigpy.zcl.clusters import closures, general
@@ -84,6 +84,40 @@ async def test_lock(zha_gateway: Gateway) -> None:
     await zha_gateway.async_block_till_done()
     assert cluster.read_attributes.call_count == 1
     assert entity.state["is_locked"] is True
+
+
+async def test_lock_operation_event_notification_emits_zha_event(
+    zha_gateway: Gateway,
+) -> None:
+    """Test lock operation event notification is emitted via entity command bridge."""
+    zigpy_device = create_mock_zigpy_device(zha_gateway, ZIGPY_LOCK)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    cluster = zigpy_device.endpoints[1].door_lock
+
+    zha_device.emit_zha_event = MagicMock(wraps=zha_device.emit_zha_event)
+    zha_device.emit_zha_event.reset_mock()
+
+    cluster.listener_event(
+        "cluster_command",
+        1,
+        closures.DoorLock.ClientCommandDefs.operation_event_notification.id,
+        [
+            closures.DoorLock.OperationEventSource.RF,
+            closures.DoorLock.OperationEvent.Unlock,
+            0,
+        ],
+    )
+
+    await zha_gateway.async_block_till_done()
+
+    assert zha_device.emit_zha_event.call_count == 1
+    event_data = zha_device.emit_zha_event.call_args[0][0]
+    assert event_data["command"] == "operation_event_notification"
+    assert event_data["args"] == {
+        "source": "RF",
+        "operation": "Unlock",
+        "code_slot": 1,
+    }
 
 
 async def async_lock(

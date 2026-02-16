@@ -21,16 +21,13 @@ from zha.application.platforms import (
     PlatformEntity,
     register_entity,
 )
+from zha.application.platforms.cluster_config import entity_cluster_configs_from_refs
+from zha.application.platforms.cluster_names import CLUSTER_OTA
 from zha.exceptions import ZHAException
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-    CLUSTER_HANDLER_OTA,
-)
+from zha.zigbee.cluster_events import ClusterAttributeUpdatedEvent, ClusterCommandEvent
 from zha.zigbee.endpoint import Endpoint
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
 
 _LOGGER = logging.getLogger(__name__)
@@ -167,7 +164,7 @@ class BaseFirmwareUpdateEntity(PlatformEntity):
         """Flag supported features."""
         return self._attr_supported_features
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
         event: ClusterAttributeUpdatedEvent,
     ) -> None:
@@ -283,23 +280,21 @@ class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
 
     _unique_id_suffix = "firmware_update"
 
-    _cluster_match = ClusterMatch(
-        client_cluster_handlers=frozenset({CLUSTER_HANDLER_OTA})
+    _cluster_match = ClusterMatch(client_clusters=frozenset({CLUSTER_OTA}))
+    _entity_cluster_configs = entity_cluster_configs_from_refs(
+        (CLUSTER_OTA, True),
     )
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Initialize the ZHA update entity."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
-
-        self._ota_cluster_handler: ClusterHandler = self.cluster_handlers[
-            CLUSTER_HANDLER_OTA
-        ]
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._ota_cluster = self.get_cluster(CLUSTER_OTA)
         self._attr_installed_version: str | None = self._get_cluster_version()
         self._compatible_images: OtaImagesResult = OtaImagesResult(
             upgrades=(), downgrades=()
@@ -308,13 +303,16 @@ class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
     def on_add(self) -> None:
         """Call when entity is added."""
         super().on_add()
-
         self.device.device.add_listener(self)
-        self._on_remove_callbacks.append(
-            self._ota_cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
-            )
+        self.subscribe_cluster_attribute_updates(
+            CLUSTER_OTA,
+            self.handle_cluster_attribute_updated,
+            is_client=True,
+        )
+        self.subscribe_cluster_commands(
+            CLUSTER_OTA,
+            self.handle_cluster_command,
+            is_client=True,
         )
         self._on_remove_callbacks.append(
             lambda: self.device.device.remove_listener(self)
@@ -322,10 +320,27 @@ class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
 
     def _get_cluster_version(self) -> str | None:
         """Synchronize current file version with the cluster."""
-        if self._ota_cluster_handler.current_file_version is not None:
-            return f"0x{self._ota_cluster_handler.current_file_version:08x}"
+        current_file_version = self._ota_cluster.get(
+            Ota.AttributeDefs.current_file_version.name
+        )
+        if current_file_version is not None:
+            return f"0x{current_file_version:08x}"
 
         return None
+
+    def handle_cluster_command(self, event: ClusterCommandEvent) -> None:
+        """Handle OTA client cluster commands."""
+        if event.command_id != Ota.ServerCommandDefs.query_next_image.id:
+            return
+
+        if len(event.args) < 4:
+            return
+
+        current_file_version = int(event.args[3])
+        self._ota_cluster.update_attribute(
+            Ota.AttributeDefs.current_file_version.id,
+            current_file_version,
+        )
 
 
 @register_entity(Ota.cluster_id)
@@ -333,22 +348,21 @@ class FirmwareUpdateServerEntity(BaseFirmwareUpdateEntity):
     """Representation of a ZHA firmware update entity."""
 
     _unique_id_suffix = "firmware_update"
-    _cluster_match = ClusterMatch(cluster_handlers=frozenset({CLUSTER_HANDLER_OTA}))
+    _cluster_match = ClusterMatch(clusters=frozenset({CLUSTER_OTA}))
+    _entity_cluster_configs = entity_cluster_configs_from_refs(
+        (CLUSTER_OTA, False),
+    )
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Initialize the ZHA update entity."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
-
-        # Some devices make it a server cluster, not a client cluster...
-        self._ota_cluster_handler: ClusterHandler = self.cluster_handlers[
-            CLUSTER_HANDLER_OTA
-        ]
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._ota_cluster = self.get_cluster(CLUSTER_OTA)
         self._attr_installed_version: str | None = self._get_cluster_version()
         self._compatible_images: OtaImagesResult = OtaImagesResult(
             upgrades=(), downgrades=()
@@ -359,11 +373,9 @@ class FirmwareUpdateServerEntity(BaseFirmwareUpdateEntity):
         super().on_add()
 
         self.device.device.add_listener(self)
-        self._on_remove_callbacks.append(
-            self._ota_cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
-            )
+        self.subscribe_cluster_attribute_updates(
+            CLUSTER_OTA,
+            self.handle_cluster_attribute_updated,
         )
         self._on_remove_callbacks.append(
             lambda: self.device.device.remove_listener(self)
@@ -371,7 +383,10 @@ class FirmwareUpdateServerEntity(BaseFirmwareUpdateEntity):
 
     def _get_cluster_version(self) -> str | None:
         """Synchronize current file version with the cluster."""
-        if self._ota_cluster_handler.current_file_version is not None:
-            return f"0x{self._ota_cluster_handler.current_file_version:08x}"
+        current_file_version = self._ota_cluster.get(
+            Ota.AttributeDefs.current_file_version.name
+        )
+        if current_file_version is not None:
+            return f"0x{current_file_version:08x}"
 
         return None

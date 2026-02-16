@@ -201,6 +201,30 @@ async def test_firmware_update_notification_from_zigpy(zha_gateway: Gateway) -> 
     )
 
 
+async def test_firmware_update_query_next_image_updates_installed_version(
+    zha_gateway: Gateway,
+) -> None:
+    """Test OTA query_next_image command updates installed version via entity bridge."""
+    zigpy_device = zigpy_device_mock(zha_gateway)
+    zha_device, ota_cluster, _fw_image, installed_fw_version = await setup_test_data(
+        zha_gateway, zigpy_device
+    )
+
+    entity = get_entity(zha_device, platform=Platform.UPDATE)
+    assert entity.state[ATTR_INSTALLED_VERSION] == f"0x{installed_fw_version:08x}"
+
+    next_installed_version = installed_fw_version + 5
+    ota_cluster.listener_event(
+        "cluster_command",
+        0x34,
+        general.Ota.ServerCommandDefs.query_next_image.id,
+        [0, zha_device.manufacturer_code, 0x90, next_installed_version, 1],
+    )
+    await zha_gateway.async_block_till_done()
+
+    assert entity.state[ATTR_INSTALLED_VERSION] == f"0x{next_installed_version:08x}"
+
+
 @patch("zigpy.device.AFTER_OTA_ATTR_READ_DELAY", 0.01)
 async def test_firmware_update_success(zha_gateway: Gateway) -> None:
     """Test ZHA update platform - firmware update success."""

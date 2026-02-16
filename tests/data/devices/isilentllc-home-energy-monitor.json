@@ -4009,10 +4009,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 1,
               "cluster": {
                 "id": 0,
@@ -4053,10 +4053,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 1,
               "cluster": {
                 "id": 0,
@@ -4097,10 +4097,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 10,
               "cluster": {
                 "id": 2820,
@@ -4146,10 +4146,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 10,
               "cluster": {
                 "id": 2820,
@@ -4195,10 +4195,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 10,
               "cluster": {
                 "id": 2820,
@@ -4243,10 +4243,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 10,
               "cluster": {
                 "id": 2820,
@@ -4291,10 +4291,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 10,
               "cluster": {
                 "id": 2820,
@@ -4340,10 +4340,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 10,
               "cluster": {
                 "id": 2820,
@@ -4389,10 +4389,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 11,
               "cluster": {
                 "id": 2820,
@@ -4438,10 +4438,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 11,
               "cluster": {
                 "id": 2820,
@@ -4487,10 +4487,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 11,
               "cluster": {
                 "id": 2820,
@@ -4535,10 +4535,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 11,
               "cluster": {
                 "id": 2820,
@@ -4583,10 +4583,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 11,
               "cluster": {
                 "id": 2820,
@@ -4632,10 +4632,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 11,
               "cluster": {
                 "id": 2820,
@@ -4681,10 +4681,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 12,
               "cluster": {
                 "id": 2820,
@@ -4730,10 +4730,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 12,
               "cluster": {
                 "id": 2820,
@@ -4779,10 +4779,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 12,
               "cluster": {
                 "id": 2820,
@@ -4827,10 +4827,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 12,
               "cluster": {
                 "id": 2820,
@@ -4875,10 +4875,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 12,
               "cluster": {
                 "id": 2820,
@@ -4924,10 +4924,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 12,
               "cluster": {
                 "id": 2820,
@@ -4973,10 +4973,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 13,
               "cluster": {
                 "id": 2820,
@@ -5022,10 +5022,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 13,
               "cluster": {
                 "id": 2820,
@@ -5071,10 +5071,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 13,
               "cluster": {
                 "id": 2820,
@@ -5119,10 +5119,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 13,
               "cluster": {
                 "id": 2820,
@@ -5167,10 +5167,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 13,
               "cluster": {
                 "id": 2820,
@@ -5216,10 +5216,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 13,
               "cluster": {
                 "id": 2820,
@@ -5265,10 +5265,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 14,
               "cluster": {
                 "id": 2820,
@@ -5314,10 +5314,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 14,
               "cluster": {
                 "id": 2820,
@@ -5363,10 +5363,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 14,
               "cluster": {
                 "id": 2820,
@@ -5411,10 +5411,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 14,
               "cluster": {
                 "id": 2820,
@@ -5459,10 +5459,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 14,
               "cluster": {
                 "id": 2820,
@@ -5508,10 +5508,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 14,
               "cluster": {
                 "id": 2820,
@@ -5557,10 +5557,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 15,
               "cluster": {
                 "id": 2820,
@@ -5606,10 +5606,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 15,
               "cluster": {
                 "id": 2820,
@@ -5655,10 +5655,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 15,
               "cluster": {
                 "id": 2820,
@@ -5703,10 +5703,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 15,
               "cluster": {
                 "id": 2820,
@@ -5751,10 +5751,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 15,
               "cluster": {
                 "id": 2820,
@@ -5800,10 +5800,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 15,
               "cluster": {
                 "id": 2820,
@@ -5849,10 +5849,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 16,
               "cluster": {
                 "id": 2820,
@@ -5898,10 +5898,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 16,
               "cluster": {
                 "id": 2820,
@@ -5947,10 +5947,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 16,
               "cluster": {
                 "id": 2820,
@@ -5995,10 +5995,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 16,
               "cluster": {
                 "id": 2820,
@@ -6043,10 +6043,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 16,
               "cluster": {
                 "id": 2820,
@@ -6092,10 +6092,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 16,
               "cluster": {
                 "id": 2820,
@@ -6141,10 +6141,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 17,
               "cluster": {
                 "id": 2820,
@@ -6190,10 +6190,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 17,
               "cluster": {
                 "id": 2820,
@@ -6239,10 +6239,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 17,
               "cluster": {
                 "id": 2820,
@@ -6287,10 +6287,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 17,
               "cluster": {
                 "id": 2820,
@@ -6335,10 +6335,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 17,
               "cluster": {
                 "id": 2820,
@@ -6384,10 +6384,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 17,
               "cluster": {
                 "id": 2820,
@@ -6433,10 +6433,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 18,
               "cluster": {
                 "id": 2820,
@@ -6482,10 +6482,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 18,
               "cluster": {
                 "id": 2820,
@@ -6531,10 +6531,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 18,
               "cluster": {
                 "id": 2820,
@@ -6579,10 +6579,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 18,
               "cluster": {
                 "id": 2820,
@@ -6627,10 +6627,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 18,
               "cluster": {
                 "id": 2820,
@@ -6676,10 +6676,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 18,
               "cluster": {
                 "id": 2820,
@@ -6725,10 +6725,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 19,
               "cluster": {
                 "id": 2820,
@@ -6774,10 +6774,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 19,
               "cluster": {
                 "id": 2820,
@@ -6823,10 +6823,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 19,
               "cluster": {
                 "id": 2820,
@@ -6871,10 +6871,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 19,
               "cluster": {
                 "id": 2820,
@@ -6919,10 +6919,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 19,
               "cluster": {
                 "id": 2820,
@@ -6968,10 +6968,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 19,
               "cluster": {
                 "id": 2820,
@@ -7017,10 +7017,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 2,
               "cluster": {
                 "id": 2820,
@@ -7066,10 +7066,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 2,
               "cluster": {
                 "id": 2820,
@@ -7115,10 +7115,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 2,
               "cluster": {
                 "id": 2820,
@@ -7163,10 +7163,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 2,
               "cluster": {
                 "id": 2820,
@@ -7211,10 +7211,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 2,
               "cluster": {
                 "id": 2820,
@@ -7260,10 +7260,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 2,
               "cluster": {
                 "id": 2820,
@@ -7309,10 +7309,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 20,
               "cluster": {
                 "id": 2820,
@@ -7358,10 +7358,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 20,
               "cluster": {
                 "id": 2820,
@@ -7407,10 +7407,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 20,
               "cluster": {
                 "id": 2820,
@@ -7455,10 +7455,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 20,
               "cluster": {
                 "id": 2820,
@@ -7503,10 +7503,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 20,
               "cluster": {
                 "id": 2820,
@@ -7552,10 +7552,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 20,
               "cluster": {
                 "id": 2820,
@@ -7601,10 +7601,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 21,
               "cluster": {
                 "id": 2820,
@@ -7650,10 +7650,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 21,
               "cluster": {
                 "id": 2820,
@@ -7699,10 +7699,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 21,
               "cluster": {
                 "id": 2820,
@@ -7747,10 +7747,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 21,
               "cluster": {
                 "id": 2820,
@@ -7795,10 +7795,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 21,
               "cluster": {
                 "id": 2820,
@@ -7844,10 +7844,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 21,
               "cluster": {
                 "id": 2820,
@@ -7893,10 +7893,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 22,
               "cluster": {
                 "id": 2820,
@@ -7942,10 +7942,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 22,
               "cluster": {
                 "id": 2820,
@@ -7991,10 +7991,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 22,
               "cluster": {
                 "id": 2820,
@@ -8039,10 +8039,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 22,
               "cluster": {
                 "id": 2820,
@@ -8087,10 +8087,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 22,
               "cluster": {
                 "id": 2820,
@@ -8136,10 +8136,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 22,
               "cluster": {
                 "id": 2820,
@@ -8185,10 +8185,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 23,
               "cluster": {
                 "id": 2820,
@@ -8234,10 +8234,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 23,
               "cluster": {
                 "id": 2820,
@@ -8283,10 +8283,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 23,
               "cluster": {
                 "id": 2820,
@@ -8331,10 +8331,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 23,
               "cluster": {
                 "id": 2820,
@@ -8379,10 +8379,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 23,
               "cluster": {
                 "id": 2820,
@@ -8428,10 +8428,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 23,
               "cluster": {
                 "id": 2820,
@@ -8477,10 +8477,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 24,
               "cluster": {
                 "id": 2820,
@@ -8526,10 +8526,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 24,
               "cluster": {
                 "id": 2820,
@@ -8575,10 +8575,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 24,
               "cluster": {
                 "id": 2820,
@@ -8623,10 +8623,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 24,
               "cluster": {
                 "id": 2820,
@@ -8671,10 +8671,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 24,
               "cluster": {
                 "id": 2820,
@@ -8720,10 +8720,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 24,
               "cluster": {
                 "id": 2820,
@@ -8769,10 +8769,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 25,
               "cluster": {
                 "id": 2820,
@@ -8818,10 +8818,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 25,
               "cluster": {
                 "id": 2820,
@@ -8867,10 +8867,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 25,
               "cluster": {
                 "id": 2820,
@@ -8915,10 +8915,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 25,
               "cluster": {
                 "id": 2820,
@@ -8963,10 +8963,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 25,
               "cluster": {
                 "id": 2820,
@@ -9012,10 +9012,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 25,
               "cluster": {
                 "id": 2820,
@@ -9061,10 +9061,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 26,
               "cluster": {
                 "id": 2820,
@@ -9110,10 +9110,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 26,
               "cluster": {
                 "id": 2820,
@@ -9159,10 +9159,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 26,
               "cluster": {
                 "id": 2820,
@@ -9207,10 +9207,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 26,
               "cluster": {
                 "id": 2820,
@@ -9255,10 +9255,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 26,
               "cluster": {
                 "id": 2820,
@@ -9304,10 +9304,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 26,
               "cluster": {
                 "id": 2820,
@@ -9353,10 +9353,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 3,
               "cluster": {
                 "id": 2820,
@@ -9402,10 +9402,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 3,
               "cluster": {
                 "id": 2820,
@@ -9451,10 +9451,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 3,
               "cluster": {
                 "id": 2820,
@@ -9499,10 +9499,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 3,
               "cluster": {
                 "id": 2820,
@@ -9547,10 +9547,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 3,
               "cluster": {
                 "id": 2820,
@@ -9596,10 +9596,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 3,
               "cluster": {
                 "id": 2820,
@@ -9645,10 +9645,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 4,
               "cluster": {
                 "id": 2820,
@@ -9694,10 +9694,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 4,
               "cluster": {
                 "id": 2820,
@@ -9743,10 +9743,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 4,
               "cluster": {
                 "id": 2820,
@@ -9791,10 +9791,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 4,
               "cluster": {
                 "id": 2820,
@@ -9839,10 +9839,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 4,
               "cluster": {
                 "id": 2820,
@@ -9888,10 +9888,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 4,
               "cluster": {
                 "id": 2820,
@@ -9937,10 +9937,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 5,
               "cluster": {
                 "id": 2820,
@@ -9986,10 +9986,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 5,
               "cluster": {
                 "id": 2820,
@@ -10035,10 +10035,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 5,
               "cluster": {
                 "id": 2820,
@@ -10083,10 +10083,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 5,
               "cluster": {
                 "id": 2820,
@@ -10131,10 +10131,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 5,
               "cluster": {
                 "id": 2820,
@@ -10180,10 +10180,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 5,
               "cluster": {
                 "id": 2820,
@@ -10229,10 +10229,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 6,
               "cluster": {
                 "id": 2820,
@@ -10278,10 +10278,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 6,
               "cluster": {
                 "id": 2820,
@@ -10327,10 +10327,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 6,
               "cluster": {
                 "id": 2820,
@@ -10375,10 +10375,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 6,
               "cluster": {
                 "id": 2820,
@@ -10423,10 +10423,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 6,
               "cluster": {
                 "id": 2820,
@@ -10472,10 +10472,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 6,
               "cluster": {
                 "id": 2820,
@@ -10521,10 +10521,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 7,
               "cluster": {
                 "id": 2820,
@@ -10570,10 +10570,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 7,
               "cluster": {
                 "id": 2820,
@@ -10619,10 +10619,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 7,
               "cluster": {
                 "id": 2820,
@@ -10667,10 +10667,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 7,
               "cluster": {
                 "id": 2820,
@@ -10715,10 +10715,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 7,
               "cluster": {
                 "id": 2820,
@@ -10764,10 +10764,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 7,
               "cluster": {
                 "id": 2820,
@@ -10813,10 +10813,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 8,
               "cluster": {
                 "id": 2820,
@@ -10862,10 +10862,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 8,
               "cluster": {
                 "id": 2820,
@@ -10911,10 +10911,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 8,
               "cluster": {
                 "id": 2820,
@@ -10959,10 +10959,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 8,
               "cluster": {
                 "id": 2820,
@@ -11007,10 +11007,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 8,
               "cluster": {
                 "id": 2820,
@@ -11056,10 +11056,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 8,
               "cluster": {
                 "id": 2820,
@@ -11105,10 +11105,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 9,
               "cluster": {
                 "id": 2820,
@@ -11154,10 +11154,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 9,
               "cluster": {
                 "id": 2820,
@@ -11203,10 +11203,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 9,
               "cluster": {
                 "id": 2820,
@@ -11251,10 +11251,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 9,
               "cluster": {
                 "id": 2820,
@@ -11299,10 +11299,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 9,
               "cluster": {
                 "id": 2820,
@@ -11348,10 +11348,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 9,
               "cluster": {
                 "id": 2820,

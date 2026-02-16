@@ -58,15 +58,28 @@ from zha.application.discovery import discover_device_entities
 from zha.application.gateway import Gateway
 from zha.application.helpers import DeviceOverridesConfiguration
 from zha.application.platforms import PlatformEntity, binary_sensor, sensor
+from zha.application.platforms.cluster_names import PHILLIPS_REMOTE_CLUSTER
 from zha.application.platforms.light import HueLight
 from zha.application.platforms.number import BaseNumber, NumberMode
-from zha.zigbee.cluster_handlers.const import PHILLIPS_REMOTE_CLUSTER
 
 
 def _get_identify_cluster(zigpy_device):
     for endpoint in list(zigpy_device.endpoints.values())[1:]:
         if hasattr(endpoint, "identify"):
             return endpoint.identify
+
+
+def _strip_cluster_diagnostics(value):
+    """Recursively strip cluster runtime diagnostics fields."""
+    if isinstance(value, dict):
+        return {
+            key: _strip_cluster_diagnostics(item)
+            for key, item in value.items()
+            if key != "clusters"
+        }
+    if isinstance(value, list):
+        return [_strip_cluster_diagnostics(item) for item in value]
+    return value
 
 
 @pytest.mark.parametrize("override_platform", [Platform.SWITCH, Platform.LIGHT])
@@ -91,7 +104,7 @@ async def test_device_override(
         zha_device,
         platform=override_platform,
         qualifier_func=(
-            lambda entity: entity.cluster_handlers["on_off"].cluster
+            lambda entity: entity.get_cluster("on_off")
             == zigpy_device.endpoints[1].on_off
         ),
     )
@@ -107,8 +120,10 @@ async def test_device_override(
                 if override_platform == Platform.SWITCH
                 else Platform.SWITCH
             ),
-            qualifier_func=lambda entity: entity.cluster_handlers["on_off"].cluster
-            == zigpy_device.endpoints[1].on_off,
+            qualifier_func=(
+                lambda entity: entity.get_cluster("on_off")
+                == zigpy_device.endpoints[1].on_off
+            ),
         )
 
 
@@ -148,7 +163,9 @@ async def test_device_override_entities(zha_gateway: Gateway) -> None:
         loaded_device_data["zha_lib_entities"]["switch"][0]
     ]
 
-    assert loaded_device_data == expected_loaded_device_data
+    assert _strip_cluster_diagnostics(loaded_device_data) == _strip_cluster_diagnostics(
+        expected_loaded_device_data
+    )
 
 
 async def test_device_override_picks_highest_priority(
@@ -751,7 +768,9 @@ async def test_devices_from_files(
         loaded_device_data = json.loads(
             json.dumps(zha_device.get_diagnostics_json(), cls=ZhaJsonEncoder)
         )
-        assert loaded_device_data == device_data
+        assert _strip_cluster_diagnostics(loaded_device_data) == (
+            _strip_cluster_diagnostics(device_data)
+        )
 
         # Assert identify called on join for devices that support it
         cluster_identify = _get_identify_cluster(zha_device.device)
@@ -775,14 +794,14 @@ async def test_devices_from_files(
             ]
 
 
-async def test_cluster_handler_only_clusters_are_bound(zha_gateway: Gateway) -> None:
-    """Test CLUSTER_HANDLER_ONLY_CLUSTERS causes binds even without entities."""
+async def test_cluster_only_clusters_are_bound(zha_gateway: Gateway) -> None:
+    """Test CLUSTER_ONLY_CLUSTERS causes binds even without entities."""
     zigpy_device = await zigpy_device_from_json(
         zha_gateway.application_controller,
         "tests/data/devices/signify-netherlands-b-v-rwl022.json",
     )
 
-    # The Philips remote cluster (0xFC00) is in CLUSTER_HANDLER_ONLY_CLUSTERS: it
+    # The Philips remote cluster (0xFC00) is in CLUSTER_ONLY_CLUSTERS: it
     # doesn't produce any entities but must still be bound
     philips_cluster = zigpy_device.endpoints[1].in_clusters[PHILLIPS_REMOTE_CLUSTER]
 

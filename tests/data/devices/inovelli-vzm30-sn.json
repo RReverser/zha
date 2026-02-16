@@ -781,10 +781,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
+              "generic_id": "cluster_0x0003",
               "endpoint_id": 1,
               "cluster": {
                 "id": 3,
@@ -829,10 +829,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
+              "generic_id": "cluster_0x0006",
               "endpoint_id": 1,
               "cluster": {
                 "id": 6,
@@ -846,7 +846,7 @@
             },
             {
               "class_name": "LevelControlClusterHandler",
-              "generic_id": "cluster_handler_0x0008",
+              "generic_id": "cluster_0x0008",
               "endpoint_id": 1,
               "cluster": {
                 "id": 8,
@@ -912,10 +912,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "LevelControlClusterHandler",
-              "generic_id": "cluster_handler_0x0008",
+              "generic_id": "cluster_0x0008",
               "endpoint_id": 1,
               "cluster": {
                 "id": 8,
@@ -959,10 +959,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "LevelControlClusterHandler",
-              "generic_id": "cluster_handler_0x0008",
+              "generic_id": "cluster_0x0008",
               "endpoint_id": 1,
               "cluster": {
                 "id": 8,
@@ -1006,10 +1006,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "LevelControlClusterHandler",
-              "generic_id": "cluster_handler_0x0008",
+              "generic_id": "cluster_0x0008",
               "endpoint_id": 1,
               "cluster": {
                 "id": 8,
@@ -1053,10 +1053,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "LevelControlClusterHandler",
-              "generic_id": "cluster_handler_0x0008",
+              "generic_id": "cluster_0x0008",
               "endpoint_id": 1,
               "cluster": {
                 "id": 8,
@@ -1102,10 +1102,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
+              "generic_id": "cluster_0x0006",
               "endpoint_id": 1,
               "cluster": {
                 "id": 6,
@@ -1153,10 +1153,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 1,
               "cluster": {
                 "id": 0,
@@ -1197,10 +1197,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 1,
               "cluster": {
                 "id": 0,
@@ -1241,10 +1241,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "MeteringClusterHandler",
-              "generic_id": "cluster_handler_0x0702",
+              "generic_id": "cluster_0x0702",
               "endpoint_id": 1,
               "cluster": {
                 "id": 1794,
@@ -1293,10 +1293,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 1,
               "cluster": {
                 "id": 2820,
@@ -1341,10 +1341,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 1,
               "cluster": {
                 "id": 2820,
@@ -1389,10 +1389,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
+              "generic_id": "cluster_0x0b04",
               "endpoint_id": 1,
               "cluster": {
                 "id": 2820,
@@ -1437,10 +1437,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "InovelliConfigEntityClusterHandler",
-              "generic_id": "cluster_handler_0xfc31",
+              "generic_id": "cluster_0xfc31",
               "endpoint_id": 1,
               "cluster": {
                 "id": 64561,
@@ -1481,10 +1481,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "InovelliConfigEntityClusterHandler",
-              "generic_id": "cluster_handler_0xfc31",
+              "generic_id": "cluster_0xfc31",
               "endpoint_id": 1,
               "cluster": {
                 "id": 64561,
@@ -1525,10 +1525,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TemperatureMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0402",
+              "generic_id": "cluster_0x0402",
               "endpoint_id": 4,
               "cluster": {
                 "id": 1026,
@@ -1569,10 +1569,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "RelativeHumidityClusterHandler",
-              "generic_id": "cluster_handler_0x0405",
+              "generic_id": "cluster_0x0405",
               "endpoint_id": 4,
               "cluster": {
                 "id": 1029,
@@ -1615,10 +1615,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
+              "generic_id": "cluster_0x0019_client",
               "endpoint_id": 1,
               "cluster": {
                 "id": 25,

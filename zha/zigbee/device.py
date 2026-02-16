@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 from collections import defaultdict
 from collections.abc import Callable, Iterable
+import contextlib
 import dataclasses
 from dataclasses import dataclass
 from enum import Enum
@@ -65,8 +66,8 @@ from zha.application.const import (
     UNKNOWN,
     UNKNOWN_MANUFACTURER,
     UNKNOWN_MODEL,
-    ZHA_CLUSTER_HANDLER_CFG_DONE,
-    ZHA_CLUSTER_HANDLER_MSG,
+    ZHA_CLUSTER_CFG_DONE,
+    ZHA_CLUSTER_MSG,
     ZHA_DEVICE_UPDATED_EVENT,
     ZHA_EVENT,
 )
@@ -77,12 +78,16 @@ from zha.application.platforms import (
     EntityStateChangedEvent,
     PlatformEntity,
 )
+from zha.application.platforms.cluster_names import CLUSTER_ZDO
 from zha.application.platforms.update import BaseFirmwareUpdateEntity
 from zha.const import STATE_CHANGED
 from zha.event import EventBase
 from zha.exceptions import ZHAException
 from zha.mixins import LogMixin
-from zha.zigbee.cluster_handlers import ClusterHandler, ZDOClusterHandler
+from zha.zigbee.cluster_io import (
+    get_attribute_value as cluster_get_attribute_value,
+    retryable_cluster_call,
+)
 from zha.zigbee.endpoint import Endpoint
 
 if TYPE_CHECKING:
@@ -150,6 +155,14 @@ class DeviceStatus(Enum):
     INITIALIZED = 2
 
 
+class ZdoLifecycleStatus(Enum):
+    """Status of the endpoint-0 ZDO lifecycle."""
+
+    CREATED = 1
+    CONFIGURED = 2
+    INITIALIZED = 3
+
+
 @dataclass(kw_only=True, frozen=True)
 class ZHAEvent:
     """Event generated when a device wishes to send an arbitrary event."""
@@ -173,13 +186,13 @@ class DeviceFirmwareInfoUpdatedEvent:
 
 
 @dataclass(kw_only=True, frozen=True)
-class ClusterHandlerConfigurationComplete:
-    """Event generated when all cluster handlers are configured."""
+class ClusterConfigurationComplete:
+    """Event generated when all cluster configuration tasks are complete."""
 
     device_ieee: EUI64
     unique_id: str
-    event_type: Final[str] = ZHA_CLUSTER_HANDLER_MSG
-    event: Final[str] = ZHA_CLUSTER_HANDLER_CFG_DONE
+    event_type: Final[str] = ZHA_CLUSTER_MSG
+    event: Final[str] = ZHA_CLUSTER_CFG_DONE
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -284,9 +297,10 @@ class Device(LogMixin, EventBase):
                 f.feature for f in self.quirk_metadata.exposes_features
             )
 
-        self._power_config_ch: ClusterHandler | None = None
-        self._identify_ch: ClusterHandler | None = None
-        self._basic_ch: ClusterHandler | None = None
+        self._power_config_ch: Any | None = None
+        self._identify_ch: Any | None = None
+        self._basic_ch: Any | None = None
+        self._resolved_cluster_cache: dict[tuple[str, bool], Any] = {}
         self._firmware_version: str | None = None
 
         device_options = _gateway.config.config.device_options
@@ -309,9 +323,11 @@ class Device(LogMixin, EventBase):
 
         self._on_remove_callbacks: list[Callable[[], None]] = []
 
-        self._zdo_handler: ZDOClusterHandler = ZDOClusterHandler(self)
-        self._zdo_handler.on_add()
-        self._on_remove_callbacks.append(self._zdo_handler.on_remove)
+        self._zdo_cluster: Any = self.device.endpoints[0]
+        self._zdo_status: ZdoLifecycleStatus = ZdoLifecycleStatus.CREATED
+        self._zdo_unique_id: str = f"{str(self.ieee)}:{self.name}_ZDO"
+        self._zdo_on_add()
+        self._on_remove_callbacks.append(self._zdo_on_remove)
 
         self.status: DeviceStatus = DeviceStatus.CREATED
 
@@ -542,42 +558,77 @@ class Device(LogMixin, EventBase):
             self.debug("Device is not on the network, marking unavailable")
 
     @property
-    def power_configuration_ch(self) -> ClusterHandler | None:
-        """Return power configuration cluster handler."""
+    def power_configuration_ch(self) -> Any | None:
+        """Return the power configuration cluster."""
+        if self._power_config_ch is None:
+            self._power_config_ch = self._resolve_cluster("power")
         return self._power_config_ch
 
     @power_configuration_ch.setter
-    def power_configuration_ch(self, cluster_handler: ClusterHandler) -> None:
-        """Power configuration cluster handler setter."""
+    def power_configuration_ch(self, cluster: Any) -> None:
+        """Set the power configuration cluster once."""
         if self._power_config_ch is None:
-            self._power_config_ch = cluster_handler
+            self._power_config_ch = cluster
 
     @property
-    def basic_ch(self) -> ClusterHandler | None:
-        """Return basic cluster handler."""
+    def basic_ch(self) -> Any | None:
+        """Return the basic cluster."""
+        if self._basic_ch is None:
+            self._basic_ch = self._resolve_cluster("basic")
         return self._basic_ch
 
     @basic_ch.setter
-    def basic_ch(self, cluster_handler: ClusterHandler) -> None:
-        """Set the basic cluster handler."""
+    def basic_ch(self, cluster: Any) -> None:
+        """Set the basic cluster once."""
         if self._basic_ch is None:
-            self._basic_ch = cluster_handler
+            self._basic_ch = cluster
 
     @property
-    def identify_ch(self) -> ClusterHandler | None:
-        """Return power configuration cluster handler."""
+    def identify_ch(self) -> Any | None:
+        """Return the identify cluster."""
+        if self._identify_ch is None:
+            self._identify_ch = self._resolve_cluster("identify")
         return self._identify_ch
 
     @identify_ch.setter
-    def identify_ch(self, cluster_handler: ClusterHandler) -> None:
-        """Power configuration cluster handler setter."""
+    def identify_ch(self, cluster: Any) -> None:
+        """Set the identify cluster once."""
         if self._identify_ch is None:
-            self._identify_ch = cluster_handler
+            self._identify_ch = cluster
 
     @property
-    def zdo_cluster_handler(self) -> ZDOClusterHandler:
-        """Return ZDO cluster handler."""
-        return self._zdo_handler
+    def zdo_cluster(self) -> Any:
+        """Return the ZDO cluster endpoint."""
+        return self._zdo_cluster
+
+    @property
+    def zdo_unique_id(self) -> str:
+        """Return the legacy unique id used for ZDO lifecycle logs/events."""
+        return self._zdo_unique_id
+
+    @property
+    def zdo_status(self) -> ZdoLifecycleStatus:
+        """Return ZDO lifecycle status."""
+        return self._zdo_status
+
+    def _resolve_cluster(
+        self, cluster_name: str, *, is_client: bool = False
+    ) -> Any | None:
+        """Resolve and cache a zigpy cluster by cluster name and direction."""
+        cache_key = (cluster_name, is_client)
+        if cache_key in self._resolved_cluster_cache:
+            return self._resolved_cluster_cache[cache_key]
+
+        for endpoint in self._endpoints.values():
+            with contextlib.suppress(KeyError):
+                cluster, _unique_id = endpoint.resolve_cluster_and_unique_id_for_ref(
+                    cluster_name,
+                    is_client=is_client,
+                )
+                self._resolved_cluster_cache[cache_key] = cluster
+                return cluster
+
+        return None
 
     @property
     def endpoints(self) -> dict[int, Endpoint]:
@@ -684,8 +735,10 @@ class Device(LogMixin, EventBase):
                 self.debug("does not have a mandatory basic cluster")
                 self.update_available(False)
                 return
-            res = await self.basic_ch.get_attribute_value(
-                ATTR_MANUFACTURER, from_cache=False
+            res = await cluster_get_attribute_value(
+                self.basic_ch,
+                ATTR_MANUFACTURER,
+                from_cache=False,
             )
             if res is not None:
                 self._checkins_missed_count = 0
@@ -704,10 +757,10 @@ class Device(LogMixin, EventBase):
         availability_changed = self.available ^ available
         self.available = available
         if availability_changed and available:
-            # reinit cluster handlers then signal entities
+            # reinit clusters then signal entities
             self.debug(
                 "Device availability changed and device became available,"
-                " reinitializing cluster handlers"
+                " reinitializing clusters"
             )
             self._gateway.async_create_task(
                 self._async_became_available(),
@@ -741,6 +794,38 @@ class Device(LogMixin, EventBase):
         await self.async_initialize(False)
         for platform_entity in self._platform_entities.values():
             platform_entity.maybe_emit_state_changed_event()
+
+    def _zdo_on_add(self) -> None:
+        """Attach this device as a listener for endpoint-0 (ZDO) callbacks."""
+        self._zdo_cluster.add_listener(self)
+
+    def _zdo_on_remove(self) -> None:
+        """Detach this device from endpoint-0 (ZDO) callbacks."""
+        with contextlib.suppress(ValueError):
+            self._zdo_cluster.remove_listener(self)
+
+    def device_announce(self, zigpy_device: Any) -> None:
+        """Handle ZDO Device_annce callbacks."""
+        del zigpy_device
+
+    def permit_duration(self, duration: Any) -> None:
+        """Handle permit duration callbacks."""
+        del duration
+
+    async def _async_initialize_zdo(self, from_cache: bool) -> None:
+        """Initialize ZDO lifecycle state."""
+        del from_cache
+        self._zdo_status = ZdoLifecycleStatus.INITIALIZED
+
+    async def _async_configure_zdo(self) -> None:
+        """Configure ZDO lifecycle state."""
+        self._zdo_status = ZdoLifecycleStatus.CONFIGURED
+
+    def _log_zdo(self, level: int, msg: str, *args: Any, **kwargs: Any) -> None:
+        """Log a ZDO-scoped message with the legacy prefix format."""
+        msg = f"[%s:{CLUSTER_ZDO.upper()}](%s): {msg}"
+        args = (self.nwk, self.model) + args
+        _LOGGER.log(level, msg, *args, **kwargs)
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -827,14 +912,14 @@ class Device(LogMixin, EventBase):
     async def async_configure(self) -> None:
         """Configure the device."""
         self.debug("started configuration")
-        await self._zdo_handler.async_configure()
-        self._zdo_handler.debug("'async_configure' stage succeeded")
+        await self._async_configure_zdo()
+        self._log_zdo(logging.DEBUG, "'async_configure' stage succeeded")
 
         if isinstance(self._zigpy_device, zigpy.quirks.BaseCustomDevice):
             self.debug("applying quirks custom device configuration")
             await self._zigpy_device.apply_custom_configuration()
 
-        # Try to add entities to claim the cluster handlers
+        # Try to add entities to claim clusters
         self._discover_new_entities()
 
         await asyncio.gather(
@@ -842,8 +927,8 @@ class Device(LogMixin, EventBase):
         )
 
         self.emit(
-            ZHA_CLUSTER_HANDLER_CFG_DONE,
-            ClusterHandlerConfigurationComplete(
+            ZHA_CLUSTER_CFG_DONE,
+            ClusterConfigurationComplete(
                 device_ieee=self.ieee,
                 unique_id=self.ieee,
             ),
@@ -857,7 +942,8 @@ class Device(LogMixin, EventBase):
             and not self.skip_configuration
         ):
             self._gateway.async_create_task(
-                self.identify_ch.trigger_effect(
+                retryable_cluster_call(
+                    self.identify_ch.trigger_effect,
                     effect_id=Identify.EffectIdentifier.Okay,
                     effect_variant=Identify.EffectVariant.Default,
                 ),
@@ -880,10 +966,7 @@ class Device(LogMixin, EventBase):
             if meta.endpoint_id is not None and entity.endpoint.id != meta.endpoint_id:
                 continue
 
-            if meta.cluster_id is not None and not any(
-                cluster_handler.cluster.cluster_id == meta.cluster_id
-                for cluster_handler in entity.cluster_handlers.values()
-            ):
+            if meta.cluster_id is not None and not entity.has_cluster(meta.cluster_id):
                 continue
 
             if meta.function is not None and not meta.function(entity):
@@ -907,10 +990,9 @@ class Device(LogMixin, EventBase):
             if meta.endpoint_id is not None and entity.endpoint.id != meta.endpoint_id:
                 continue
 
-            if meta.cluster_id is not None and not any(
-                cluster_handler.cluster.cluster_id == meta.cluster_id
-                and cluster_handler.cluster.cluster_type == meta.cluster_type
-                for cluster_handler in entity.cluster_handlers.values()
+            if meta.cluster_id is not None and not entity.has_cluster(
+                meta.cluster_id,
+                meta.cluster_type,
             ):
                 continue
 
@@ -979,13 +1061,13 @@ class Device(LogMixin, EventBase):
             self._pending_entities.append(entity)
 
     async def async_initialize(self, from_cache: bool = False) -> None:
-        """Initialize cluster handlers."""
+        """Initialize clusters."""
         self.debug("started initialization")
 
         self._discover_new_entities()
 
-        await self._zdo_handler.async_initialize(from_cache)
-        self._zdo_handler.debug("'async_initialize' stage succeeded")
+        await self._async_initialize_zdo(from_cache)
+        self._log_zdo(logging.DEBUG, "'async_initialize' stage succeeded")
 
         # We intentionally do not use `gather` here! This is so that if, for example,
         # three `device.async_initialize()`s are spawned, only three concurrent requests
@@ -1550,12 +1632,12 @@ class Device(LogMixin, EventBase):
             self.platform_entities.items()
         ):
             info_object = dataclasses.asdict(platform_entity.info_object)
-            info_object["cluster_handlers"].sort(key=lambda i: i["unique_id"])
+            info_object["clusters"].sort(key=lambda i: i["unique_id"])
             info_object["migrate_unique_ids"] = list(info_object["migrate_unique_ids"])
             info_object["device_ieee"] = str(info_object["device_ieee"])
 
-            for cluster_handler_info in info_object["cluster_handlers"]:
-                cluster_info = cluster_handler_info["cluster"]
+            for cluster_info_obj in info_object["clusters"]:
+                cluster_info = cluster_info_obj["cluster"]
 
                 if cluster_info is not None:
                     cluster_info.pop("commands", None)

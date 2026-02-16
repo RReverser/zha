@@ -270,10 +270,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
+              "generic_id": "cluster_0x0003",
               "endpoint_id": 1,
               "cluster": {
                 "id": 3,
@@ -318,10 +318,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 1,
               "cluster": {
                 "id": 0,
@@ -362,10 +362,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 1,
               "cluster": {
                 "id": 0,
@@ -406,10 +406,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "PowerConfigurationClusterHandler",
-              "generic_id": "cluster_handler_0x0001",
+              "generic_id": "cluster_0x0001",
               "endpoint_id": 1,
               "cluster": {
                 "id": 1,
@@ -458,10 +458,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
+              "generic_id": "cluster_0x0006",
               "endpoint_id": 1,
               "cluster": {
                 "id": 6,

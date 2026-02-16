@@ -36,7 +36,7 @@ from zha.application.platforms.binary_sensor import (
     IASZone,
     Occupancy,
 )
-from zha.zigbee.cluster_handlers.const import SMARTTHINGS_ACCELERATION_CLUSTER
+from zha.application.platforms.cluster_names import SMARTTHINGS_ACCELERATION_CLUSTER
 
 DEVICE_IAS = {
     1: {
@@ -230,15 +230,13 @@ async def test_smarttthings_multi(
     assert entity.PLATFORM == Platform.BINARY_SENSOR
     assert entity.is_on is False
 
-    st_ch = zha_device.endpoints[1].all_cluster_handlers["1:0xfc02"]
-    assert st_ch is not None
+    entity._emit_zha_event = MagicMock(wraps=entity._emit_zha_event)
 
-    st_ch.emit_zha_event = MagicMock(wraps=st_ch.emit_zha_event)
+    cluster = zigpy_device.endpoints[1].accelerometer
+    await send_attributes_report(zha_gateway, cluster, {"x_axis": 120})
 
-    await send_attributes_report(zha_gateway, st_ch.cluster, {"x_axis": 120})
-
-    assert st_ch.emit_zha_event.call_count == 1
-    assert st_ch.emit_zha_event.mock_calls == [
+    assert entity._emit_zha_event.call_count == 1
+    assert entity._emit_zha_event.mock_calls == [
         call(
             "attribute_updated",
             {"attribute_id": 18, "attribute_name": "x_axis", "attribute_value": 120},

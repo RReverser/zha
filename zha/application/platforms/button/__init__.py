@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import functools
-import logging
 from typing import TYPE_CHECKING, Any
 
 from zigpy.quirks.v2 import WriteAttributeButtonMetadata, ZCLCommandButtonMetadata
@@ -21,18 +20,15 @@ from zha.application.platforms import (
     register_entity,
 )
 from zha.application.platforms.button.const import DEFAULT_DURATION, ButtonDeviceClass
-from zha.zigbee.cluster_handlers.const import (
+from zha.application.platforms.cluster_names import (
     AQARA_OPPLE_CLUSTER,
-    CLUSTER_HANDLER_IDENTIFY,
+    CLUSTER_IDENTIFY,
     TUYA_MANUFACTURER_CLUSTER,
 )
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -63,16 +59,17 @@ class Button(PlatformEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ):
         """Initialize button."""
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
         if ENTITY_METADATA in kwargs:
             self._init_from_quirks_metadata(kwargs[ENTITY_METADATA])
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
+        primary_cluster_name = self.get_primary_cluster_name()
+        self._cluster: Any = self.get_cluster(primary_cluster_name)
 
     def _init_from_quirks_metadata(
         self, entity_metadata: ZCLCommandButtonMetadata
@@ -105,7 +102,7 @@ class Button(PlatformEntity):
 
     async def async_press(self) -> None:
         """Send out a update command."""
-        command = getattr(self._cluster_handler, self._command_name)
+        command = getattr(self._cluster, self._command_name)
         arguments = self.args or []
         kwargs = self.kwargs or {}
         await command(*arguments, **kwargs)
@@ -121,9 +118,7 @@ class IdentifyButton(Button):
     _kwargs = {}
     _args = [DEFAULT_DURATION]
 
-    _cluster_match = ClusterMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_IDENTIFY})
-    )
+    _cluster_match = ClusterMatch(clusters=frozenset({CLUSTER_IDENTIFY}))
 
     def is_supported_in_list(self, entities: list[BaseEntity]) -> bool:
         """Check if this button is supported given the list of entities."""
@@ -141,16 +136,17 @@ class WriteAttributeButton(PlatformEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this button."""
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
         if ENTITY_METADATA in kwargs:
             self._init_from_quirks_metadata(kwargs[ENTITY_METADATA])
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
+        primary_cluster_name = self.get_primary_cluster_name()
+        self._cluster: Any = self.get_cluster(primary_cluster_name)
         self.recompute_capabilities()
 
     def _init_from_quirks_metadata(
@@ -172,8 +168,8 @@ class WriteAttributeButton(PlatformEntity):
 
     async def async_press(self) -> None:
         """Write attribute with defined value."""
-        await self._cluster_handler.write_attributes_safe(
-            {self._attribute_name: self._attribute_value}
+        await self.write_cluster_attributes_safe(
+            self._cluster, {self._attribute_name: self._attribute_value}
         )
 
 
@@ -189,7 +185,7 @@ class FrostLockResetButton(WriteAttributeButton):
     _attr_translation_key = "reset_frost_lock"
 
     _cluster_match = ClusterMatch(
-        cluster_handlers=frozenset({"tuya_manufacturer"}),
+        clusters=frozenset({"tuya_manufacturer"}),
         manufacturers=frozenset({"_TZE200_htnnfasr"}),
     )
 
@@ -206,7 +202,7 @@ class NoPresenceStatusResetButton(WriteAttributeButton):
     _attr_translation_key = "reset_no_presence_status"
 
     _cluster_match = ClusterMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+        clusters=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.motion.ac01"}),
     )
 
@@ -221,7 +217,7 @@ class AqaraPetFeederFeedButton(WriteAttributeButton):
     _attr_translation_key = "feed"
 
     _cluster_match = ClusterMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+        clusters=frozenset({"opple_cluster"}),
         models=frozenset({"aqara.feeder.acn001"}),
     )
 
@@ -237,6 +233,6 @@ class AqaraSelfTestButton(WriteAttributeButton):
     _attr_translation_key = "self_test"
 
     _cluster_match = ClusterMatch(
-        cluster_handlers=frozenset({"opple_cluster"}),
+        clusters=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.sensor_smoke.acn03"}),
     )

@@ -535,10 +535,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BinaryInputClusterHandler",
-              "generic_id": "cluster_handler_0x000f",
+              "generic_id": "cluster_0x000f",
               "endpoint_id": 112,
               "cluster": {
                 "id": 15,
@@ -578,10 +578,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BinaryInputClusterHandler",
-              "generic_id": "cluster_handler_0x000f",
+              "generic_id": "cluster_0x000f",
               "endpoint_id": 113,
               "cluster": {
                 "id": 15,
@@ -621,10 +621,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BinaryInputClusterHandler",
-              "generic_id": "cluster_handler_0x000f",
+              "generic_id": "cluster_0x000f",
               "endpoint_id": 114,
               "cluster": {
                 "id": 15,
@@ -664,10 +664,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BinaryInputClusterHandler",
-              "generic_id": "cluster_handler_0x000f",
+              "generic_id": "cluster_0x000f",
               "endpoint_id": 115,
               "cluster": {
                 "id": 15,
@@ -709,10 +709,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
+              "generic_id": "cluster_0x0003",
               "endpoint_id": 112,
               "cluster": {
                 "id": 3,
@@ -757,10 +757,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 112,
               "cluster": {
                 "id": 0,
@@ -801,10 +801,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 112,
               "cluster": {
                 "id": 0,
@@ -847,10 +847,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
+              "generic_id": "cluster_0x0006",
               "endpoint_id": 116,
               "cluster": {
                 "id": 6,
@@ -889,10 +889,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
+              "generic_id": "cluster_0x0006",
               "endpoint_id": 117,
               "cluster": {
                 "id": 6,
@@ -933,10 +933,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
+              "generic_id": "cluster_0x0019_client",
               "endpoint_id": 112,
               "cluster": {
                 "id": 25,

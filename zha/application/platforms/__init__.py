@@ -5,29 +5,46 @@ from __future__ import annotations
 from abc import abstractmethod
 import asyncio
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from contextlib import suppress
 import dataclasses
 from enum import StrEnum
+import functools
 from functools import cached_property
 import logging
-from typing import TYPE_CHECKING, Any, Final, Literal, final
+from typing import TYPE_CHECKING, Any, Final, Literal, cast, final
 
 from zigpy.profiles import zha, zll
 from zigpy.quirks.v2 import EntityMetadata, EntityType
 from zigpy.types import ClusterId
 from zigpy.types.named import EUI64
+from zigpy.typing import UNDEFINED, UndefinedType
+from zigpy.zcl import (
+    AttributeReadEvent,
+    AttributeReportedEvent,
+    AttributeUpdatedEvent,
+    AttributeWrittenEvent,
+)
 
 from zha.application import Platform
 from zha.application.const import UniqueIdMigration
+from zha.application.platforms.cluster_config import (
+    EntityClusterConfig,
+    entity_cluster_configs_from_refs,
+)
 from zha.const import STATE_CHANGED
 from zha.debounce import Debouncer
 from zha.event import EventBase
 from zha.mixins import LogMixin
-from zha.zigbee.cluster_handlers import ClusterHandlerInfo
+from zha.zigbee.cluster_events import ClusterAttributeUpdatedEvent, ClusterCommandEvent
+from zha.zigbee.cluster_io import (
+    get_attribute_value as cluster_get_attribute_value,
+    get_attributes as cluster_get_attributes,
+    retryable_cluster_call,
+    write_attributes_safe as cluster_write_attributes_safe,
+)
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
     from zha.zigbee.group import Group
@@ -39,6 +56,16 @@ DEFAULT_UPDATE_GROUP_FROM_CHILD_DELAY: float = 0.5
 
 ENTITY_REGISTRY: dict[ClusterId, list[type[PlatformEntity]]] = defaultdict(list)
 GROUP_ENTITY_REGISTRY: list[type[GroupEntity]] = []
+
+
+@dataclasses.dataclass(slots=True)
+class _ClusterCompatView:
+    """Lightweight cluster metadata view for entity compatibility paths."""
+
+    name: str
+    cluster: Any
+    unique_id: str
+    id: str
 
 
 class PlatformFeatureGroup(StrEnum):
@@ -67,18 +94,18 @@ class PlatformFeatureGroup(StrEnum):
     LOCAL_TEMPERATURE_CALIBRATION = "local_temperature_calibration"
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True, init=False)
 class ClusterMatch:
     """Declares cluster requirements for an entity class."""
 
-    cluster_handlers: frozenset[str] = frozenset()
-    client_cluster_handlers: frozenset[str] = frozenset()
-    optional_cluster_handlers: frozenset[str] = frozenset()
+    clusters: frozenset[str]
+    client_clusters: frozenset[str]
+    optional_clusters: frozenset[str]
 
     # Strict filters: if present, device info must match
-    manufacturers: frozenset[str] | None = None
-    models: frozenset[str] | None = None
-    exposed_features: frozenset[str] | None = None
+    manufacturers: frozenset[str] | None
+    models: frozenset[str] | None
+    exposed_features: frozenset[str] | None
 
     # If present, device must match one of the given profile and device type combinations.
     # This will be ignored if `platform_override` is used.
@@ -89,7 +116,7 @@ class ClusterMatch:
             | tuple[int, int]
         ]
         | None
-    ) = None
+    )
     not_profile_device_types: (  # type:ignore[valid-type]
         frozenset[
             tuple[Literal[zha.PROFILE_ID], zha.DeviceType]
@@ -97,35 +124,56 @@ class ClusterMatch:
             | tuple[int, int]
         ]
         | None
-    ) = None
+    )
 
     # For a given feature, only entities with the highest priority will be considered
-    feature_priority: tuple[PlatformFeatureGroup, int] | None = None
+    feature_priority: tuple[PlatformFeatureGroup, int] | None
 
-    @property
-    def clusters(self) -> frozenset[str]:
-        """Alias for server cluster requirements."""
-        return self.cluster_handlers
-
-    @property
-    def client_clusters(self) -> frozenset[str]:
-        """Alias for client cluster requirements."""
-        return self.client_cluster_handlers
-
-    @property
-    def optional_clusters(self) -> frozenset[str]:
-        """Alias for optional server cluster requirements."""
-        return self.optional_cluster_handlers
-
-
-# Backwards-compat alias while entity modules migrate to `_cluster_match`.
-ClusterHandlerMatch = ClusterMatch
+    def __init__(
+        self,
+        *,
+        clusters: frozenset[str] = frozenset(),
+        client_clusters: frozenset[str] = frozenset(),
+        optional_clusters: frozenset[str] = frozenset(),
+        manufacturers: frozenset[str] | None = None,
+        models: frozenset[str] | None = None,
+        exposed_features: frozenset[str] | None = None,
+        profile_device_types: (  # type:ignore[valid-type]
+            frozenset[
+                tuple[Literal[zha.PROFILE_ID], zha.DeviceType]
+                | tuple[Literal[zll.PROFILE_ID], zll.DeviceType]
+                | tuple[int, int]
+            ]
+            | None
+        ) = None,
+        not_profile_device_types: (  # type:ignore[valid-type]
+            frozenset[
+                tuple[Literal[zha.PROFILE_ID], zha.DeviceType]
+                | tuple[Literal[zll.PROFILE_ID], zll.DeviceType]
+                | tuple[int, int]
+            ]
+            | None
+        ) = None,
+        feature_priority: tuple[PlatformFeatureGroup, int] | None = None,
+    ) -> None:
+        """Initialize cluster match criteria."""
+        object.__setattr__(self, "clusters", clusters)
+        object.__setattr__(self, "client_clusters", client_clusters)
+        object.__setattr__(self, "optional_clusters", optional_clusters)
+        object.__setattr__(self, "manufacturers", manufacturers)
+        object.__setattr__(self, "models", models)
+        object.__setattr__(self, "exposed_features", exposed_features)
+        object.__setattr__(self, "profile_device_types", profile_device_types)
+        object.__setattr__(self, "not_profile_device_types", not_profile_device_types)
+        object.__setattr__(self, "feature_priority", feature_priority)
 
 
 def register_entity[T: type[PlatformEntity]](cluster_id: ClusterId) -> Callable[[T], T]:
     """Register an entity class for discovery."""
 
     def inner(cls: T) -> T:
+        if hasattr(cls, "_ensure_entity_cluster_configs"):
+            cls._ensure_entity_cluster_configs()
         ENTITY_REGISTRY[cluster_id].append(cls)
         return cls
 
@@ -168,7 +216,7 @@ class BaseEntityInfo:
     primary: bool
 
     # For platform entities
-    cluster_handlers: list[ClusterHandlerInfo]
+    clusters: list[Any]
     device_ieee: EUI64 | None
     endpoint_id: int | None
     available: bool | None
@@ -376,7 +424,7 @@ class BaseEntity(LogMixin, EventBase):
             enabled=self.enabled,
             primary=self.primary,
             # Set by platform entities
-            cluster_handlers=[],
+            clusters=[],
             device_ieee=None,
             endpoint_id=None,
             available=None,
@@ -452,21 +500,114 @@ class PlatformEntity(BaseEntity):
     """Class that represents an entity for a device platform."""
 
     # suffix to add to the unique_id of the entity. Used for multi
-    # entities using the same cluster handler/cluster id for the entity.
+    # entities using the same primary cluster/cluster id for the entity.
     _unique_id_suffix: str | None = None
 
     _migrate_platform_unique_ids: tuple[tuple[UniqueIdMigration, str]] | None = None
 
     # Auto-discovery for the entity
     _cluster_match: ClusterMatch | None = None
-    _cluster_handler_match: ClusterMatch | None = None
+
+    # Optional entity-owned cluster config overrides keyed by cluster name.
+    _entity_cluster_configs: (
+        dict[str | tuple[str, bool], EntityClusterConfig] | None
+    ) = None
+
+    @classmethod
+    def _default_entity_cluster_refs(cls) -> tuple[tuple[str, bool], ...]:
+        """Return ordered cluster refs derived from class match metadata."""
+        match = cls.get_cluster_match()
+        if match is None:
+            return ()
+
+        server_clusters = tuple(sorted(match.clusters | match.optional_clusters))
+        client_clusters = tuple(sorted(match.client_clusters))
+        return (
+            *((cluster_name, False) for cluster_name in server_clusters),
+            *((cluster_name, True) for cluster_name in client_clusters),
+        )
+
+    @classmethod
+    def _ensure_entity_cluster_configs(
+        cls,
+    ) -> dict[str | tuple[str, bool], EntityClusterConfig]:
+        """Ensure class-level entity config metadata exists."""
+        if cls._entity_cluster_configs is not None:
+            return cls._entity_cluster_configs
+
+        auto_configs = entity_cluster_configs_from_refs(
+            *cls._default_entity_cluster_refs()
+        )
+        cls._entity_cluster_configs = auto_configs
+        return auto_configs
+
+    @staticmethod
+    def _cluster_names_from_refs(
+        cluster_refs: Sequence[tuple[str, bool]],
+    ) -> tuple[str, ...]:
+        """Return ordered cluster names from name/direction refs."""
+        return tuple(name for name, _is_client in cluster_refs)
+
+    @classmethod
+    def _default_match_cluster_names(cls) -> tuple[str, ...]:
+        """Return required cluster names declared by the class match."""
+        match = cls.get_cluster_match()
+        if match is None:
+            return ()
+        return tuple(sorted(match.clusters | match.client_clusters))
+
+    @classmethod
+    def resolve_primary_cluster_name(
+        cls,
+        clusters: list[Any],
+        cluster_refs: Sequence[tuple[str, bool]] | None = None,
+        cluster_names: Sequence[str] | None = None,
+    ) -> str:
+        """Resolve a primary cluster name from provided clusters or class match."""
+        if clusters:
+            return clusters[0].name
+        if cluster_refs:
+            return cluster_refs[0][0]
+        if cluster_names:
+            return cluster_names[0]
+
+        cluster_names = cls._default_match_cluster_names()
+        if len(cluster_names) == 1:
+            return cluster_names[0]
+
+        raise ValueError(
+            f"{cls.__name__} cannot infer a primary cluster name from match: "
+            f"{cluster_names!r}"
+        )
+
+    @classmethod
+    def resolve_primary_cluster_id(
+        cls,
+        endpoint: Endpoint,
+        clusters: list[Any],
+        cluster_refs: Sequence[tuple[str, bool]] | None = None,
+        cluster_names: Sequence[str] | None = None,
+    ) -> int:
+        """Resolve a primary cluster id from provided clusters or endpoint lookup."""
+        if clusters:
+            return int(clusters[0].cluster_id)
+
+        cluster_name = cls.resolve_primary_cluster_name(
+            clusters,
+            cluster_refs,
+            cluster_names,
+        )
+        cluster, _unique_id = endpoint.resolve_cluster_and_unique_id(cluster_name)
+        return int(cluster.cluster_id)
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         *,
+        cluster_refs: Sequence[tuple[str, bool]] | None = None,
+        cluster_names: Sequence[str] | None = None,
         entity_metadata: EntityMetadata | None = None,
         legacy_discovery_unique_id: str | None = None,
         **kwargs: Any,
@@ -476,8 +617,14 @@ class PlatformEntity(BaseEntity):
             self._init_from_quirks_metadata(entity_metadata)
 
         if legacy_discovery_unique_id is None:
+            primary_cluster_id = type(self).resolve_primary_cluster_id(
+                endpoint,
+                clusters,
+                cluster_refs,
+                cluster_names,
+            )
             legacy_discovery_unique_id = (
-                f"{device.ieee}-{endpoint.id}-{cluster_handlers[0].cluster.cluster_id}"
+                f"{device.ieee}-{endpoint.id}-{primary_cluster_id}"
             )
 
         if self._unique_id_suffix is not None:
@@ -487,19 +634,396 @@ class PlatformEntity(BaseEntity):
 
         super().__init__(unique_id=unique_id, **kwargs)
 
-        self._cluster_handlers: list[ClusterHandler] = cluster_handlers
-        self.cluster_handlers: dict[str, ClusterHandler] = {}
-
-        for cluster_handler in cluster_handlers:
-            self.cluster_handlers[cluster_handler.name] = cluster_handler
-
+        resolved_cluster_names: tuple[str, ...]
+        if clusters:
+            resolved_cluster_names = tuple(cluster_obj.name for cluster_obj in clusters)
+        elif cluster_refs:
+            resolved_cluster_names = type(self)._cluster_names_from_refs(cluster_refs)
+        elif cluster_names:
+            resolved_cluster_names = tuple(cluster_names)
+        else:
+            resolved_cluster_names = type(self)._default_match_cluster_names()
+        self._cluster_names = resolved_cluster_names
+        self._cluster_refs = tuple(cluster_refs) if cluster_refs else ()
         self._device: Device = device
         self._endpoint = endpoint
+
+        self._cluster_helpers = list(clusters)
+        self._clusters_by_name: dict[str, Any] = {}
+        self._resolved_clusters: dict[tuple[str, bool | None], tuple[Any, str]] = {}
+
+        for cluster_obj in self._cluster_helpers:
+            self._clusters_by_name[cluster_obj.name] = cluster_obj
+
+        if self._cluster_refs:
+            self._populate_cluster_compat_from_refs()
+
+    def _populate_cluster_compat_from_refs(self) -> None:
+        """Backfill cluster-name map from refs for compatibility consumers."""
+        for cluster_name, is_client in self._cluster_refs:
+            if cluster_name in self._clusters_by_name:
+                continue
+            with suppress(KeyError):
+                cluster, unique_id = self.resolve_cluster_and_unique_id(
+                    cluster_name,
+                    is_client=is_client,
+                )
+                self._remember_cluster_resolution(cluster, unique_id)
+                self._ensure_cluster_helpers(cluster, unique_id)
+                runtime_id = (
+                    f"{self.endpoint.id}:0x{int(cluster.cluster_id):04x}_client"
+                    if cluster.is_client
+                    else f"{self.endpoint.id}:0x{int(cluster.cluster_id):04x}"
+                )
+                self._clusters_by_name[cluster_name] = _ClusterCompatView(
+                    name=cluster_name,
+                    cluster=cluster,
+                    unique_id=unique_id,
+                    id=runtime_id,
+                )
 
     @classmethod
     def get_cluster_match(cls) -> ClusterMatch | None:
         """Return the entity cluster match declaration."""
-        return cls._cluster_match or cls._cluster_handler_match
+        return cls._cluster_match
+
+    @classmethod
+    def get_entity_cluster_config(
+        cls,
+        cluster_name: str,
+        *,
+        is_client: bool | None = None,
+    ) -> EntityClusterConfig | None:
+        """Return entity-owned cluster config override for a cluster name."""
+        if configs := cls._ensure_entity_cluster_configs():
+            if is_client is not None:
+                directional = configs.get((cluster_name, is_client))
+                if directional is not None:
+                    return directional
+            if config := configs.get(cluster_name):
+                return config
+        return None
+
+    def get_primary_cluster_name(self) -> str:
+        """Return the primary cluster name for this entity."""
+        return type(self).resolve_primary_cluster_name(
+            self._cluster_helpers,
+            self._cluster_refs,
+            self._cluster_names,
+        )
+
+    def has_cluster(self, cluster_id: int, cluster_type: Any | None = None) -> bool:
+        """Return True if this entity references a matching cluster."""
+        for cluster_compat in self._clusters_by_name.values():
+            cluster = cluster_compat.cluster
+            if cluster.cluster_id != cluster_id:
+                continue
+            if cluster_type is None or cluster.cluster_type == cluster_type:
+                return True
+
+        for cluster_name, is_client in self._iter_cluster_ref_sequence():
+            with suppress(KeyError):
+                cluster, _unique_id = self.resolve_cluster_and_unique_id(
+                    cluster_name,
+                    is_client=is_client,
+                )
+                if cluster.cluster_id != cluster_id:
+                    continue
+                if cluster_type is None or cluster.cluster_type == cluster_type:
+                    return True
+
+        return False
+
+    def get_cluster(
+        self,
+        cluster_name: str,
+        *,
+        is_client: bool | None = None,
+    ) -> Any:
+        """Return a resolved zigpy cluster by cluster name."""
+        selected_direction = self._resolve_cluster_direction(
+            cluster_name,
+            requested_direction=is_client,
+        )
+
+        cluster, unique_id = self._resolve_cluster(cluster_name, selected_direction)
+        self._remember_cluster_resolution(cluster, unique_id)
+        self._ensure_cluster_helpers(cluster, unique_id)
+        return cluster
+
+    def _resolve_cluster_direction(
+        self,
+        cluster_name: str,
+        *,
+        requested_direction: bool | None = None,
+    ) -> bool | None:
+        """Resolve cluster direction preference for a named cluster reference."""
+        selected_direction = requested_direction
+        if selected_direction is not None:
+            return selected_direction
+
+        matching_refs = [
+            ref_is_client
+            for ref_name, ref_is_client in self._cluster_refs
+            if ref_name == cluster_name
+        ]
+        if matching_refs:
+            # Preserve declaration order when a name appears in both directions.
+            return matching_refs[0]
+
+        return None
+
+    def _resolve_cluster(
+        self, cluster_name: str, selected_direction: bool | None
+    ) -> tuple[Any, str]:
+        """Resolve and cache a cluster by name and direction."""
+        cache_key = (cluster_name, selected_direction)
+        if cache_key in self._resolved_clusters:
+            return self._resolved_clusters[cache_key]
+
+        cluster, unique_id = self.resolve_cluster_and_unique_id(
+            cluster_name,
+            is_client=selected_direction,
+        )
+        self._resolved_clusters[cache_key] = (cluster, unique_id)
+        return cluster, unique_id
+
+    def _remember_cluster_resolution(self, cluster: Any, unique_id: str) -> None:
+        """Track resolved cluster unique ids for event payload parity."""
+        cluster_name = cluster.ep_attribute or f"cluster_0x{cluster.cluster_id:04x}"
+        self._resolved_clusters.setdefault(
+            (cluster_name, cluster.is_client),
+            (cluster, unique_id),
+        )
+
+    def _ensure_cluster_helpers(self, cluster: Any, unique_id: str) -> None:
+        """Attach helper attrs used by legacy entity code paths."""
+        setattr(cluster, "unique_id", unique_id)
+        setattr(cluster, "data_cache", self.get_cluster_data_cache(cluster))
+        if not hasattr(cluster, "get_attribute_value"):
+            setattr(
+                cluster,
+                "get_attribute_value",
+                functools.partial(cluster_get_attribute_value, cluster),
+            )
+        if not hasattr(cluster, "get_attributes"):
+            setattr(
+                cluster,
+                "get_attributes",
+                functools.partial(cluster_get_attributes, cluster),
+            )
+        if not hasattr(cluster, "write_attributes_safe"):
+            setattr(
+                cluster,
+                "write_attributes_safe",
+                functools.partial(cluster_write_attributes_safe, cluster),
+            )
+        wrapped_commands: set[str] = getattr(
+            cluster, "_zha_retry_wrapped_commands", set()
+        )
+        for command_map_name in ("client_commands", "server_commands"):
+            command_map = getattr(cluster, command_map_name, None)
+            if not isinstance(command_map, dict):
+                continue
+            for command_def in command_map.values():
+                command_name = getattr(command_def, "name", None)
+                if not command_name or command_name in wrapped_commands:
+                    continue
+                command = getattr(cluster, command_name, None)
+                if not callable(command):
+                    continue
+                command_callable = cast(Callable[..., Any], command)
+
+                async def _wrapped_command(
+                    *args: Any,
+                    __command: Callable[..., Any] = command_callable,
+                    **kwargs: Any,
+                ) -> Any:
+                    return await retryable_cluster_call(__command, *args, **kwargs)
+
+                setattr(cluster, command_name, _wrapped_command)
+                wrapped_commands.add(command_name)
+        setattr(cluster, "_zha_retry_wrapped_commands", wrapped_commands)
+
+    def get_cluster_unique_id(
+        self,
+        cluster_name: str,
+        *,
+        is_client: bool | None = None,
+    ) -> str:
+        """Return the legacy cluster unique id for a resolved cluster reference."""
+        selected_direction = self._resolve_cluster_direction(
+            cluster_name,
+            requested_direction=is_client,
+        )
+        _cluster, unique_id = self._resolve_cluster(cluster_name, selected_direction)
+        return unique_id
+
+    def get_cluster_unique_id_for_cluster(self, cluster: Any) -> str:
+        """Return the legacy cluster unique id for a cluster object."""
+        for resolved_cluster, unique_id in self._resolved_clusters.values():
+            if resolved_cluster is cluster:
+                return unique_id
+        return self.endpoint.get_legacy_cluster_unique_id(cluster)
+
+    @staticmethod
+    def get_cluster_data_cache(cluster: Any) -> dict[str, Any]:
+        """Return shared per-cluster entity data cache."""
+        shared_cache = getattr(cluster, "_zha_entity_data_cache", None)
+        if shared_cache is None:
+            shared_cache = {}
+            setattr(cluster, "_zha_entity_data_cache", shared_cache)
+        return shared_cache
+
+    async def get_cluster_attribute_value(
+        self,
+        cluster: Any,
+        attribute: int | str,
+        *,
+        from_cache: bool = True,
+    ) -> Any:
+        """Read a single cluster attribute with safe error handling."""
+        return await cluster_get_attribute_value(
+            cluster, attribute, from_cache=from_cache
+        )
+
+    async def get_cluster_attributes(
+        self,
+        cluster: Any,
+        attributes: list[int | str],
+        *,
+        from_cache: bool = True,
+        only_cache: bool = True,
+    ) -> dict[int | str, Any]:
+        """Read multiple cluster attributes with safe error handling."""
+        return await cluster_get_attributes(
+            cluster,
+            attributes,
+            from_cache=from_cache,
+            only_cache=only_cache,
+        )
+
+    async def write_cluster_attributes_safe(
+        self,
+        cluster: Any,
+        attributes: dict[str, Any],
+        *,
+        manufacturer: int | UndefinedType | None = UNDEFINED,
+    ) -> None:
+        """Write attributes and raise `ZHAException` on failures."""
+        await cluster_write_attributes_safe(
+            cluster,
+            attributes,
+            manufacturer=manufacturer,
+        )
+
+    async def call_cluster_method(
+        self,
+        cluster: Any,
+        method_name: str,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Any:
+        """Call a cluster method with retry + transport error wrapping."""
+        method = getattr(cluster, method_name)
+        return await retryable_cluster_call(method, *args, **kwargs)
+
+    def resolve_cluster_and_unique_id(
+        self,
+        cluster_name: str,
+        *,
+        is_client: bool | None = None,
+    ) -> tuple[Any, str]:
+        """Resolve a cluster object and its unique id for an entity cluster name."""
+        selected_direction = self._resolve_cluster_direction(
+            cluster_name,
+            requested_direction=is_client,
+        )
+        if selected_direction is not None:
+            return self.endpoint.resolve_cluster_and_unique_id_for_ref(
+                cluster_name,
+                is_client=selected_direction,
+            )
+        return self.endpoint.resolve_cluster_and_unique_id(cluster_name)
+
+    def subscribe_cluster_attribute_updates(
+        self,
+        cluster_name: str,
+        callback: Callable[[ClusterAttributeUpdatedEvent], None],
+        *,
+        is_client: bool | None = None,
+    ) -> None:
+        """Subscribe directly to zigpy cluster attribute updates for a cluster name."""
+        cluster, unique_id = self.resolve_cluster_and_unique_id(
+            cluster_name,
+            is_client=is_client,
+        )
+        self._remember_cluster_resolution(cluster, unique_id)
+
+        def _forward_event(
+            event: AttributeReadEvent
+            | AttributeReportedEvent
+            | AttributeUpdatedEvent
+            | AttributeWrittenEvent,
+        ) -> None:
+            callback(
+                ClusterAttributeUpdatedEvent(
+                    attribute_id=event.attribute_id,
+                    attribute_name=event.attribute_name,
+                    attribute_value=event.value,
+                    cluster_unique_id=unique_id,
+                    cluster_id=cluster.cluster_id,
+                )
+            )
+
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                cluster.on_event(event_type.event_type, _forward_event)
+            )
+
+    def subscribe_cluster_commands(
+        self,
+        cluster_name: str,
+        callback: Callable[[ClusterCommandEvent], None],
+        *,
+        is_client: bool | None = None,
+    ) -> None:
+        """Subscribe directly to zigpy cluster command callbacks for a cluster name."""
+        cluster, unique_id = self.resolve_cluster_and_unique_id(
+            cluster_name,
+            is_client=is_client,
+        )
+        self._remember_cluster_resolution(cluster, unique_id)
+
+        class _ClusterCommandListener:
+            """Listener bridge for cluster command callbacks."""
+
+            def cluster_command(
+                self, tsn: int, command_id: int, args: list[Any] | None
+            ) -> None:
+                callback(
+                    ClusterCommandEvent(
+                        tsn=tsn,
+                        command_id=command_id,
+                        args=list(args or []),
+                        cluster_unique_id=unique_id,
+                        cluster_id=cluster.cluster_id,
+                    )
+                )
+
+        listener = _ClusterCommandListener()
+        cluster.add_listener(listener)
+
+        def _remove_listener() -> None:
+            with suppress(ValueError):
+                cluster.remove_listener(listener)
+
+        self._on_remove_callbacks.append(_remove_listener)
 
     def _init_from_quirks_metadata(self, entity_metadata: EntityMetadata) -> None:
         """Init this entity from the quirks metadata."""
@@ -556,11 +1080,25 @@ class PlatformEntity(BaseEntity):
         """Return a representation of the platform entity."""
         return dataclasses.replace(
             super().info_object,
-            cluster_handlers=[ch.info_object for ch in self._cluster_handlers],
+            clusters=self._resolve_cluster_info_objects(),
             device_ieee=self._device.ieee,
             endpoint_id=self._endpoint.id,
             available=self.available,
         )
+
+    def _iter_cluster_ref_sequence(self) -> tuple[tuple[str, bool], ...]:
+        """Return ordered cluster refs used by this entity."""
+        if self._cluster_refs:
+            return self._cluster_refs
+        return tuple((cluster_name, False) for cluster_name in self._cluster_names)
+
+    def _resolve_poll_cluster_helpers(self) -> list[Any]:
+        """Return cluster-backed helper objects associated with this entity."""
+        return list(self._cluster_helpers)
+
+    def _resolve_cluster_info_objects(self) -> list[Any]:
+        """Resolve cluster helper info objects for diagnostics compatibility."""
+        return [ch.info_object for ch in self._resolve_poll_cluster_helpers()]
 
     @property
     def device(self) -> Device:
@@ -593,9 +1131,9 @@ class PlatformEntity(BaseEntity):
         """Retrieve latest state."""
         self.debug("polling current state")
         tasks = [
-            cluster_handler.async_update()
-            for cluster_handler in self.cluster_handlers.values()
-            if hasattr(cluster_handler, "async_update")
+            cluster_helper.async_update()
+            for cluster_helper in self._resolve_poll_cluster_helpers()
+            if hasattr(cluster_helper, "async_update")
         ]
         if tasks:
             await asyncio.gather(*tasks)

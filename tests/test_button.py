@@ -36,7 +36,6 @@ from tests.common import (
     update_attribute_cache,
 )
 from zha.application import Platform
-from zha.application.const import ZCL_INIT_ATTRS
 from zha.application.gateway import Gateway
 from zha.application.platforms import EntityCategory, PlatformEntity
 from zha.application.platforms.button import (
@@ -46,7 +45,6 @@ from zha.application.platforms.button import (
 )
 from zha.application.platforms.button.const import ButtonDeviceClass
 from zha.exceptions import ZHAException
-from zha.zigbee.cluster_handlers.manufacturerspecific import OppleRemoteClusterHandler
 from zha.zigbee.device import Device
 
 ZIGPY_DEVICE = {
@@ -374,10 +372,10 @@ class OppleCluster(CustomCluster, ManufacturerSpecificCluster):
         )
 
 
-async def test_cluster_handler_quirks_unnecessary_claiming(
+async def test_cluster_quirks_unnecessary_claiming(
     zha_gateway: Gateway,
 ) -> None:
-    """Test quirks button doesn't claim cluster handlers unnecessarily."""
+    """Test quirks button doesn't claim cluster config unnecessarily."""
 
     registry = DeviceRegistry()
     (
@@ -413,35 +411,27 @@ async def test_cluster_handler_quirks_unnecessary_claiming(
     )
     zigpy_device = registry.get_device(zigpy_device)
 
-    # Suppress normal endpoint probing, as this will claim the Opple cluster handler
-    # already due to it being in the "CLUSTER_HANDLER_ONLY_CLUSTERS" registry.
-    # We want to test the handler also gets claimed via quirks v2 attributes init.
+    # Suppress normal endpoint probing, as this will claim the Opple cluster
+    # already due to it being in the "CLUSTER_ONLY_CLUSTERS" registry.
+    # We want to test the cluster also gets claimed via quirks v2 attributes init.
     with patch("zha.application.discovery.discover_entities_for_endpoint"):
         zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
 
     assert isinstance(zha_device.device, CustomDeviceV2)
 
-    # get cluster handler of OppleCluster
-    opple_ch = zha_device.endpoints[1].all_cluster_handlers["1:0xfcc0"]
-    assert isinstance(opple_ch, OppleRemoteClusterHandler)
+    endpoint = zha_device.endpoints[1]
 
-    # make sure the cluster handler was not claimed,
-    # as no reporting is configured and no attributes are to be read
-    assert opple_ch not in zha_device.endpoints[1].claimed_cluster_handlers.values()
+    # No bind/report/init contribution should claim this cluster.
+    assert not endpoint.is_cluster_claimed(OppleCluster.cluster_id)
 
-    # check that BIND is left at default of True, though ZHA will ignore it
-    assert opple_ch.BIND is True
+    # Default cluster-level config remains unchanged.
+    bind, reporting, init_attrs = endpoint.get_cluster_defaults_by_cluster_id(
+        OppleCluster.cluster_id,
+        is_client=False,
+    )
+    assert bind is True
+    assert reporting == ()
+    assert init_attrs == {}
 
-    # check ZCL_INIT_ATTRS is empty
-    assert opple_ch.ZCL_INIT_ATTRS == {}
-
-    # check that no ZCL_INIT_ATTRS instance variable was created
-    assert opple_ch.__dict__.get(ZCL_INIT_ATTRS) is None
-    assert opple_ch.ZCL_INIT_ATTRS is OppleRemoteClusterHandler.ZCL_INIT_ATTRS
-
-    # double check we didn't modify the class variable
-    assert OppleRemoteClusterHandler.ZCL_INIT_ATTRS == {}
-
-    # check if REPORT_CONFIG is empty, both instance and class variable
-    assert opple_ch.REPORT_CONFIG == ()
-    assert OppleRemoteClusterHandler.REPORT_CONFIG == ()
+    merged = endpoint._cluster_config_merger.merge()  # noqa: SLF001
+    assert all(target.cluster_id != OppleCluster.cluster_id for target in merged)

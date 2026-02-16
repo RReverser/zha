@@ -47,29 +47,8 @@ from zha.application.platforms import (  # noqa: F401 pylint: disable=unused-imp
     switch,
     update,
 )
-from zha.application.platforms.cluster_config import (
-    ClusterConfigContribution,
-    ReportingConfig,
-    cluster_target_from_handler,
-)
-
-# importing cluster handlers updates registries
-from zha.zigbee.cluster_handlers import (  # noqa: F401 pylint: disable=unused-import
-    ClientClusterHandler,
-    ClusterHandler,
-    closures,
-    general,
-    homeautomation,
-    hvac,
-    lighting,
-    lightlink,
-    manufacturerspecific,
-    measurement,
-    protocol,
-    security,
-    smartenergy,
-)
-from zha.zigbee.cluster_handlers.registries import CLUSTER_HANDLER_ONLY_CLUSTERS
+from zha.application.platforms.cluster_config import ReportingConfig
+from zha.zigbee.cluster_metadata import CLUSTER_ONLY_CLUSTERS
 from zha.zigbee.group import Group
 
 if TYPE_CHECKING:
@@ -113,48 +92,6 @@ QUIRKS_ENTITY_META_TO_ENTITY_CLASS = {
     (Platform.NUMBER, NumberMetadata): number.NumberConfigurationEntity,
     (Platform.SWITCH, SwitchMetadata): switch.ConfigurableAttributeSwitch,
 }
-
-
-def _add_cluster_config_contribution(
-    *,
-    endpoint: Endpoint,
-    cluster_handler: ClusterHandler | ClientClusterHandler,
-    source: str,
-    feature_priority: int,
-    explicit_quirk: bool = False,
-    bind_override: bool | None = None,
-    reporting_override: tuple[ReportingConfig, ...] = (),
-    init_attr_override: dict[str, bool] | None = None,
-) -> None:
-    """Add a cluster config contribution for merge/apply at endpoint setup time."""
-    reporting: tuple[ReportingConfig, ...]
-    if explicit_quirk or reporting_override:
-        reporting = reporting_override
-    else:
-        reporting = tuple(
-            ReportingConfig(attribute=cfg["attr"], config=cfg["config"])
-            for cfg in cluster_handler.REPORT_CONFIG
-        )
-
-    if explicit_quirk:
-        init_attrs = dict(init_attr_override or {})
-    else:
-        init_attrs = dict(cluster_handler.ZCL_INIT_ATTRS)
-        if init_attr_override:
-            init_attrs.update(init_attr_override)
-
-    endpoint.add_cluster_config_contribution(
-        ClusterConfigContribution(
-            target=cluster_target_from_handler(cluster_handler),
-            source=source,
-            order=endpoint.next_cluster_config_order(),
-            feature_priority=feature_priority,
-            explicit_quirk=explicit_quirk,
-            bind=cluster_handler.BIND if bind_override is None else bind_override,
-            reporting=reporting,
-            init_attrs=init_attrs,
-        )
-    )
 
 
 def ignore_exceptions_during_iteration[**P, T](
@@ -337,20 +274,25 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
             )
             continue
 
-        if cluster_type is ClusterType.Server:
-            cluster_handler = endpoint.all_cluster_handlers.get(
-                f"{endpoint.id}:0x{cluster.cluster_id:04x}"
+        is_client = cluster_type is ClusterType.Client
+        cluster_name = endpoint.get_cluster_name_by_cluster_id(
+            cluster.cluster_id,
+            is_client=is_client,
+        )
+        if cluster_name is None:
+            _LOGGER.warning(
+                "Device: %s-%s cluster id %s has no resolvable cluster name",
+                str(device.ieee),
+                device.name,
+                cluster.cluster_id,
             )
-        else:
-            cluster_handler = endpoint.client_cluster_handlers.get(
-                f"{endpoint.id}:0x{cluster.cluster_id:04x}_client"
+            continue
+        _bind, _reporting, default_init_attrs = (
+            endpoint.get_cluster_defaults_by_cluster_id(
+                cluster.cluster_id,
+                is_client=is_client,
             )
-
-        assert cluster_handler
-
-        # flags to determine if we need to claim/bind the cluster handler
-        attribute_initialization_found: bool = False
-        reporting_found: bool = False
+        )
 
         for entity_metadata in entity_metadata_list:
             platform = Platform(entity_metadata.entity_platform.value)
@@ -377,9 +319,9 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
                 # TODO: ignore "attribute write buttons"? currently, we claim ch
                 # if the entity has a reporting config, contribute it to endpoint merge
                 if rep_conf := getattr(entity_metadata, "reporting_config", None):
-                    _add_cluster_config_contribution(
-                        endpoint=endpoint,
-                        cluster_handler=cluster_handler,
+                    endpoint.add_cluster_config_for_cluster_id(
+                        cluster_id=cluster.cluster_id,
+                        is_client=is_client,
                         source=f"{entity_class.__name__}:{attr_name}:quirk_reporting",
                         feature_priority=0,
                         explicit_quirk=True,
@@ -390,14 +332,12 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
                             ),
                         ),
                     )
-                    # mark cluster handler for claiming and binding later
-                    reporting_found = True
 
                 # not in REPORT_CONFIG, contribute to init attrs merge
-                elif attr_name not in cluster_handler.ZCL_INIT_ATTRS:
-                    _add_cluster_config_contribution(
-                        endpoint=endpoint,
-                        cluster_handler=cluster_handler,
+                elif attr_name not in default_init_attrs:
+                    endpoint.add_cluster_config_for_cluster_id(
+                        cluster_id=cluster.cluster_id,
+                        is_client=is_client,
                         source=f"{entity_class.__name__}:{attr_name}:quirk_init",
                         feature_priority=0,
                         explicit_quirk=True,
@@ -406,11 +346,10 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
                             attr_name: entity_metadata.attribute_initialized_from_cache
                         },
                     )
-                    # mark cluster handler for claiming later, but not binding
-                    attribute_initialization_found = True
 
             yield entity_class(
-                cluster_handlers=[cluster_handler],
+                clusters=[],
+                cluster_refs=((cluster_name, is_client),),
                 endpoint=endpoint,
                 device=device,
                 entity_metadata=entity_metadata,
@@ -421,18 +360,13 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
                 "'%s' platform -> '%s' using %s",
                 platform,
                 entity_class.__name__,
-                [cluster_handler.name],
+                [cluster_name],
             )
 
-        # if the cluster handler is unclaimed, claim it and set BIND accordingly,
-        # so ZHA configures the cluster handler: reporting + reads attributes
-        if (attribute_initialization_found or reporting_found) and (
-            cluster_handler not in endpoint.claimed_cluster_handlers.values()
-        ):
-            endpoint.claim_cluster_handlers([cluster_handler])
 
-
-def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntity]:
+def discover_entities_for_endpoint(  # noqa: C901
+    endpoint: Endpoint,
+) -> Iterator[PlatformEntity]:
     """Discover entities for an endpoint using the new registry-based discovery."""
     device = endpoint.device
     endpoint.reset_cluster_config_contributions()
@@ -467,13 +401,15 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
             if match is None:
                 continue
 
-            if not match.cluster_handlers.issubset(
-                endpoint.cluster_handlers_by_name.keys()
+            if any(
+                not endpoint.has_server_cluster_name(cluster_name)
+                for cluster_name in match.clusters
             ):
                 continue
 
-            if not match.client_cluster_handlers.issubset(
-                endpoint.client_cluster_handlers_by_name.keys()
+            if any(
+                not endpoint.has_client_cluster_name(cluster_name)
+                for cluster_name in match.client_clusters
             ):
                 continue
 
@@ -568,72 +504,85 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
         matches = matches_by_priority[highest_priority]
 
         for match, entity_class in matches:
-            server_handlers = set(match.cluster_handlers)
+            server_clusters = set(match.clusters)
 
-            for optional in match.optional_cluster_handlers:
-                if optional in endpoint.cluster_handlers_by_name:
-                    server_handlers.add(optional)
+            for optional in match.optional_clusters:
+                if endpoint.has_server_cluster_name(optional):
+                    server_clusters.add(optional)
 
-            client_handlers = set(match.client_cluster_handlers)
-
-            server_cluster_handlers = [
-                endpoint.cluster_handlers_by_name[name] for name in server_handlers
-            ]
-            client_cluster_handlers = [
-                endpoint.client_cluster_handlers_by_name[name]
-                for name in client_handlers
-            ]
-
-            # Claim on endpoint
-            endpoint.claim_cluster_handlers(server_cluster_handlers)
-            endpoint.claim_cluster_handlers(client_cluster_handlers)
+            client_clusters = set(match.client_clusters)
+            ordered_server_clusters = tuple(sorted(server_clusters))
+            ordered_client_clusters = tuple(sorted(client_clusters))
+            cluster_refs = (
+                *((cluster_name, False) for cluster_name in ordered_server_clusters),
+                *((cluster_name, True) for cluster_name in ordered_client_clusters),
+            )
+            claimed_cluster_refs = endpoint.claim_cluster_refs(cluster_refs)
 
             if match.feature_priority is not None:
                 _feature, feature_priority = match.feature_priority
             else:
                 feature_priority = 0
 
-            for cluster_handler in itertools.chain(
-                server_cluster_handlers, client_cluster_handlers
-            ):
-                _add_cluster_config_contribution(
-                    endpoint=endpoint,
-                    cluster_handler=cluster_handler,
+            for cluster_name in ordered_server_clusters:
+                endpoint.add_cluster_config_for_cluster_name(
+                    cluster_name=cluster_name,
+                    is_client=False,
                     source=entity_class.__name__,
                     feature_priority=feature_priority,
+                    entity_cluster_config=entity_class.get_entity_cluster_config(
+                        cluster_name,
+                        is_client=False,
+                    ),
+                )
+
+            for cluster_name in ordered_client_clusters:
+                endpoint.add_cluster_config_for_cluster_name(
+                    cluster_name=cluster_name,
+                    is_client=True,
+                    source=entity_class.__name__,
+                    feature_priority=feature_priority,
+                    entity_cluster_config=entity_class.get_entity_cluster_config(
+                        cluster_name,
+                        is_client=True,
+                    ),
                 )
 
             _LOGGER.debug(
                 "'%s' platform -> '%s' using %s + %s",
                 entity_class.PLATFORM,
                 entity_class.__name__,
-                [ch.name for ch in server_cluster_handlers],
-                [ch.name for ch in client_cluster_handlers],
-            )
-
-            # XXX: Combining server and client cluster handlers should not be done
-            cluster_handlers: list[ClusterHandler | ClientClusterHandler] = (
-                server_cluster_handlers + client_cluster_handlers  # type: ignore[operator]
+                [
+                    cluster_name
+                    for cluster_name, is_client in claimed_cluster_refs
+                    if not is_client
+                ],
+                [
+                    cluster_name
+                    for cluster_name, is_client in claimed_cluster_refs
+                    if is_client
+                ],
             )
 
             yield entity_class(
-                cluster_handlers=cluster_handlers,
+                clusters=[],
+                cluster_refs=claimed_cluster_refs,
                 endpoint=endpoint,
                 device=device,
             )
 
-    # Claim any remaining unclaimed cluster handlers that don't produce entities but
-    # still need to be configured for bare events (bound, reporting set up, etc.)
-    for cluster_handler in endpoint.all_cluster_handlers.values():
-        if (
-            cluster_handler.id not in endpoint.claimed_cluster_handlers
-            and cluster_handler.cluster.cluster_id in CLUSTER_HANDLER_ONLY_CLUSTERS
-        ):
-            _LOGGER.debug("Claiming entityless cluster handler %s", cluster_handler)
-            endpoint.claim_cluster_handlers([cluster_handler])
-            _add_cluster_config_contribution(
-                endpoint=endpoint,
-                cluster_handler=cluster_handler,
-                source=f"entityless:{cluster_handler.name}",
-                feature_priority=0,
-            )
+    # Contribute config for unclaimed entityless clusters that still need configure
+    # operations for bare events (binding/reporting/init).
+    for cluster_id in endpoint.iter_unclaimed_entityless_cluster_ids(
+        CLUSTER_ONLY_CLUSTERS
+    ):
+        cluster_name = endpoint.get_cluster_name_by_cluster_id(cluster_id) or (
+            f"cluster_0x{cluster_id:04x}"
+        )
+        _LOGGER.debug("Configuring entityless cluster %s", cluster_name)
+        endpoint.add_cluster_config_for_cluster_id(
+            cluster_id=cluster_id,
+            is_client=False,
+            source=f"entityless:{cluster_name}",
+            feature_priority=0,
+        )

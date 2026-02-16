@@ -5,24 +5,19 @@ from __future__ import annotations
 from enum import StrEnum
 import functools
 import time
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from zigpy.profiles import zha
 from zigpy.zcl.clusters.general import PowerConfiguration
 
 from zha.application import Platform
 from zha.application.platforms import ClusterMatch, PlatformEntity, register_entity
+from zha.application.platforms.cluster_names import CLUSTER_POWER_CONFIGURATION
 from zha.application.platforms.sensor import Battery
 from zha.decorators import periodic
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-    CLUSTER_HANDLER_POWER_CONFIGURATION,
-)
-from zha.zigbee.cluster_handlers.general import PowerConfigurationClusterHandler
+from zha.zigbee.cluster_events import ClusterAttributeUpdatedEvent
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -52,7 +47,7 @@ class DeviceScannerEntity(PlatformEntity):
     __polling_interval: int
 
     _cluster_match = ClusterMatch(
-        cluster_handlers=frozenset({CLUSTER_HANDLER_POWER_CONFIGURATION}),
+        clusters=frozenset({CLUSTER_POWER_CONFIGURATION}),
         profile_device_types=frozenset(
             {(zha.PROFILE_ID, SMARTTHINGS_ARRIVAL_SENSOR_DEVICE_TYPE)}
         ),
@@ -60,22 +55,18 @@ class DeviceScannerEntity(PlatformEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs,
     ):
         """Initialize the ZHA device tracker."""
         super().__init__(
-            cluster_handlers,
+            clusters,
             endpoint,
             device,
             **kwargs,
             legacy_discovery_unique_id=f"{endpoint.device.ieee}-{endpoint.id}",
-        )
-        self._battery_cluster_handler: PowerConfigurationClusterHandler = cast(
-            PowerConfigurationClusterHandler,
-            self.cluster_handlers[CLUSTER_HANDLER_POWER_CONFIGURATION],
         )
         self._connected: bool = False
         self._keepalive_interval: int = 60
@@ -85,11 +76,9 @@ class DeviceScannerEntity(PlatformEntity):
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._battery_cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
-            )
+        self.subscribe_cluster_attribute_updates(
+            CLUSTER_POWER_CONFIGURATION,
+            self.handle_cluster_attribute_updated,
         )
 
         self._tracked_tasks.append(
@@ -152,7 +141,7 @@ class DeviceScannerEntity(PlatformEntity):
                 self._connected = True
         self.maybe_emit_state_changed_event()
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self, event: ClusterAttributeUpdatedEvent
     ) -> None:
         """Handle tracking."""

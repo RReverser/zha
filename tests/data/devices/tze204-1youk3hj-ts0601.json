@@ -209,10 +209,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OccupancySensingClusterHandler",
-              "generic_id": "cluster_handler_0x0406",
+              "generic_id": "cluster_0x0406",
               "endpoint_id": 1,
               "cluster": {
                 "id": 1030,
@@ -254,10 +254,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -301,10 +301,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -348,10 +348,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -395,10 +395,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -442,10 +442,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -491,10 +491,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -540,10 +540,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 1,
               "cluster": {
                 "id": 0,
@@ -584,10 +584,10 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
+              "generic_id": "cluster_0x0000",
               "endpoint_id": 1,
               "cluster": {
                 "id": 0,
@@ -628,10 +628,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "IlluminanceMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0400",
+              "generic_id": "cluster_0x0400",
               "endpoint_id": 1,
               "cluster": {
                 "id": 1024,
@@ -672,10 +672,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -716,10 +716,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -762,10 +762,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -810,10 +810,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
+              "generic_id": "cluster_0xef00",
               "endpoint_id": 1,
               "cluster": {
                 "id": 61184,
@@ -860,10 +860,10 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
               "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
+              "generic_id": "cluster_0x0019_client",
               "endpoint_id": 1,
               "cluster": {
                 "id": 25,

@@ -19,10 +19,8 @@ from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar
 import voluptuous as vol
 import zigpy.exceptions
 import zigpy.types
-from zigpy.typing import UNDEFINED, UndefinedType
 import zigpy.util
 import zigpy.zcl
-from zigpy.zcl import foundation
 from zigpy.zcl.foundation import CommandSchema
 import zigpy.zdo.types as zdo_types
 
@@ -35,13 +33,12 @@ from zha.application.const import (
 )
 from zha.async_ import gather_with_limited_concurrency
 from zha.decorators import periodic
+from zha.zigbee.cluster_metadata import BINDABLE_CLUSTERS
 
 if TYPE_CHECKING:
     from zha.application.gateway import Gateway
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
 
-_ClusterHandlerT = TypeVar("_ClusterHandlerT", bound="ClusterHandler")
 _T = TypeVar("_T")
 _R = TypeVar("_R")
 _P = ParamSpec("_P")
@@ -64,39 +61,10 @@ class BindingPair:
         )
 
 
-async def safe_read(
-    cluster: zigpy.zcl.Cluster,
-    attributes: list[int | str | foundation.ZCLAttributeDef],
-    allow_cache: bool = True,
-    only_cache: bool = False,
-    manufacturer: int | UndefinedType | None = UNDEFINED,
-):
-    """Swallow all exceptions from network read.
-
-    If we throw during initialization, setup fails. Rather have an entity that
-    exists, but is in a maybe wrong state, than no entity. This method should
-    probably only be used during initialization.
-    """
-    try:
-        result, _ = await cluster.read_attributes(
-            attributes,
-            allow_cache=allow_cache,
-            only_cache=only_cache,
-            manufacturer=manufacturer,
-        )
-        return result
-    except Exception:  # pylint: disable=broad-except
-        return {}
-
-
 async def get_matched_clusters(
     source_zha_device: Device, target_zha_device: Device
 ) -> list[BindingPair]:
     """Get matched input/output cluster pairs for 2 devices."""
-    from zha.zigbee.cluster_handlers.registries import (  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
-        BINDABLE_CLUSTERS,
-    )
-
     source_clusters = source_zha_device.async_get_std_clusters()
     target_clusters = target_zha_device.async_get_std_clusters()
     clusters_to_bind = []
@@ -201,10 +169,6 @@ def convert_to_zcl_values(
 
 def async_is_bindable_target(source_zha_device: Device, target_zha_device: Device):
     """Determine if target is bindable to source."""
-    from zha.zigbee.cluster_handlers.registries import (  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
-        BINDABLE_CLUSTERS,
-    )
-
     if target_zha_device.nwk == 0x0000:
         return True
 
