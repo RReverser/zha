@@ -30,7 +30,11 @@ from zha.application.platforms import (
 )
 from zha.application.platforms.light.const import LIGHT_PROFILE_DEVICE_TYPES
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.cluster_handlers.general import (
+    BinaryOutputClusterHandler,
+    OnOffClusterHandler,
+)
+from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_BASIC,
@@ -48,10 +52,6 @@ from zha.zigbee.cluster_handlers.const import (
     REPORT_CONFIG_IMMEDIATE,
     SINOPE_MANUFACTURER_CLUSTER,
     TUYA_MANUFACTURER_CLUSTER,
-)
-from zha.zigbee.cluster_handlers.general import (
-    BinaryOutputClusterHandler,
-    OnOffClusterHandler,
 )
 from zha.zigbee.group import Group
 

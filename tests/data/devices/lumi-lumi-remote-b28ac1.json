@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:b2:f6:6e:7d",
   "nwk": "0x9CFA",
   "manufacturer": "LUMI",
@@ -252,20 +252,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "ab:cd:ef:12:b2:f6:6e:7d:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b2:f6:6e:7d",
@@ -300,20 +292,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OppleRemoteClusterHandler",
-              "generic_id": "cluster_handler_0xfcc0",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64704,
-                "name": "AqaraRemoteManuSpecificCluster",
-                "type": "server"
-              },
-              "id": "1:0xfcc0",
-              "unique_id": "ab:cd:ef:12:b2:f6:6e:7d:1:0xfcc0",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 64704,
+              "name": "AqaraRemoteManuSpecificCluster",
+              "type": "server",
+              "endpoint_attribute": "opple_cluster"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b2:f6:6e:7d",
@@ -347,20 +331,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OppleRemoteClusterHandler",
-              "generic_id": "cluster_handler_0xfcc0",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64704,
-                "name": "AqaraRemoteManuSpecificCluster",
-                "type": "server"
-              },
-              "id": "1:0xfcc0",
-              "unique_id": "ab:cd:ef:12:b2:f6:6e:7d:1:0xfcc0",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 64704,
+              "name": "AqaraRemoteManuSpecificCluster",
+              "type": "server",
+              "endpoint_attribute": "opple_cluster"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b2:f6:6e:7d",
@@ -396,20 +372,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:b2:f6:6e:7d:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b2:f6:6e:7d",
@@ -440,20 +408,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:b2:f6:6e:7d:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b2:f6:6e:7d",
@@ -484,20 +444,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PowerConfigurationClusterHandler",
-              "generic_id": "cluster_handler_0x0001",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1,
-                "name": "Power Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0001",
-              "unique_id": "ab:cd:ef:12:b2:f6:6e:7d:1:0x0001",
-              "status": "INITIALIZED",
-              "value_attribute": "battery_voltage"
+              "id": 1,
+              "name": "Power Configuration",
+              "type": "server",
+              "endpoint_attribute": "power"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b2:f6:6e:7d",

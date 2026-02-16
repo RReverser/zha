@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "90:35:ea:ff:fe:0d:8a:5e",
   "nwk": "0x767D",
   "manufacturer": "eWeLink",
@@ -212,20 +212,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "90:35:ea:ff:fe:0d:8a:5e:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "90:35:ea:ff:fe:0d:8a:5e",
@@ -260,20 +252,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "90:35:ea:ff:fe:0d:8a:5e:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "90:35:ea:ff:fe:0d:8a:5e",
@@ -304,20 +288,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "90:35:ea:ff:fe:0d:8a:5e:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "90:35:ea:ff:fe:0d:8a:5e",
@@ -348,20 +324,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PowerConfigurationClusterHandler",
-              "generic_id": "cluster_handler_0x0001",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1,
-                "name": "Power Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0001",
-              "unique_id": "90:35:ea:ff:fe:0d:8a:5e:1:0x0001",
-              "status": "INITIALIZED",
-              "value_attribute": "battery_voltage"
+              "id": 1,
+              "name": "Power Configuration",
+              "type": "server",
+              "endpoint_attribute": "power"
             }
           ],
           "device_ieee": "90:35:ea:ff:fe:0d:8a:5e",
@@ -397,20 +365,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TemperatureMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0402",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1026,
-                "name": "Temperature Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0402",
-              "unique_id": "90:35:ea:ff:fe:0d:8a:5e:1:0x0402",
-              "status": "INITIALIZED",
-              "value_attribute": "measured_value"
+              "id": 1026,
+              "name": "Temperature Measurement",
+              "type": "server",
+              "endpoint_attribute": "temperature"
             }
           ],
           "device_ieee": "90:35:ea:ff:fe:0d:8a:5e",
@@ -441,20 +401,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "RelativeHumidityClusterHandler",
-              "generic_id": "cluster_handler_0x0405",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1029,
-                "name": "Relative Humidity Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0405",
-              "unique_id": "90:35:ea:ff:fe:0d:8a:5e:1:0x0405",
-              "status": "INITIALIZED",
-              "value_attribute": "measured_value"
+              "id": 1029,
+              "name": "Relative Humidity Measurement",
+              "type": "server",
+              "endpoint_attribute": "humidity"
             }
           ],
           "device_ieee": "90:35:ea:ff:fe:0d:8a:5e",
@@ -487,20 +439,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "90:35:ea:ff:fe:0d:8a:5e:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "90:35:ea:ff:fe:0d:8a:5e",

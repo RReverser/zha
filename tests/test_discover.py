@@ -65,7 +65,7 @@ from zha.application.platforms import (
 )
 from zha.application.platforms.light import HueLight
 from zha.application.platforms.number import BaseNumber, NumberMode
-from zha.zigbee.cluster_handlers.const import PHILLIPS_REMOTE_CLUSTER
+from zha.zigbee.const import PHILLIPS_REMOTE_CLUSTER
 from zha.zigbee.endpoint import Endpoint
 
 

@@ -68,16 +68,16 @@ from zha.zigbee.cluster_handlers import (
     parse_and_log_command,
     retry_request,
 )
-from zha.zigbee.cluster_handlers.const import (
-    CLUSTER_HANDLER_COLOR,
-    CLUSTER_HANDLER_LEVEL,
-    CLUSTER_HANDLER_ON_OFF,
-)
 from zha.zigbee.cluster_handlers.lighting import ColorClusterHandler
 from zha.zigbee.cluster_handlers.lightlink import LightLinkClusterHandler
 from zha.zigbee.cluster_handlers.registries import (
     CLIENT_CLUSTER_HANDLER_REGISTRY,
     CLUSTER_HANDLER_REGISTRY,
+)
+from zha.zigbee.const import (
+    CLUSTER_HANDLER_COLOR,
+    CLUSTER_HANDLER_LEVEL,
+    CLUSTER_HANDLER_ON_OFF,
 )
 from zha.zigbee.device import Device
 from zha.zigbee.endpoint import Endpoint

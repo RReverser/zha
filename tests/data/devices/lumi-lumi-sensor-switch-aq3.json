@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "00:15:8d:00:02:b0:e5:91",
   "nwk": "0x3E30",
   "manufacturer": "LUMI",
@@ -179,20 +179,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "BasicCluster",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "00:15:8d:00:02:b0:e5:91:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "BasicCluster",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:15:8d:00:02:b0:e5:91",
@@ -223,20 +215,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "BasicCluster",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "00:15:8d:00:02:b0:e5:91:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "BasicCluster",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:15:8d:00:02:b0:e5:91",
@@ -267,20 +251,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PowerConfigurationClusterHandler",
-              "generic_id": "cluster_handler_0x0001",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1,
-                "name": "Power Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0001",
-              "unique_id": "00:15:8d:00:02:b0:e5:91:1:0x0001",
-              "status": "INITIALIZED",
-              "value_attribute": "battery_voltage"
+              "id": 1,
+              "name": "Power Configuration",
+              "type": "server",
+              "endpoint_attribute": "power"
             }
           ],
           "device_ieee": "00:15:8d:00:02:b0:e5:91",
@@ -319,20 +295,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "DeviceTemperatureClusterHandler",
-              "generic_id": "cluster_handler_0x0002",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 2,
-                "name": "Device Temperature",
-                "type": "server"
-              },
-              "id": "1:0x0002",
-              "unique_id": "00:15:8d:00:02:b0:e5:91:1:0x0002",
-              "status": "INITIALIZED",
-              "value_attribute": "current_temperature"
+              "id": 2,
+              "name": "Device Temperature",
+              "type": "server",
+              "endpoint_attribute": "device_temperature"
             }
           ],
           "device_ieee": "00:15:8d:00:02:b0:e5:91",

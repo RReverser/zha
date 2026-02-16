@@ -28,7 +28,7 @@ from zha.application.platforms.number.bacnet import BACNET_UNITS_TO_HA_UNITS
 from zha.application.platforms.number.const import ICONS, NumberDeviceClass, NumberMode
 from zha.units import UnitOfMass, UnitOfTemperature, UnitOfTime
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
     CLUSTER_HANDLER_ANALOG_OUTPUT,
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,

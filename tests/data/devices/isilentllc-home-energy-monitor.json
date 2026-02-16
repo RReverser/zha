@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "00:13:a2:00:41:93:fe:df",
   "nwk": "0x29E5",
   "manufacturer": "iSilentLLC",
@@ -4009,20 +4009,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "00:13:a2:00:41:93:fe:df:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4053,20 +4045,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "00:13:a2:00:41:93:fe:df:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4097,20 +4081,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 10,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "10:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:10:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4146,20 +4122,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 10,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "10:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:10:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4195,20 +4163,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 10,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "10:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:10:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4243,20 +4203,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 10,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "10:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:10:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4291,20 +4243,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 10,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "10:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:10:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4340,20 +4284,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 10,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "10:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:10:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4389,20 +4325,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 11,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "11:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:11:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4438,20 +4366,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 11,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "11:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:11:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4487,20 +4407,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 11,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "11:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:11:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4535,20 +4447,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 11,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "11:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:11:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4583,20 +4487,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 11,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "11:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:11:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4632,20 +4528,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 11,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "11:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:11:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4681,20 +4569,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 12,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "12:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:12:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4730,20 +4610,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 12,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "12:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:12:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4779,20 +4651,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 12,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "12:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:12:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4827,20 +4691,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 12,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "12:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:12:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4875,20 +4731,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 12,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "12:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:12:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4924,20 +4772,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 12,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "12:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:12:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -4973,20 +4813,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 13,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "13:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:13:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5022,20 +4854,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 13,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "13:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:13:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5071,20 +4895,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 13,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "13:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:13:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5119,20 +4935,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 13,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "13:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:13:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5167,20 +4975,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 13,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "13:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:13:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5216,20 +5016,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 13,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "13:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:13:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5265,20 +5057,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 14,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "14:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:14:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5314,20 +5098,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 14,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "14:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:14:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5363,20 +5139,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 14,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "14:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:14:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5411,20 +5179,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 14,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "14:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:14:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5459,20 +5219,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 14,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "14:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:14:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5508,20 +5260,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 14,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "14:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:14:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5557,20 +5301,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 15,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "15:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:15:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5606,20 +5342,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 15,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "15:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:15:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5655,20 +5383,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 15,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "15:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:15:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5703,20 +5423,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 15,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "15:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:15:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5751,20 +5463,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 15,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "15:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:15:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5800,20 +5504,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 15,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "15:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:15:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5849,20 +5545,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 16,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "16:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:16:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5898,20 +5586,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 16,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "16:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:16:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5947,20 +5627,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 16,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "16:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:16:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -5995,20 +5667,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 16,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "16:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:16:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6043,20 +5707,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 16,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "16:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:16:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6092,20 +5748,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 16,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "16:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:16:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6141,20 +5789,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 17,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "17:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:17:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6190,20 +5830,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 17,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "17:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:17:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6239,20 +5871,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 17,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "17:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:17:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6287,20 +5911,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 17,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "17:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:17:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6335,20 +5951,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 17,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "17:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:17:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6384,20 +5992,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 17,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "17:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:17:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6433,20 +6033,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 18,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "18:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:18:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6482,20 +6074,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 18,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "18:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:18:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6531,20 +6115,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 18,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "18:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:18:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6579,20 +6155,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 18,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "18:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:18:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6627,20 +6195,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 18,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "18:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:18:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6676,20 +6236,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 18,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "18:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:18:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6725,20 +6277,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 19,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "19:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:19:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6774,20 +6318,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 19,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "19:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:19:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6823,20 +6359,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 19,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "19:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:19:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6871,20 +6399,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 19,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "19:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:19:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6919,20 +6439,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 19,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "19:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:19:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -6968,20 +6480,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 19,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "19:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:19:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7017,20 +6521,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "2:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:2:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7066,20 +6562,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "2:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:2:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7115,20 +6603,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "2:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:2:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7163,20 +6643,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "2:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:2:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7211,20 +6683,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "2:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:2:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7260,20 +6724,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "2:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:2:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7309,20 +6765,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 20,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "20:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:20:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7358,20 +6806,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 20,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "20:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:20:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7407,20 +6847,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 20,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "20:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:20:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7455,20 +6887,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 20,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "20:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:20:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7503,20 +6927,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 20,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "20:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:20:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7552,20 +6968,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 20,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "20:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:20:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7601,20 +7009,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 21,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "21:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:21:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7650,20 +7050,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 21,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "21:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:21:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7699,20 +7091,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 21,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "21:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:21:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7747,20 +7131,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 21,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "21:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:21:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7795,20 +7171,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 21,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "21:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:21:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7844,20 +7212,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 21,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "21:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:21:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7893,20 +7253,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 22,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "22:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:22:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7942,20 +7294,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 22,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "22:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:22:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -7991,20 +7335,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 22,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "22:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:22:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8039,20 +7375,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 22,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "22:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:22:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8087,20 +7415,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 22,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "22:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:22:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8136,20 +7456,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 22,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "22:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:22:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8185,20 +7497,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 23,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "23:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:23:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8234,20 +7538,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 23,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "23:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:23:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8283,20 +7579,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 23,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "23:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:23:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8331,20 +7619,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 23,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "23:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:23:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8379,20 +7659,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 23,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "23:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:23:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8428,20 +7700,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 23,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "23:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:23:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8477,20 +7741,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 24,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "24:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:24:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8526,20 +7782,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 24,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "24:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:24:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8575,20 +7823,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 24,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "24:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:24:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8623,20 +7863,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 24,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "24:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:24:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8671,20 +7903,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 24,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "24:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:24:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8720,20 +7944,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 24,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "24:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:24:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8769,20 +7985,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 25,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "25:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:25:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8818,20 +8026,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 25,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "25:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:25:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8867,20 +8067,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 25,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "25:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:25:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8915,20 +8107,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 25,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "25:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:25:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -8963,20 +8147,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 25,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "25:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:25:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9012,20 +8188,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 25,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "25:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:25:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9061,20 +8229,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 26,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "26:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:26:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9110,20 +8270,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 26,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "26:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:26:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9159,20 +8311,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 26,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "26:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:26:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9207,20 +8351,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 26,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "26:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:26:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9255,20 +8391,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 26,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "26:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:26:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9304,20 +8432,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 26,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "26:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:26:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9353,20 +8473,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 3,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "3:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:3:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9402,20 +8514,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 3,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "3:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:3:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9451,20 +8555,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 3,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "3:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:3:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9499,20 +8595,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 3,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "3:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:3:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9547,20 +8635,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 3,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "3:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:3:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9596,20 +8676,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 3,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "3:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:3:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9645,20 +8717,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "4:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:4:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9694,20 +8758,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "4:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:4:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9743,20 +8799,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "4:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:4:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9791,20 +8839,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "4:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:4:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9839,20 +8879,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "4:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:4:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9888,20 +8920,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "4:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:4:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9937,20 +8961,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 5,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "5:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:5:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -9986,20 +9002,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 5,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "5:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:5:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10035,20 +9043,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 5,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "5:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:5:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10083,20 +9083,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 5,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "5:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:5:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10131,20 +9123,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 5,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "5:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:5:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10180,20 +9164,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 5,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "5:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:5:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10229,20 +9205,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 6,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "6:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:6:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10278,20 +9246,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 6,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "6:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:6:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10327,20 +9287,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 6,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "6:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:6:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10375,20 +9327,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 6,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "6:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:6:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10423,20 +9367,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 6,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "6:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:6:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10472,20 +9408,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 6,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "6:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:6:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10521,20 +9449,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 7,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "7:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:7:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10570,20 +9490,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 7,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "7:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:7:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10619,20 +9531,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 7,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "7:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:7:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10667,20 +9571,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 7,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "7:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:7:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10715,20 +9611,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 7,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "7:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:7:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10764,20 +9652,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 7,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "7:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:7:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10813,20 +9693,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 8,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "8:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:8:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10862,20 +9734,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 8,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "8:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:8:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10911,20 +9775,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 8,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "8:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:8:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -10959,20 +9815,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 8,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "8:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:8:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -11007,20 +9855,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 8,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "8:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:8:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -11056,20 +9896,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 8,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "8:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:8:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -11105,20 +9937,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 9,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "9:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:9:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -11154,20 +9978,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 9,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "9:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:9:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -11203,20 +10019,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 9,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "9:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:9:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -11251,20 +10059,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 9,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "9:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:9:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -11299,20 +10099,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 9,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "9:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:9:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",
@@ -11348,20 +10140,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 9,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "9:0x0b04",
-              "unique_id": "00:13:a2:00:41:93:fe:df:9:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "00:13:a2:00:41:93:fe:df",

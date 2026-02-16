@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:dd:23:ca:15",
   "nwk": "0xB334",
   "manufacturer": "SONOFF",
@@ -181,20 +181,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OccupancySensingClusterHandler",
-              "generic_id": "cluster_handler_0x0406",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1030,
-                "name": "Occupancy Sensing",
-                "type": "server"
-              },
-              "id": "1:0x0406",
-              "unique_id": "ab:cd:ef:12:dd:23:ca:15:1:0x0406",
-              "status": "INITIALIZED",
-              "value_attribute": "occupancy"
+              "id": 1030,
+              "name": "Occupancy Sensing",
+              "type": "server",
+              "endpoint_attribute": "occupancy"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dd:23:ca:15",
@@ -226,20 +218,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "ab:cd:ef:12:dd:23:ca:15:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dd:23:ca:15",
@@ -274,20 +258,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OccupancySensingClusterHandler",
-              "generic_id": "cluster_handler_0x0406",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1030,
-                "name": "Occupancy Sensing",
-                "type": "server"
-              },
-              "id": "1:0x0406",
-              "unique_id": "ab:cd:ef:12:dd:23:ca:15:1:0x0406",
-              "status": "INITIALIZED",
-              "value_attribute": "occupancy"
+              "id": 1030,
+              "name": "Occupancy Sensing",
+              "type": "server",
+              "endpoint_attribute": "occupancy"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dd:23:ca:15",
@@ -323,20 +299,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OccupancySensingClusterHandler",
-              "generic_id": "cluster_handler_0x0406",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1030,
-                "name": "Occupancy Sensing",
-                "type": "server"
-              },
-              "id": "1:0x0406",
-              "unique_id": "ab:cd:ef:12:dd:23:ca:15:1:0x0406",
-              "status": "INITIALIZED",
-              "value_attribute": "occupancy"
+              "id": 1030,
+              "name": "Occupancy Sensing",
+              "type": "server",
+              "endpoint_attribute": "occupancy"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dd:23:ca:15",
@@ -373,20 +341,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:dd:23:ca:15:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dd:23:ca:15",
@@ -417,20 +377,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:dd:23:ca:15:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dd:23:ca:15",
@@ -461,20 +413,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "SonoffPresenceSenorClusterHandler",
-              "generic_id": "cluster_handler_0xfc11",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64529,
-                "name": "SonoffFC11Cluster",
-                "type": "server"
-              },
-              "id": "1:0xfc11",
-              "unique_id": "ab:cd:ef:12:dd:23:ca:15:1:0xfc11",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 64529,
+              "name": "SonoffFC11Cluster",
+              "type": "server",
+              "endpoint_attribute": "sonoff_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dd:23:ca:15",
@@ -507,20 +451,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "ab:cd:ef:12:dd:23:ca:15:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dd:23:ca:15",

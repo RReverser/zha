@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:28:a4:a4:f2",
   "nwk": "0x8ED4",
   "manufacturer": "Bosch",
@@ -483,20 +483,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -528,20 +520,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -576,20 +560,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -656,20 +632,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -703,20 +671,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -750,20 +710,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -797,20 +749,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "UserInterfaceClusterHandler",
-              "generic_id": "cluster_handler_0x0204",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 516,
-                "name": "Thermostat User Interface Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0204",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0204",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 516,
+              "name": "Thermostat User Interface Configuration",
+              "type": "server",
+              "endpoint_attribute": "thermostat_ui"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -844,20 +788,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "UserInterfaceClusterHandler",
-              "generic_id": "cluster_handler_0x0204",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 516,
-                "name": "Thermostat User Interface Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0204",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0204",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 516,
+              "name": "Thermostat User Interface Configuration",
+              "type": "server",
+              "endpoint_attribute": "thermostat_ui"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -891,20 +827,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -938,20 +866,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -985,20 +905,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1034,20 +946,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "UserInterfaceClusterHandler",
-              "generic_id": "cluster_handler_0x0204",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 516,
-                "name": "Thermostat User Interface Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0204",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0204",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 516,
+              "name": "Thermostat User Interface Configuration",
+              "type": "server",
+              "endpoint_attribute": "thermostat_ui"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1084,20 +988,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1131,20 +1027,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1180,20 +1068,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1228,20 +1108,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1276,20 +1148,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "UserInterfaceClusterHandler",
-              "generic_id": "cluster_handler_0x0204",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 516,
-                "name": "Thermostat User Interface Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0204",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0204",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 516,
+              "name": "Thermostat User Interface Configuration",
+              "type": "server",
+              "endpoint_attribute": "thermostat_ui"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1323,20 +1187,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "UserInterfaceClusterHandler",
-              "generic_id": "cluster_handler_0x0204",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 516,
-                "name": "Thermostat User Interface Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0204",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0204",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 516,
+              "name": "Thermostat User Interface Configuration",
+              "type": "server",
+              "endpoint_attribute": "thermostat_ui"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1373,20 +1229,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1417,20 +1265,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1461,20 +1301,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "RelativeHumidityClusterHandler",
-              "generic_id": "cluster_handler_0x0405",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1029,
-                "name": "Relative Humidity Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0405",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0405",
-              "status": "INITIALIZED",
-              "value_attribute": "measured_value"
+              "id": 1029,
+              "name": "Relative Humidity Measurement",
+              "type": "server",
+              "endpoint_attribute": "humidity"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1505,20 +1337,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1549,20 +1373,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1593,20 +1409,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1637,20 +1445,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1681,20 +1481,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1725,20 +1517,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1769,20 +1553,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1813,20 +1589,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1859,20 +1627,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1907,20 +1667,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ThermostatClusterHandler",
-              "generic_id": "cluster_handler_0x0201",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 513,
-                "name": "BoschThermostatCluster",
-                "type": "server"
-              },
-              "id": "1:0x0201",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0201",
-              "status": "INITIALIZED",
-              "value_attribute": "local_temperature"
+              "id": 513,
+              "name": "BoschThermostatCluster",
+              "type": "server",
+              "endpoint_attribute": "thermostat"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",
@@ -1957,20 +1709,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "ab:cd:ef:12:28:a4:a4:f2:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "ab:cd:ef:12:28:a4:a4:f2",

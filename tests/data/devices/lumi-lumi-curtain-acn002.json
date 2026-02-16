@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:dc:6a:11:ac",
   "nwk": "0x7F3C",
   "manufacturer": "LUMI",
@@ -402,20 +402,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OppleRemoteClusterHandler",
-              "generic_id": "cluster_handler_0xfcc0",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64704,
-                "name": "XiaomiAqaraRollerE1",
-                "type": "server"
-              },
-              "id": "1:0xfcc0",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0xfcc0",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 64704,
+              "name": "XiaomiAqaraRollerE1",
+              "type": "server",
+              "endpoint_attribute": "opple_cluster"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -445,20 +437,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OppleRemoteClusterHandler",
-              "generic_id": "cluster_handler_0xfcc0",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64704,
-                "name": "XiaomiAqaraRollerE1",
-                "type": "server"
-              },
-              "id": "1:0xfcc0",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0xfcc0",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 64704,
+              "name": "XiaomiAqaraRollerE1",
+              "type": "server",
+              "endpoint_attribute": "opple_cluster"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -490,20 +474,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -538,20 +514,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "WindowCoveringClusterHandler",
-              "generic_id": "cluster_handler_0x0102",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 258,
-                "name": "Window Covering",
-                "type": "server"
-              },
-              "id": "1:0x0102",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0102",
-              "status": "INITIALIZED",
-              "value_attribute": "current_position_lift_percentage"
+              "id": 258,
+              "name": "Window Covering",
+              "type": "server",
+              "endpoint_attribute": "window_covering"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -587,20 +555,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OppleRemoteClusterHandler",
-              "generic_id": "cluster_handler_0xfcc0",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64704,
-                "name": "XiaomiAqaraRollerE1",
-                "type": "server"
-              },
-              "id": "1:0xfcc0",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0xfcc0",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 64704,
+              "name": "XiaomiAqaraRollerE1",
+              "type": "server",
+              "endpoint_attribute": "opple_cluster"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -637,20 +597,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "BasicCluster",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "BasicCluster",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -681,20 +633,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "BasicCluster",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "BasicCluster",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -725,20 +669,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PowerConfigurationClusterHandler",
-              "generic_id": "cluster_handler_0x0001",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1,
-                "name": "Power Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0001",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0001",
-              "status": "INITIALIZED",
-              "value_attribute": "battery_voltage"
+              "id": 1,
+              "name": "Power Configuration",
+              "type": "server",
+              "endpoint_attribute": "power"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -776,20 +712,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "DeviceTemperatureClusterHandler",
-              "generic_id": "cluster_handler_0x0002",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 2,
-                "name": "Device Temperature",
-                "type": "server"
-              },
-              "id": "1:0x0002",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0002",
-              "status": "INITIALIZED",
-              "value_attribute": "current_temperature"
+              "id": 2,
+              "name": "Device Temperature",
+              "type": "server",
+              "endpoint_attribute": "device_temperature"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -820,20 +748,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "WindowCoveringClusterHandler",
-              "generic_id": "cluster_handler_0x0102",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 258,
-                "name": "Window Covering",
-                "type": "server"
-              },
-              "id": "1:0x0102",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0102",
-              "status": "INITIALIZED",
-              "value_attribute": "current_position_lift_percentage"
+              "id": 258,
+              "name": "Window Covering",
+              "type": "server",
+              "endpoint_attribute": "window_covering"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -866,20 +786,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "WindowCoveringClusterHandler",
-              "generic_id": "cluster_handler_0x0102",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 258,
-                "name": "Window Covering",
-                "type": "server"
-              },
-              "id": "1:0x0102",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0102",
-              "status": "INITIALIZED",
-              "value_attribute": "current_position_lift_percentage"
+              "id": 258,
+              "name": "Window Covering",
+              "type": "server",
+              "endpoint_attribute": "window_covering"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",
@@ -916,20 +828,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "ab:cd:ef:12:dc:6a:11:ac:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "ab:cd:ef:12:dc:6a:11:ac",

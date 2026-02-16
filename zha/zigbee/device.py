@@ -83,7 +83,7 @@ from zha.event import EventBase
 from zha.exceptions import ZHAException
 from zha.mixins import LogMixin
 from zha.zigbee.cluster_handlers import ClusterHandler, ClusterHandlerStatus
-from zha.zigbee.cluster_handlers.const import REPORT_CONFIG_ATTR, REPORT_CONFIG_CONFIG
+from zha.zigbee.const import REPORT_CONFIG_ATTR, REPORT_CONFIG_CONFIG
 from zha.zigbee.endpoint import Endpoint
 
 if TYPE_CHECKING:
@@ -91,7 +91,7 @@ if TYPE_CHECKING:
 
 _LOGGER = logging.getLogger(__name__)
 _CHECKIN_GRACE_PERIODS = 2
-DIAGNOSTICS_JSON_VERSION = 1
+DIAGNOSTICS_JSON_VERSION = 2
 
 
 def get_cluster_attr_data(cluster: Cluster) -> list[dict]:
@@ -1771,15 +1771,9 @@ class Device(LogMixin, EventBase):
             self.platform_entities.items()
         ):
             info_object = dataclasses.asdict(platform_entity.info_object)
-            info_object["cluster_handlers"].sort(key=lambda i: i["unique_id"])
+            info_object["clusters"].sort(key=lambda i: (i["id"], i["type"]))
             info_object["migrate_unique_ids"] = list(info_object["migrate_unique_ids"])
             info_object["device_ieee"] = str(info_object["device_ieee"])
-
-            for cluster_handler_info in info_object["cluster_handlers"]:
-                cluster_info = cluster_handler_info["cluster"]
-
-                if cluster_info is not None:
-                    cluster_info.pop("commands", None)
 
             obj: dict[str, Any] = {
                 "info_object": info_object,

@@ -15,14 +15,14 @@ from zha.application.platforms import ClusterMatch, PlatformEntity, register_ent
 from zha.application.platforms.sensor import Battery
 from zha.decorators import periodic
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.cluster_handlers.general import PowerConfigurationClusterHandler
+from zha.zigbee.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_POWER_CONFIGURATION,
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_BATTERY_SAVE,
     REPORT_CONFIG_CONFIG,
 )
-from zha.zigbee.cluster_handlers.general import PowerConfigurationClusterHandler
 
 if TYPE_CHECKING:
     from zha.zigbee.cluster_handlers import ClusterHandler

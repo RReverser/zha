@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:0b:b6:c8:60",
   "nwk": "0x5605",
   "manufacturer": "_TZ3000_xxacnuab",
@@ -504,20 +504,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",
@@ -552,20 +544,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 6,
-                "name": "On/Off",
-                "type": "server"
-              },
-              "id": "1:0x0006",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:1:0x0006",
-              "status": "INITIALIZED",
-              "value_attribute": "on_off"
+              "id": 6,
+              "name": "On/Off",
+              "type": "server",
+              "endpoint_attribute": "on_off"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",
@@ -618,20 +602,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 6,
-                "name": "On/Off",
-                "type": "server"
-              },
-              "id": "2:0x0006",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:2:0x0006",
-              "status": "INITIALIZED",
-              "value_attribute": "on_off"
+              "id": 6,
+              "name": "On/Off",
+              "type": "server",
+              "endpoint_attribute": "on_off"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",
@@ -684,20 +660,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
-              "endpoint_id": 3,
-              "cluster": {
-                "id": 6,
-                "name": "On/Off",
-                "type": "server"
-              },
-              "id": "3:0x0006",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:3:0x0006",
-              "status": "INITIALIZED",
-              "value_attribute": "on_off"
+              "id": 6,
+              "name": "On/Off",
+              "type": "server",
+              "endpoint_attribute": "on_off"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",
@@ -750,20 +718,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 6,
-                "name": "On/Off",
-                "type": "server"
-              },
-              "id": "4:0x0006",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:4:0x0006",
-              "status": "INITIALIZED",
-              "value_attribute": "on_off"
+              "id": 6,
+              "name": "On/Off",
+              "type": "server",
+              "endpoint_attribute": "on_off"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",
@@ -818,20 +778,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 6,
-                "name": "On/Off",
-                "type": "server"
-              },
-              "id": "1:0x0006",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:1:0x0006",
-              "status": "INITIALIZED",
-              "value_attribute": "on_off"
+              "id": 6,
+              "name": "On/Off",
+              "type": "server",
+              "endpoint_attribute": "on_off"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",
@@ -868,20 +820,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",
@@ -912,20 +856,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",
@@ -958,20 +894,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "ab:cd:ef:12:0b:b6:c8:60:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "ab:cd:ef:12:0b:b6:c8:60",

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:b3:c5:e5:3a",
   "nwk": "0xB9A4",
   "manufacturer": "_TZE200_cpbo62rn",
@@ -160,20 +160,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "WindowCoveringClusterHandler",
-              "generic_id": "cluster_handler_0x0102",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 258,
-                "name": "Window Covering",
-                "type": "server"
-              },
-              "id": "1:0x0102",
-              "unique_id": "ab:cd:ef:12:b3:c5:e5:3a:1:0x0102",
-              "status": "INITIALIZED",
-              "value_attribute": "current_position_lift_percentage"
+              "id": 258,
+              "name": "Window Covering",
+              "type": "server",
+              "endpoint_attribute": "window_covering"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b3:c5:e5:3a",
@@ -209,20 +201,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:b3:c5:e5:3a:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b3:c5:e5:3a",
@@ -253,20 +237,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:b3:c5:e5:3a:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b3:c5:e5:3a",
@@ -297,20 +273,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "WindowCoveringClusterHandler",
-              "generic_id": "cluster_handler_0x0102",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 258,
-                "name": "Window Covering",
-                "type": "server"
-              },
-              "id": "1:0x0102",
-              "unique_id": "ab:cd:ef:12:b3:c5:e5:3a:1:0x0102",
-              "status": "INITIALIZED",
-              "value_attribute": "current_position_lift_percentage"
+              "id": 258,
+              "name": "Window Covering",
+              "type": "server",
+              "endpoint_attribute": "window_covering"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b3:c5:e5:3a",
@@ -343,20 +311,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "ab:cd:ef:12:b3:c5:e5:3a:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "ab:cd:ef:12:b3:c5:e5:3a",

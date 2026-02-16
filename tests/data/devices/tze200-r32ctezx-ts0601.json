@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:38:4a:57:6b",
   "nwk": "0x4CCB",
   "manufacturer": "_TZE200_r32ctezx",
@@ -197,34 +197,18 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 6,
-                "name": "On/Off",
-                "type": "server"
-              },
-              "id": "1:0x0006",
-              "unique_id": "ab:cd:ef:12:38:4a:57:6b:1:0x0006",
-              "status": "INITIALIZED",
-              "value_attribute": "on_off"
+              "id": 6,
+              "name": "On/Off",
+              "type": "server",
+              "endpoint_attribute": "on_off"
             },
             {
-              "class_name": "LevelControlClusterHandler",
-              "generic_id": "cluster_handler_0x0008",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 8,
-                "name": "Level control",
-                "type": "server"
-              },
-              "id": "1:0x0008",
-              "unique_id": "ab:cd:ef:12:38:4a:57:6b:1:0x0008",
-              "status": "INITIALIZED",
-              "value_attribute": "current_level"
+              "id": 8,
+              "name": "Level control",
+              "type": "server",
+              "endpoint_attribute": "level"
             }
           ],
           "device_ieee": "ab:cd:ef:12:38:4a:57:6b",
@@ -280,20 +264,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:38:4a:57:6b:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:38:4a:57:6b",
@@ -324,20 +300,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:38:4a:57:6b:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:38:4a:57:6b",
@@ -370,20 +338,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "ab:cd:ef:12:38:4a:57:6b:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "ab:cd:ef:12:38:4a:57:6b",

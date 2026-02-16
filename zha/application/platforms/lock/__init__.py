@@ -16,7 +16,7 @@ from zha.application.platforms.lock.const import (
 )
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
 from zha.zigbee.cluster_handlers.closures import DoorLockClusterHandler
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_DOORLOCK,
     REPORT_CONFIG_ATTR,

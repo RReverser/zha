@@ -31,7 +31,7 @@ from zha.application.platforms.binary_sensor.const import (
 )
 from zha.application.platforms.helpers import validate_device_class
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
     CLUSTER_HANDLER_ACCELEROMETER,
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,

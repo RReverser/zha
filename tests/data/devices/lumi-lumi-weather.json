@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "00:15:8d:00:05:4b:9d:1f",
   "nwk": "0xFF23",
   "manufacturer": "LUMI",
@@ -216,20 +216,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "00:15:8d:00:05:4b:9d:1f:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "00:15:8d:00:05:4b:9d:1f",
@@ -264,20 +256,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "BasicCluster",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "00:15:8d:00:05:4b:9d:1f:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "BasicCluster",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:15:8d:00:05:4b:9d:1f",
@@ -308,20 +292,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "BasicCluster",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "00:15:8d:00:05:4b:9d:1f:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "BasicCluster",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:15:8d:00:05:4b:9d:1f",
@@ -352,20 +328,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PowerConfigurationClusterHandler",
-              "generic_id": "cluster_handler_0x0001",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1,
-                "name": "Power Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0001",
-              "unique_id": "00:15:8d:00:05:4b:9d:1f:1:0x0001",
-              "status": "INITIALIZED",
-              "value_attribute": "battery_voltage"
+              "id": 1,
+              "name": "Power Configuration",
+              "type": "server",
+              "endpoint_attribute": "power"
             }
           ],
           "device_ieee": "00:15:8d:00:05:4b:9d:1f",
@@ -404,20 +372,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TemperatureMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0402",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1026,
-                "name": "Temperature Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0402",
-              "unique_id": "00:15:8d:00:05:4b:9d:1f:1:0x0402",
-              "status": "INITIALIZED",
-              "value_attribute": "measured_value"
+              "id": 1026,
+              "name": "Temperature Measurement",
+              "type": "server",
+              "endpoint_attribute": "temperature"
             }
           ],
           "device_ieee": "00:15:8d:00:05:4b:9d:1f",
@@ -448,20 +408,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PressureMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0403",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1027,
-                "name": "Pressure Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0403",
-              "unique_id": "00:15:8d:00:05:4b:9d:1f:1:0x0403",
-              "status": "INITIALIZED",
-              "value_attribute": "measured_value"
+              "id": 1027,
+              "name": "Pressure Measurement",
+              "type": "server",
+              "endpoint_attribute": "pressure"
             }
           ],
           "device_ieee": "00:15:8d:00:05:4b:9d:1f",
@@ -492,20 +444,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "RelativeHumidityClusterHandler",
-              "generic_id": "cluster_handler_0x0405",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1029,
-                "name": "Relative Humidity Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0405",
-              "unique_id": "00:15:8d:00:05:4b:9d:1f:1:0x0405",
-              "status": "INITIALIZED",
-              "value_attribute": "measured_value"
+              "id": 1029,
+              "name": "Relative Humidity Measurement",
+              "type": "server",
+              "endpoint_attribute": "humidity"
             }
           ],
           "device_ieee": "00:15:8d:00:05:4b:9d:1f",

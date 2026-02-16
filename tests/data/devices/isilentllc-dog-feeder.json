@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "00:13:a2:00:41:67:1f:d7",
   "nwk": "0xB988",
   "manufacturer": "iSilentLLC",
@@ -324,20 +324,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BinaryInputClusterHandler",
-              "generic_id": "cluster_handler_0x000f",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 15,
-                "name": "Binary Input (Basic)",
-                "type": "server"
-              },
-              "id": "1:0x000f",
-              "unique_id": "00:13:a2:00:41:67:1f:d7:1:0x000f",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 15,
+              "name": "Binary Input (Basic)",
+              "type": "server",
+              "endpoint_attribute": "binary_input"
             }
           ],
           "device_ieee": "00:13:a2:00:41:67:1f:d7",
@@ -367,20 +359,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BinaryInputClusterHandler",
-              "generic_id": "cluster_handler_0x000f",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 15,
-                "name": "Binary Input (Basic)",
-                "type": "server"
-              },
-              "id": "2:0x000f",
-              "unique_id": "00:13:a2:00:41:67:1f:d7:2:0x000f",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 15,
+              "name": "Binary Input (Basic)",
+              "type": "server",
+              "endpoint_attribute": "binary_input"
             }
           ],
           "device_ieee": "00:13:a2:00:41:67:1f:d7",
@@ -410,20 +394,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BinaryInputClusterHandler",
-              "generic_id": "cluster_handler_0x000f",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 15,
-                "name": "Binary Input (Basic)",
-                "type": "server"
-              },
-              "id": "4:0x000f",
-              "unique_id": "00:13:a2:00:41:67:1f:d7:4:0x000f",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 15,
+              "name": "Binary Input (Basic)",
+              "type": "server",
+              "endpoint_attribute": "binary_input"
             }
           ],
           "device_ieee": "00:13:a2:00:41:67:1f:d7",
@@ -455,20 +431,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "AnalogOutputClusterHandler",
-              "generic_id": "cluster_handler_0x000d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 13,
-                "name": "AnalogOutput",
-                "type": "server"
-              },
-              "id": "1:0x000d",
-              "unique_id": "00:13:a2:00:41:67:1f:d7:1:0x000d",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 13,
+              "name": "AnalogOutput",
+              "type": "server",
+              "endpoint_attribute": "analog_output"
             }
           ],
           "device_ieee": "00:13:a2:00:41:67:1f:d7",
@@ -504,20 +472,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "00:13:a2:00:41:67:1f:d7:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:13:a2:00:41:67:1f:d7",
@@ -548,20 +508,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "00:13:a2:00:41:67:1f:d7:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:13:a2:00:41:67:1f:d7",
@@ -594,20 +546,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 6,
-                "name": "On/Off",
-                "type": "server"
-              },
-              "id": "1:0x0006",
-              "unique_id": "00:13:a2:00:41:67:1f:d7:1:0x0006",
-              "status": "INITIALIZED",
-              "value_attribute": "on_off"
+              "id": 6,
+              "name": "On/Off",
+              "type": "server",
+              "endpoint_attribute": "on_off"
             }
           ],
           "device_ieee": "00:13:a2:00:41:67:1f:d7",

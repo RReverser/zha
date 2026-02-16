@@ -24,8 +24,7 @@ from zha.const import STATE_CHANGED
 from zha.debounce import Debouncer
 from zha.event import EventBase
 from zha.mixins import LogMixin
-from zha.zigbee.cluster_handlers import ClusterHandlerInfo
-from zha.zigbee.cluster_handlers.const import REPORT_CONFIG_ATTR, REPORT_CONFIG_CONFIG
+from zha.zigbee.const import REPORT_CONFIG_ATTR, REPORT_CONFIG_CONFIG
 
 if TYPE_CHECKING:
     from zigpy.zcl import Cluster
@@ -179,7 +178,7 @@ class BaseEntityInfo:
     primary: bool
 
     # For platform entities
-    cluster_handlers: list[ClusterHandlerInfo]
+    clusters: list[EntityClusterInfo]
     device_ieee: EUI64 | None
     endpoint_id: int | None
     available: bool | None
@@ -194,6 +193,16 @@ class BaseIdentifiers:
 
     unique_id: str
     platform: str
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class EntityClusterInfo:
+    """Information about a cluster used by an entity."""
+
+    id: int
+    name: str
+    type: str
+    endpoint_attribute: str | None
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -387,7 +396,7 @@ class BaseEntity(LogMixin, EventBase):
             enabled=self.enabled,
             primary=self.primary,
             # Set by platform entities
-            cluster_handlers=[],
+            clusters=[],
             device_ieee=None,
             endpoint_id=None,
             available=None,
@@ -636,9 +645,21 @@ class PlatformEntity(BaseEntity):
     @cached_property
     def info_object(self) -> BaseEntityInfo:
         """Return a representation of the platform entity."""
+        clusters = [
+            EntityClusterInfo(
+                id=cluster_handler.cluster.cluster_id,
+                name=cluster_handler.cluster.name,
+                type="client" if cluster_handler.cluster.is_client else "server",
+                endpoint_attribute=cluster_handler.cluster.ep_attribute,
+            )
+            for cluster_handler in sorted(
+                self._cluster_handlers,
+                key=lambda ch: (ch.cluster.cluster_id, ch.cluster.is_client),
+            )
+        ]
         return dataclasses.replace(
             super().info_object,
-            cluster_handlers=[ch.info_object for ch in self._cluster_handlers],
+            clusters=clusters,
             device_ieee=self._device.ieee,
             endpoint_id=self._endpoint.id,
             available=self.available,

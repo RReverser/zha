@@ -53,7 +53,8 @@ from zha.application.platforms.climate.const import (
 from zha.decorators import periodic
 from zha.units import UnitOfTemperature
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.cluster_handlers.hvac import FanClusterHandler, ThermostatClusterHandler
+from zha.zigbee.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_FAN,
     CLUSTER_HANDLER_THERMOSTAT,
@@ -63,7 +64,6 @@ from zha.zigbee.cluster_handlers.const import (
     REPORT_CONFIG_DEFAULT,
     REPORT_CONFIG_OP,
 )
-from zha.zigbee.cluster_handlers.hvac import FanClusterHandler, ThermostatClusterHandler
 
 if TYPE_CHECKING:
     from zha.zigbee.cluster_handlers import ClusterHandler

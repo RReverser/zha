@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:52:88:1c:b0",
   "nwk": "0x51C6",
   "manufacturer": "_TZE204_iaeejhvf",
@@ -518,20 +518,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OccupancySensingClusterHandler",
-              "generic_id": "cluster_handler_0x0406",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1030,
-                "name": "Occupancy Sensing",
-                "type": "server"
-              },
-              "id": "1:0x0406",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0x0406",
-              "status": "INITIALIZED",
-              "value_attribute": "occupancy"
+              "id": 1030,
+              "name": "Occupancy Sensing",
+              "type": "server",
+              "endpoint_attribute": "occupancy"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -563,20 +555,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "AnalogOutputClusterHandler",
-              "generic_id": "cluster_handler_0x000d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 13,
-                "name": "AnalogOutput",
-                "type": "server"
-              },
-              "id": "1:0x000d",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0x000d",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 13,
+              "name": "AnalogOutput",
+              "type": "server",
+              "endpoint_attribute": "analog_output"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -610,20 +594,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -657,20 +633,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -704,20 +672,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -751,20 +711,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -798,20 +750,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -845,20 +789,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -892,20 +828,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -939,20 +867,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -986,20 +906,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1033,20 +945,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "AnalogOutputClusterHandler",
-              "generic_id": "cluster_handler_0x000d",
-              "endpoint_id": 2,
-              "cluster": {
-                "id": 13,
-                "name": "AnalogOutput",
-                "type": "server"
-              },
-              "id": "2:0x000d",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:2:0x000d",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 13,
+              "name": "AnalogOutput",
+              "type": "server",
+              "endpoint_attribute": "analog_output"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1080,20 +984,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "AnalogOutputClusterHandler",
-              "generic_id": "cluster_handler_0x000d",
-              "endpoint_id": 3,
-              "cluster": {
-                "id": 13,
-                "name": "AnalogOutput",
-                "type": "server"
-              },
-              "id": "3:0x000d",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:3:0x000d",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 13,
+              "name": "AnalogOutput",
+              "type": "server",
+              "endpoint_attribute": "analog_output"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1127,20 +1023,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "AnalogOutputClusterHandler",
-              "generic_id": "cluster_handler_0x000d",
-              "endpoint_id": 4,
-              "cluster": {
-                "id": 13,
-                "name": "AnalogOutput",
-                "type": "server"
-              },
-              "id": "4:0x000d",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:4:0x000d",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 13,
+              "name": "AnalogOutput",
+              "type": "server",
+              "endpoint_attribute": "analog_output"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1174,20 +1062,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "AnalogOutputClusterHandler",
-              "generic_id": "cluster_handler_0x000d",
-              "endpoint_id": 5,
-              "cluster": {
-                "id": 13,
-                "name": "AnalogOutput",
-                "type": "server"
-              },
-              "id": "5:0x000d",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:5:0x000d",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 13,
+              "name": "AnalogOutput",
+              "type": "server",
+              "endpoint_attribute": "analog_output"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1223,20 +1103,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1270,20 +1142,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1317,20 +1181,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1364,20 +1220,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1413,20 +1261,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1462,20 +1302,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1506,20 +1338,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1550,20 +1374,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IlluminanceMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0400",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1024,
-                "name": "Illuminance Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0400",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0x0400",
-              "status": "INITIALIZED",
-              "value_attribute": "measured_value"
+              "id": 1024,
+              "name": "Illuminance Measurement",
+              "type": "server",
+              "endpoint_attribute": "illuminance"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1594,20 +1410,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "AnalogInputClusterHandler",
-              "generic_id": "cluster_handler_0x000c",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 12,
-                "name": "AnalogInput",
-                "type": "server"
-              },
-              "id": "1:0x000c",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0x000c",
-              "status": "INITIALIZED",
-              "value_attribute": "present_value"
+              "id": 12,
+              "name": "AnalogInput",
+              "type": "server",
+              "endpoint_attribute": "analog_input"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1638,20 +1446,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "TuyaClusterHandler",
-              "generic_id": "cluster_handler_0xef00",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 61184,
-                "name": "Tuya Manufacturer Specific",
-                "type": "server"
-              },
-              "id": "1:0xef00",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0xef00",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 61184,
+              "name": "Tuya Manufacturer Specific",
+              "type": "server",
+              "endpoint_attribute": "tuya_manufacturer"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",
@@ -1684,20 +1484,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "ab:cd:ef:12:52:88:1c:b0:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "ab:cd:ef:12:52:88:1c:b0",

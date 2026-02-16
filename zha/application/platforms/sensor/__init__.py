@@ -98,7 +98,7 @@ from zha.units import (
     UnitOfVolumeFlowRate,
 )
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
     CLUSTER_HANDLER_ANALOG_INPUT,
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,

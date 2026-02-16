@@ -32,8 +32,8 @@ from zha.application.platforms import (
     PlatformEntity,
     register_entity,
 )
-from zha.zigbee.cluster_handlers.const import CLUSTER_HANDLER_IAS_WD
 from zha.zigbee.cluster_handlers.security import IasWdClusterHandler
+from zha.zigbee.const import CLUSTER_HANDLER_IAS_WD
 
 if TYPE_CHECKING:
     from zha.zigbee.cluster_handlers import ClusterHandler

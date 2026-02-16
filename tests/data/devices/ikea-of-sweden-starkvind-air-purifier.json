@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "0c:43:14:ff:fe:73:07:e2",
   "nwk": "0x8877",
   "manufacturer": "IKEA of Sweden",
@@ -252,20 +252,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IkeaAirPurifierClusterHandler",
-              "generic_id": "cluster_handler_0xfc7d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64637,
-                "name": "Ikea Airpurifier",
-                "type": "server"
-              },
-              "id": "1:0xfc7d",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0xfc7d",
-              "status": "INITIALIZED",
-              "value_attribute": "filter_run_time"
+              "id": 64637,
+              "name": "Ikea Airpurifier",
+              "type": "server",
+              "endpoint_attribute": "ikea_airpurifier"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -297,20 +289,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -345,20 +329,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IkeaAirPurifierClusterHandler",
-              "generic_id": "cluster_handler_0xfc7d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64637,
-                "name": "Ikea Airpurifier",
-                "type": "server"
-              },
-              "id": "1:0xfc7d",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0xfc7d",
-              "status": "INITIALIZED",
-              "value_attribute": "filter_run_time"
+              "id": 64637,
+              "name": "Ikea Airpurifier",
+              "type": "server",
+              "endpoint_attribute": "ikea_airpurifier"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -404,20 +380,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IkeaAirPurifierClusterHandler",
-              "generic_id": "cluster_handler_0xfc7d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64637,
-                "name": "Ikea Airpurifier",
-                "type": "server"
-              },
-              "id": "1:0xfc7d",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0xfc7d",
-              "status": "INITIALIZED",
-              "value_attribute": "filter_run_time"
+              "id": 64637,
+              "name": "Ikea Airpurifier",
+              "type": "server",
+              "endpoint_attribute": "ikea_airpurifier"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -453,20 +421,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -497,20 +457,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -541,20 +493,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PM25ClusterHandler",
-              "generic_id": "cluster_handler_0x042a",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1066,
-                "name": "PM2.5",
-                "type": "server"
-              },
-              "id": "1:0x042a",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0x042a",
-              "status": "INITIALIZED",
-              "value_attribute": "measured_value"
+              "id": 1066,
+              "name": "PM2.5",
+              "type": "server",
+              "endpoint_attribute": "pm25"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -585,20 +529,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IkeaAirPurifierClusterHandler",
-              "generic_id": "cluster_handler_0xfc7d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64637,
-                "name": "Ikea Airpurifier",
-                "type": "server"
-              },
-              "id": "1:0xfc7d",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0xfc7d",
-              "status": "INITIALIZED",
-              "value_attribute": "filter_run_time"
+              "id": 64637,
+              "name": "Ikea Airpurifier",
+              "type": "server",
+              "endpoint_attribute": "ikea_airpurifier"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -629,20 +565,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IkeaAirPurifierClusterHandler",
-              "generic_id": "cluster_handler_0xfc7d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64637,
-                "name": "Ikea Airpurifier",
-                "type": "server"
-              },
-              "id": "1:0xfc7d",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0xfc7d",
-              "status": "INITIALIZED",
-              "value_attribute": "filter_run_time"
+              "id": 64637,
+              "name": "Ikea Airpurifier",
+              "type": "server",
+              "endpoint_attribute": "ikea_airpurifier"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -675,20 +603,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IkeaAirPurifierClusterHandler",
-              "generic_id": "cluster_handler_0xfc7d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64637,
-                "name": "Ikea Airpurifier",
-                "type": "server"
-              },
-              "id": "1:0xfc7d",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0xfc7d",
-              "status": "INITIALIZED",
-              "value_attribute": "filter_run_time"
+              "id": 64637,
+              "name": "Ikea Airpurifier",
+              "type": "server",
+              "endpoint_attribute": "ikea_airpurifier"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -723,20 +643,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IkeaAirPurifierClusterHandler",
-              "generic_id": "cluster_handler_0xfc7d",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 64637,
-                "name": "Ikea Airpurifier",
-                "type": "server"
-              },
-              "id": "1:0xfc7d",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0xfc7d",
-              "status": "INITIALIZED",
-              "value_attribute": "filter_run_time"
+              "id": 64637,
+              "name": "Ikea Airpurifier",
+              "type": "server",
+              "endpoint_attribute": "ikea_airpurifier"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",
@@ -773,20 +685,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "0c:43:14:ff:fe:73:07:e2:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "0c:43:14:ff:fe:73:07:e2",

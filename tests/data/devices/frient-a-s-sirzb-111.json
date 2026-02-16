@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "00:15:bc:00:41:00:6f:8e",
   "nwk": "0x7FDB",
   "manufacturer": "frient A/S",
@@ -289,20 +289,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "43:0x0003",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -337,20 +329,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IasWdClusterHandler",
-              "generic_id": "cluster_handler_0x0502",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 1282,
-                "name": "IAS Warning Device",
-                "type": "server"
-              },
-              "id": "43:0x0502",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0502",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 1282,
+              "name": "IAS Warning Device",
+              "type": "server",
+              "endpoint_attribute": "ias_wd"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -386,20 +370,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IasWdClusterHandler",
-              "generic_id": "cluster_handler_0x0502",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 1282,
-                "name": "IAS Warning Device",
-                "type": "server"
-              },
-              "id": "43:0x0502",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0502",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 1282,
+              "name": "IAS Warning Device",
+              "type": "server",
+              "endpoint_attribute": "ias_wd"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -433,20 +409,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IasWdClusterHandler",
-              "generic_id": "cluster_handler_0x0502",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 1282,
-                "name": "IAS Warning Device",
-                "type": "server"
-              },
-              "id": "43:0x0502",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0502",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 1282,
+              "name": "IAS Warning Device",
+              "type": "server",
+              "endpoint_attribute": "ias_wd"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -482,20 +450,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IasWdClusterHandler",
-              "generic_id": "cluster_handler_0x0502",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 1282,
-                "name": "IAS Warning Device",
-                "type": "server"
-              },
-              "id": "43:0x0502",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0502",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 1282,
+              "name": "IAS Warning Device",
+              "type": "server",
+              "endpoint_attribute": "ias_wd"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -536,20 +496,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "43:0x0000",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -580,20 +532,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "43:0x0000",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -624,20 +568,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PowerConfigurationClusterHandler",
-              "generic_id": "cluster_handler_0x0001",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 1,
-                "name": "Power Configuration",
-                "type": "server"
-              },
-              "id": "43:0x0001",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0001",
-              "status": "INITIALIZED",
-              "value_attribute": "battery_voltage"
+              "id": 1,
+              "name": "Power Configuration",
+              "type": "server",
+              "endpoint_attribute": "power"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -670,20 +606,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IasWdClusterHandler",
-              "generic_id": "cluster_handler_0x0502",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 1282,
-                "name": "IAS Warning Device",
-                "type": "server"
-              },
-              "id": "43:0x0502",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0502",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 1282,
+              "name": "IAS Warning Device",
+              "type": "server",
+              "endpoint_attribute": "ias_wd"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",
@@ -723,20 +651,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 43,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "43:0x0019_client",
-              "unique_id": "00:15:bc:00:41:00:6f:8e:43:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "00:15:bc:00:41:00:6f:8e",

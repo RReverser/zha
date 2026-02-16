@@ -69,7 +69,14 @@ from zha.application.platforms.light.helpers import (
 from zha.debounce import Debouncer
 from zha.decorators import periodic
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.cluster_handlers.general import (
+    IdentifyClusterHandler,
+    LevelChangeEvent,
+    LevelControlClusterHandler,
+    OnOffClusterHandler,
+)
+from zha.zigbee.cluster_handlers.lighting import ColorClusterHandler
+from zha.zigbee.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_COLOR,
     CLUSTER_HANDLER_LEVEL,
@@ -81,13 +88,6 @@ from zha.zigbee.cluster_handlers.const import (
     REPORT_CONFIG_DEFAULT,
     REPORT_CONFIG_IMMEDIATE,
 )
-from zha.zigbee.cluster_handlers.general import (
-    IdentifyClusterHandler,
-    LevelChangeEvent,
-    LevelControlClusterHandler,
-    OnOffClusterHandler,
-)
-from zha.zigbee.cluster_handlers.lighting import ColorClusterHandler
 
 if TYPE_CHECKING:
     from zha.application.gateway import Gateway

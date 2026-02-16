@@ -38,7 +38,12 @@ from zha.application.platforms.cover.const import (
 from zha.exceptions import ZHAException
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
 from zha.zigbee.cluster_handlers.closures import WindowCoveringClusterHandler
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.cluster_handlers.general import (
+    LevelChangeEvent,
+    LevelControlClusterHandler,
+    OnOffClusterHandler,
+)
+from zha.zigbee.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_COVER,
     CLUSTER_HANDLER_LEVEL,
@@ -49,11 +54,6 @@ from zha.zigbee.cluster_handlers.const import (
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_CONFIG,
     REPORT_CONFIG_IMMEDIATE,
-)
-from zha.zigbee.cluster_handlers.general import (
-    LevelChangeEvent,
-    LevelControlClusterHandler,
-    OnOffClusterHandler,
 )
 
 if TYPE_CHECKING:

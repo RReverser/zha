@@ -14,14 +14,14 @@ from zigpy.profiles.zll import PROFILE_ID as ZLL_PROFILE_ID
 from zha.application import const
 from zha.async_ import gather_with_limited_concurrency
 from zha.zigbee.cluster_handlers import ClusterHandler
-from zha.zigbee.cluster_handlers.const import (
-    CLUSTER_HANDLER_BASIC,
-    CLUSTER_HANDLER_IDENTIFY,
-    CLUSTER_HANDLER_POWER_CONFIGURATION,
-)
 from zha.zigbee.cluster_handlers.registries import (
     CLIENT_CLUSTER_HANDLER_REGISTRY,
     CLUSTER_HANDLER_REGISTRY,
+)
+from zha.zigbee.const import (
+    CLUSTER_HANDLER_BASIC,
+    CLUSTER_HANDLER_IDENTIFY,
+    CLUSTER_HANDLER_POWER_CONFIGURATION,
 )
 
 if TYPE_CHECKING:

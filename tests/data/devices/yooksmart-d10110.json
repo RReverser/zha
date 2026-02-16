@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "6c:5c:b1:ff:fe:60:80:6f",
   "nwk": "0x547E",
   "manufacturer": "yooksmart",
@@ -253,20 +253,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "6c:5c:b1:ff:fe:60:80:6f:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "6c:5c:b1:ff:fe:60:80:6f",
@@ -301,20 +293,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "WindowCoveringClusterHandler",
-              "generic_id": "cluster_handler_0x0102",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 258,
-                "name": "Window Covering",
-                "type": "server"
-              },
-              "id": "1:0x0102",
-              "unique_id": "6c:5c:b1:ff:fe:60:80:6f:1:0x0102",
-              "status": "INITIALIZED",
-              "value_attribute": "current_position_lift_percentage"
+              "id": 258,
+              "name": "Window Covering",
+              "type": "server",
+              "endpoint_attribute": "window_covering"
             }
           ],
           "device_ieee": "6c:5c:b1:ff:fe:60:80:6f",
@@ -350,20 +334,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "6c:5c:b1:ff:fe:60:80:6f:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "6c:5c:b1:ff:fe:60:80:6f",
@@ -394,20 +370,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "6c:5c:b1:ff:fe:60:80:6f:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "6c:5c:b1:ff:fe:60:80:6f",
@@ -438,20 +406,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "PowerConfigurationClusterHandler",
-              "generic_id": "cluster_handler_0x0001",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1,
-                "name": "Power Configuration",
-                "type": "server"
-              },
-              "id": "1:0x0001",
-              "unique_id": "6c:5c:b1:ff:fe:60:80:6f:1:0x0001",
-              "status": "INITIALIZED",
-              "value_attribute": "battery_voltage"
+              "id": 1,
+              "name": "Power Configuration",
+              "type": "server",
+              "endpoint_attribute": "power"
             }
           ],
           "device_ieee": "6c:5c:b1:ff:fe:60:80:6f",
@@ -487,20 +447,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "WindowCoveringClusterHandler",
-              "generic_id": "cluster_handler_0x0102",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 258,
-                "name": "Window Covering",
-                "type": "server"
-              },
-              "id": "1:0x0102",
-              "unique_id": "6c:5c:b1:ff:fe:60:80:6f:1:0x0102",
-              "status": "INITIALIZED",
-              "value_attribute": "current_position_lift_percentage"
+              "id": 258,
+              "name": "Window Covering",
+              "type": "server",
+              "endpoint_attribute": "window_covering"
             }
           ],
           "device_ieee": "6c:5c:b1:ff:fe:60:80:6f",
@@ -533,20 +485,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "WindowCoveringClusterHandler",
-              "generic_id": "cluster_handler_0x0102",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 258,
-                "name": "Window Covering",
-                "type": "server"
-              },
-              "id": "1:0x0102",
-              "unique_id": "6c:5c:b1:ff:fe:60:80:6f:1:0x0102",
-              "status": "INITIALIZED",
-              "value_attribute": "current_position_lift_percentage"
+              "id": 258,
+              "name": "Window Covering",
+              "type": "server",
+              "endpoint_attribute": "window_covering"
             }
           ],
           "device_ieee": "6c:5c:b1:ff:fe:60:80:6f",
@@ -583,20 +527,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OtaClientClusterHandler",
-              "generic_id": "cluster_handler_0x0019_client",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 25,
-                "name": "Ota",
-                "type": "client"
-              },
-              "id": "1:0x0019_client",
-              "unique_id": "6c:5c:b1:ff:fe:60:80:6f:1:0x0019_CLIENT",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 25,
+              "name": "Ota",
+              "type": "client",
+              "endpoint_attribute": "ota"
             }
           ],
           "device_ieee": "6c:5c:b1:ff:fe:60:80:6f",

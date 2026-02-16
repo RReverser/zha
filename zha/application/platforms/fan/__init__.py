@@ -46,7 +46,11 @@ from zha.zigbee.cluster_handlers import (
     ClusterAttributeUpdatedEvent,
     wrap_zigpy_exceptions,
 )
-from zha.zigbee.cluster_handlers.const import (
+from zha.zigbee.cluster_handlers.hvac import FanClusterHandler
+from zha.zigbee.cluster_handlers.manufacturerspecific import (
+    IkeaAirPurifierClusterHandler,
+)
+from zha.zigbee.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_FAN,
     IKEA_AIR_PURIFIER_CLUSTER,
@@ -55,10 +59,6 @@ from zha.zigbee.cluster_handlers.const import (
     REPORT_CONFIG_DEFAULT,
     REPORT_CONFIG_IMMEDIATE,
     REPORT_CONFIG_OP,
-)
-from zha.zigbee.cluster_handlers.hvac import FanClusterHandler
-from zha.zigbee.cluster_handlers.manufacturerspecific import (
-    IkeaAirPurifierClusterHandler,
 )
 from zha.zigbee.group import Group
 

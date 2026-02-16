@@ -23,10 +23,7 @@ from zha.application.platforms import (
 )
 from zha.exceptions import ZHAException
 from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.const import (
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-    CLUSTER_HANDLER_OTA,
-)
+from zha.zigbee.const import CLUSTER_HANDLER_ATTRIBUTE_UPDATED, CLUSTER_HANDLER_OTA
 from zha.zigbee.endpoint import Endpoint
 
 if TYPE_CHECKING:

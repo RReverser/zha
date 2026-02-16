@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "ieee": "ab:cd:ef:12:22:a7:1c:c8",
   "nwk": "0xC86B",
   "manufacturer": "_TZ3000_fdxihpp7",
@@ -484,20 +484,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "IdentifyClusterHandler",
-              "generic_id": "cluster_handler_0x0003",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 3,
-                "name": "Identify",
-                "type": "server"
-              },
-              "id": "1:0x0003",
-              "unique_id": "ab:cd:ef:12:22:a7:1c:c8:1:0x0003",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 3,
+              "name": "Identify",
+              "type": "server",
+              "endpoint_attribute": "identify"
             }
           ],
           "device_ieee": "ab:cd:ef:12:22:a7:1c:c8",
@@ -532,20 +524,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": true,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "OnOffClusterHandler",
-              "generic_id": "cluster_handler_0x0006",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 6,
-                "name": "On/Off",
-                "type": "server"
-              },
-              "id": "1:0x0006",
-              "unique_id": "ab:cd:ef:12:22:a7:1c:c8:1:0x0006",
-              "status": "INITIALIZED",
-              "value_attribute": "on_off"
+              "id": 6,
+              "name": "On/Off",
+              "type": "server",
+              "endpoint_attribute": "on_off"
             }
           ],
           "device_ieee": "ab:cd:ef:12:22:a7:1c:c8",
@@ -600,20 +584,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:22:a7:1c:c8:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:22:a7:1c:c8",
@@ -644,20 +620,12 @@
           "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "BasicClusterHandler",
-              "generic_id": "cluster_handler_0x0000",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 0,
-                "name": "Basic",
-                "type": "server"
-              },
-              "id": "1:0x0000",
-              "unique_id": "ab:cd:ef:12:22:a7:1c:c8:1:0x0000",
-              "status": "INITIALIZED",
-              "value_attribute": null
+              "id": 0,
+              "name": "Basic",
+              "type": "server",
+              "endpoint_attribute": "basic"
             }
           ],
           "device_ieee": "ab:cd:ef:12:22:a7:1c:c8",
@@ -688,20 +656,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "MeteringClusterHandler",
-              "generic_id": "cluster_handler_0x0702",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 1794,
-                "name": "Metering",
-                "type": "server"
-              },
-              "id": "1:0x0702",
-              "unique_id": "ab:cd:ef:12:22:a7:1c:c8:1:0x0702",
-              "status": "INITIALIZED",
-              "value_attribute": "instantaneous_demand"
+              "id": 1794,
+              "name": "Metering",
+              "type": "server",
+              "endpoint_attribute": "smartenergy_metering"
             }
           ],
           "device_ieee": "ab:cd:ef:12:22:a7:1c:c8",
@@ -738,20 +698,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0b04",
-              "unique_id": "ab:cd:ef:12:22:a7:1c:c8:1:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "ab:cd:ef:12:22:a7:1c:c8",
@@ -786,20 +738,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0b04",
-              "unique_id": "ab:cd:ef:12:22:a7:1c:c8:1:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "ab:cd:ef:12:22:a7:1c:c8",
@@ -834,20 +778,12 @@
           "entity_registry_enabled_default": true,
           "enabled": true,
           "primary": false,
-          "cluster_handlers": [
+          "clusters": [
             {
-              "class_name": "ElectricalMeasurementClusterHandler",
-              "generic_id": "cluster_handler_0x0b04",
-              "endpoint_id": 1,
-              "cluster": {
-                "id": 2820,
-                "name": "Electrical Measurement",
-                "type": "server"
-              },
-              "id": "1:0x0b04",
-              "unique_id": "ab:cd:ef:12:22:a7:1c:c8:1:0x0b04",
-              "status": "INITIALIZED",
-              "value_attribute": "ac_voltage_multiplier"
+              "id": 2820,
+              "name": "Electrical Measurement",
+              "type": "server",
+              "endpoint_attribute": "electrical_measurement"
             }
           ],
           "device_ieee": "ab:cd:ef:12:22:a7:1c:c8",
