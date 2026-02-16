@@ -55,12 +55,14 @@ from zha.async_ import (
     create_eager_task,
     gather_with_limited_concurrency,
 )
+from zha.debounce import Debouncer
 from zha.event import EventBase
 from zha.zigbee.device import Device, DeviceInfo, DeviceStatus, ExtendedDeviceInfo
 from zha.zigbee.group import Group, GroupInfo, GroupMemberReference
 
 BLOCK_LOG_TIMEOUT: Final[int] = 60
 SHUT_DOWN_DELAY_S: Final[float] = 0.1
+GROUP_RECONCILE_DEBOUNCE_S: Final[float] = 0.1
 _R = TypeVar("_R")
 _LOGGER = logging.getLogger(__name__)
 
@@ -174,6 +176,8 @@ class DeviceRemovedEvent:
 class Gateway(AsyncUtilMixin, EventBase):
     """Gateway that handles events that happen on the ZHA Zigbee network."""
 
+    GROUP_RECONCILE_DEBOUNCE_S: Final[float] = GROUP_RECONCILE_DEBOUNCE_S
+
     def __init__(self, config: ZHAData) -> None:
         """Initialize the gateway."""
         super().__init__()
@@ -186,6 +190,9 @@ class Gateway(AsyncUtilMixin, EventBase):
         self.shutting_down: bool = False
         self._reload_task: asyncio.Task | None = None
         self._startup_fetch_task: asyncio.Task | None = None
+        self._device_init_generation: dict[EUI64, int] = {}
+        self._device_init_task_generations: dict[asyncio.Task, int] = {}
+        self._group_reconcile_debouncers: dict[int, Debouncer[None]] = {}
 
         self.global_updater: GlobalUpdater = GlobalUpdater(self)
         self._device_availability_checker: DeviceAvailabilityChecker = (
@@ -420,18 +427,66 @@ class Gateway(AsyncUtilMixin, EventBase):
 
     def _device_init_task_done(self, ieee: EUI64, task: asyncio.Task) -> None:
         """Remove device init task mapping only if this task is still current."""
+        self._device_init_task_generations.pop(task, None)
         current = self._device_init_tasks.get(ieee)
         if current is task:
             self._device_init_tasks.pop(ieee, None)
 
+    def _bump_device_init_generation(self, ieee: EUI64) -> int:
+        """Advance and return the init generation token for a device."""
+        generation = self._device_init_generation.get(ieee, 0) + 1
+        self._device_init_generation[ieee] = generation
+        return generation
+
+    def _is_current_device_init_task(self, ieee: EUI64) -> bool:
+        """Return True when called from the active init task for this ieee."""
+        task = asyncio.current_task()
+        if task is None:
+            return True
+
+        task_generation = self._device_init_task_generations.get(task)
+        if task_generation is None:
+            # Direct calls to async_device_initialized from tests/helpers.
+            return True
+
+        return self._device_init_tasks.get(ieee) is task and (
+            self._device_init_generation.get(ieee) == task_generation
+        )
+
+    def _get_or_create_group_reconcile_debouncer(
+        self, group_id: int
+    ) -> Debouncer[None]:
+        """Return the per-group debouncer for reconcile work."""
+        debouncer = self._group_reconcile_debouncers.get(group_id)
+        if debouncer is not None:
+            return debouncer
+
+        async def reconcile_group() -> None:
+            zha_group = self._groups.get(group_id)
+            if zha_group is None:
+                return
+            await zha_group.async_reconcile_discovered_entities()
+
+        debouncer = Debouncer(
+            gateway=self,
+            logger=_LOGGER,
+            cooldown=GROUP_RECONCILE_DEBOUNCE_S,
+            immediate=False,
+            function=reconcile_group,
+        )
+        self._group_reconcile_debouncers[group_id] = debouncer
+        return debouncer
+
     def _schedule_group_reconciliation(self, zha_group: Group, reason: str) -> None:
         """Schedule async group-entity reconciliation for membership changes."""
-        self.track_task(
-            create_eager_task(
-                zha_group.async_reconcile_discovered_entities(),
-                name=f"Gateway.group_reconcile_{reason}_0x{zha_group.group_id:04x}",
-            )
+        _LOGGER.debug(
+            "Scheduling debounced group reconcile for 0x%04x due to %s",
+            zha_group.group_id,
+            reason,
         )
+        self._get_or_create_group_reconcile_debouncer(
+            zha_group.group_id
+        ).async_schedule_call()
 
     def device_joined(self, device: zigpy.device.Device) -> None:
         """Handle device joined.
@@ -472,6 +527,7 @@ class Gateway(AsyncUtilMixin, EventBase):
 
     def device_initialized(self, device: zigpy.device.Device) -> None:
         """Handle device joined and basic information discovered."""
+        generation = self._bump_device_init_generation(device.ieee)
         if device.ieee in self._device_init_tasks:
             _LOGGER.warning(
                 "Cancelling previous initialization task for device %s",
@@ -483,6 +539,7 @@ class Gateway(AsyncUtilMixin, EventBase):
             name=f"device_initialized_task_{str(device.ieee)}:0x{device.nwk:04x}",
             eager_start=True,
         )
+        self._device_init_task_generations[init_task] = generation
         init_task.add_done_callback(partial(self._device_init_task_done, device.ieee))
 
     def device_left(self, device: zigpy.device.Device) -> None:
@@ -503,7 +560,21 @@ class Gateway(AsyncUtilMixin, EventBase):
         # need to handle endpoint correctly on groups
         zha_group = self.get_or_create_group(zigpy_group)
         zha_group.clear_caches()
-        self._schedule_group_reconciliation(zha_group, "member_removed")
+        if len(zigpy_group.members) < 2:
+            # Preserve existing behavior for entity teardown when a group drops
+            # below the discovery threshold.
+            if debouncer := self._group_reconcile_debouncers.pop(
+                zha_group.group_id, None
+            ):
+                debouncer.async_cancel()
+            self.track_task(
+                create_eager_task(
+                    zha_group.async_reconcile_discovered_entities(),
+                    name=f"Gateway.group_member_removed_reconcile_0x{zha_group.group_id:04x}",
+                )
+            )
+        else:
+            self._schedule_group_reconciliation(zha_group, "member_removed")
 
         zha_group.info("group_member_removed - endpoint: %s", endpoint)
         self._emit_group_gateway_message(zigpy_group, ZHA_GW_MSG_GROUP_MEMBER_REMOVED)
@@ -529,6 +600,11 @@ class Gateway(AsyncUtilMixin, EventBase):
 
     def group_removed(self, zigpy_group: zigpy.group.Group) -> None:
         """Handle zigpy group removed event."""
+        if debouncer := self._group_reconcile_debouncers.pop(
+            zigpy_group.group_id, None
+        ):
+            debouncer.async_shutdown()
+
         self._emit_group_gateway_message(zigpy_group, ZHA_GW_MSG_GROUP_REMOVED)
         zha_group = self._groups.pop(zigpy_group.group_id, None)
         if zha_group is None:
@@ -560,6 +636,11 @@ class Gateway(AsyncUtilMixin, EventBase):
     def device_removed(self, device: zigpy.device.Device) -> None:
         """Handle device being removed from the network."""
         _LOGGER.info("Removing device %s - %s", device.ieee, f"0x{device.nwk:04x}")
+        self._bump_device_init_generation(device.ieee)
+        if init_task := self._device_init_tasks.pop(device.ieee, None):
+            self._device_init_task_generations.pop(init_task, None)
+            if not init_task.done():
+                init_task.cancel()
         zha_device = self._devices.pop(device.ieee, None)
         if zha_device is not None:
             device_info = zha_device.extended_device_info
@@ -632,6 +713,12 @@ class Gateway(AsyncUtilMixin, EventBase):
 
     async def async_device_initialized(self, device: zigpy.device.Device) -> None:
         """Handle device joined and basic information discovered (async)."""
+        if not self._is_current_device_init_task(device.ieee):
+            _LOGGER.debug(
+                "Skipping stale async_device_initialized for device %s",
+                device.ieee,
+            )
+            return
         zha_device = self.get_or_create_device(device)
         _LOGGER.debug(
             "device - %s:%s entering async_device_initialized - is_new_join: %s",
@@ -657,6 +744,13 @@ class Gateway(AsyncUtilMixin, EventBase):
             )
             await self._async_device_joined(zha_device)
 
+        if not self._is_current_device_init_task(device.ieee):
+            _LOGGER.debug(
+                "Skipping stale async_device_initialized completion for device %s",
+                device.ieee,
+            )
+            return
+
         device_info = ExtendedDeviceInfoWithPairingStatus(
             pairing_status=DevicePairingStatus.INITIALIZED,
             **zha_device.extended_device_info.__dict__,
@@ -667,12 +761,18 @@ class Gateway(AsyncUtilMixin, EventBase):
         )
 
     async def _async_device_joined(self, zha_device: Device) -> None:
+        if not self._is_current_device_init_task(zha_device.ieee):
+            return
+
         zha_device.available = True
         zha_device.on_network = True
 
         async with self.request_priority(t.PacketPriority.HIGH):
             await zha_device.async_configure()
             await zha_device.async_initialize()
+
+        if not self._is_current_device_init_task(zha_device.ieee):
+            return
 
         self.emit(
             ZHA_GW_MSG_DEVICE_FULL_INIT,
@@ -686,6 +786,9 @@ class Gateway(AsyncUtilMixin, EventBase):
         )
 
     async def _async_device_rejoined(self, zha_device: Device) -> None:
+        if not self._is_current_device_init_task(zha_device.ieee):
+            return
+
         _LOGGER.debug(
             "skipping discovery for previously discovered device - %s:%s",
             zha_device.nwk,
@@ -694,6 +797,9 @@ class Gateway(AsyncUtilMixin, EventBase):
         # we don't have to do this on a nwk swap
         # but we don't have a way to tell currently
         await zha_device.async_configure()
+
+        if not self._is_current_device_init_task(zha_device.ieee):
+            return
 
         self.emit(
             ZHA_GW_MSG_DEVICE_FULL_INIT,
@@ -745,7 +851,13 @@ class Gateway(AsyncUtilMixin, EventBase):
                         )
                     )
                 await asyncio.gather(*tasks)
-        return self.groups.get(group_id)
+
+        zha_group = self.groups.get(group_id)
+        if zha_group is not None and members:
+            # Preserve existing API behavior: groups created via this path should
+            # have entities reconciled by the time this coroutine returns.
+            await zha_group.async_reconcile_discovered_entities()
+        return zha_group
 
     async def async_remove_device(self, ieee: EUI64) -> None:
         """Remove a device from ZHA."""
@@ -786,6 +898,17 @@ class Gateway(AsyncUtilMixin, EventBase):
         if self._startup_fetch_task and not self._startup_fetch_task.done():
             self._startup_fetch_task.cancel()
         self._startup_fetch_task = None
+
+        for debouncer in self._group_reconcile_debouncers.values():
+            debouncer.async_shutdown()
+        self._group_reconcile_debouncers.clear()
+
+        for init_task in self._device_init_tasks.values():
+            if not init_task.done():
+                init_task.cancel()
+        self._device_init_tasks.clear()
+        self._device_init_task_generations.clear()
+        self._device_init_generation.clear()
 
         self.global_updater.stop()
         self._device_availability_checker.stop()

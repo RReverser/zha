@@ -50,7 +50,7 @@ from zha.application.const import (
     UNKNOWN,
 )
 from zha.application.gateway import Gateway
-from zha.application.platforms import PlatformEntity
+from zha.application.platforms import BaseEntity, PlatformEntity
 from zha.application.platforms.binary_sensor import IASZone
 from zha.application.platforms.light import Light
 from zha.application.platforms.sensor import LQISensor, RSSISensor
@@ -943,6 +943,37 @@ async def test_async_configure_repeated_calls_do_not_grow_pending_entities(
 
     await zha_device.async_configure()
     assert len(zha_device._pending_entities) == pending_count_after_first
+
+
+async def test_coordinator_baseentity_discovery_skips_quirk_metadata_hooks(
+    zha_gateway: Gateway,
+) -> None:
+    """Coordinator BaseEntity discovery should bypass quirks PlatformEntity hooks."""
+    coordinator = zha_gateway.coordinator_zha_device
+    assert coordinator is not None
+    assert coordinator.is_active_coordinator
+    base_entity = mock.Mock(spec=BaseEntity)
+    base_entity.PLATFORM = Platform.SENSOR
+    base_entity.unique_id = "coordinator_base_entity"
+    base_entity.on_add = mock.Mock()
+
+    with (
+        patch(
+            "zha.zigbee.device.discovery.discover_coordinator_device_entities",
+            return_value=iter([base_entity]),
+        ),
+        patch.object(
+            coordinator,
+            "_is_entity_removed_by_quirk",
+            side_effect=AssertionError("should not evaluate quirks for BaseEntity"),
+        ),
+        patch.object(
+            coordinator,
+            "_apply_entity_metadata_changes",
+            side_effect=AssertionError("should not apply metadata to BaseEntity"),
+        ),
+    ):
+        coordinator._discover_new_entities()
 
 
 async def test_async_initialize_does_not_replace_existing_entities_same_key(

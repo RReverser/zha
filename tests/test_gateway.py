@@ -25,7 +25,12 @@ from tests.common import (
     zigpy_device_from_json,
 )
 from zha.application import Platform
-from zha.application.const import ZHA_GW_MSG, ZHA_GW_MSG_CONNECTION_LOST, RadioType
+from zha.application.const import (
+    ZHA_GW_MSG,
+    ZHA_GW_MSG_CONNECTION_LOST,
+    ZHA_GW_MSG_DEVICE_FULL_INIT,
+    RadioType,
+)
 from zha.application.gateway import (
     ConnectionLostEvent,
     DeviceJoinedDeviceInfo,
@@ -589,6 +594,95 @@ async def test_device_initialized_done_callback_does_not_remove_replacement_task
 
     await zha_gateway.async_block_till_done()
     assert zigpy_dev_basic.ieee not in zha_gateway._device_init_tasks
+
+
+async def test_device_removed_cancels_inflight_init_and_invalidates_completion(
+    zha_gateway: Gateway,
+) -> None:
+    """Removing a device should cancel in-flight initialization for that ieee."""
+    zigpy_dev_basic = create_mock_zigpy_device(zha_gateway, ZIGPY_DEVICE_BASIC)
+    zha_gateway.get_or_create_device(zigpy_dev_basic)
+    started = asyncio.Event()
+    cancelled = asyncio.Event()
+    completed = asyncio.Event()
+
+    async def delayed_device_initialized(_):
+        started.set()
+        try:
+            await asyncio.sleep(1)
+        except asyncio.CancelledError:
+            cancelled.set()
+            raise
+        completed.set()
+
+    zha_gateway.async_device_initialized = delayed_device_initialized
+    zha_gateway.device_initialized(zigpy_dev_basic)
+    await started.wait()
+
+    zha_gateway.device_removed(zigpy_dev_basic)
+    await zha_gateway.async_block_till_done()
+
+    assert zigpy_dev_basic.ieee not in zha_gateway._device_init_tasks
+    assert zigpy_dev_basic.ieee not in zha_gateway.devices
+    assert cancelled.is_set()
+    assert not completed.is_set()
+
+
+async def test_device_removed_prevents_late_full_init_side_effects(
+    zha_gateway: Gateway,
+) -> None:
+    """Stale initialization completions must not emit full-init after removal."""
+    zigpy_dev_basic = create_mock_zigpy_device(zha_gateway, ZIGPY_DEVICE_BASIC)
+    zha_gateway.emit = MagicMock(wraps=zha_gateway.emit)
+    started = asyncio.Event()
+    proceed = asyncio.Event()
+
+    async def delayed_device_initialized(device):
+        zha_gateway.get_or_create_device(device)
+        started.set()
+        await proceed.wait()
+        zha_gateway.emit(ZHA_GW_MSG_DEVICE_FULL_INIT, MagicMock())
+
+    zha_gateway.async_device_initialized = delayed_device_initialized
+    zha_gateway.device_initialized(zigpy_dev_basic)
+    await started.wait()
+
+    zha_gateway.device_removed(zigpy_dev_basic)
+    proceed.set()
+    await zha_gateway.async_block_till_done()
+
+    assert all(
+        emit_call.args[0] != ZHA_GW_MSG_DEVICE_FULL_INIT
+        for emit_call in zha_gateway.emit.mock_calls
+    )
+
+
+async def test_shutdown_clears_device_init_task_state(
+    zha_gateway: Gateway,
+) -> None:
+    """Gateway shutdown should cancel and clear device init tracking state."""
+    zigpy_dev_basic = create_mock_zigpy_device(zha_gateway, ZIGPY_DEVICE_BASIC)
+    started = asyncio.Event()
+    cancelled = asyncio.Event()
+
+    async def delayed_device_initialized(_):
+        started.set()
+        try:
+            await asyncio.sleep(1)
+        except asyncio.CancelledError:
+            cancelled.set()
+            raise
+
+    zha_gateway.async_device_initialized = delayed_device_initialized
+    zha_gateway.device_initialized(zigpy_dev_basic)
+    await started.wait()
+
+    await zha_gateway.shutdown()
+    await zha_gateway.async_block_till_done()
+
+    assert cancelled.is_set()
+    assert zha_gateway._device_init_tasks == {}
+    assert zha_gateway._device_init_generation == {}
 
 
 def test_gateway_raw_device_initialized(
@@ -1181,3 +1275,93 @@ async def test_group_reconcile_skips_removed_group(
 
     assert zha_group.group_entities == {}
     assert zha_group._entity_unsubs == {}
+
+
+async def test_group_member_event_burst_is_debounced_to_single_reconcile(
+    zha_gateway: Gateway,
+) -> None:
+    """Burst group member events should collapse into one reconcile call."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+    zha_group.async_reconcile_discovered_entities = AsyncMock()
+
+    for _ in range(5):
+        zha_gateway.group_member_added(
+            zha_group.zigpy_group, device_light_2.device.endpoints[1]
+        )
+    await asyncio.sleep(zha_gateway.GROUP_RECONCILE_DEBOUNCE_S + 0.05)
+    await zha_gateway.async_block_till_done()
+
+    assert zha_group.async_reconcile_discovered_entities.await_count == 1
+
+
+async def test_group_removed_cancels_group_reconcile_debouncer(
+    zha_gateway: Gateway,
+) -> None:
+    """Removing a group should cancel pending debounced reconcile work."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+    zha_group.async_reconcile_discovered_entities = AsyncMock()
+
+    zha_gateway.group_member_removed(
+        zha_group.zigpy_group, device_light_2.device.endpoints[1]
+    )
+    zha_gateway.group_removed(zha_group.zigpy_group)
+    await asyncio.sleep(zha_gateway.GROUP_RECONCILE_DEBOUNCE_S + 0.05)
+    await zha_gateway.async_block_till_done()
+
+    assert zha_group.group_id not in zha_gateway._group_reconcile_debouncers
+    assert zha_group.async_reconcile_discovered_entities.await_count == 0
+
+
+async def test_shutdown_cancels_all_group_reconcile_debouncers(
+    zha_gateway: Gateway,
+) -> None:
+    """Gateway shutdown should cancel all pending debounced group reconciles."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+    zha_group.async_reconcile_discovered_entities = AsyncMock()
+
+    zha_gateway.group_member_added(
+        zha_group.zigpy_group, device_light_2.device.endpoints[1]
+    )
+
+    await zha_gateway.shutdown()
+    await asyncio.sleep(0.15)
+    await zha_gateway.async_block_till_done(wait_background_tasks=True)
+
+    assert zha_gateway._group_reconcile_debouncers == {}
+    assert zha_group.async_reconcile_discovered_entities.await_count == 0

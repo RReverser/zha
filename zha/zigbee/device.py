@@ -1018,11 +1018,12 @@ class Device(LogMixin, EventBase):
 
         # Discover all applicable entities
         for entity in new_entities:
-            if self._is_entity_removed_by_quirk(entity):
-                continue
+            if isinstance(entity, PlatformEntity):
+                if self._is_entity_removed_by_quirk(entity):
+                    continue
 
-            # Apply any metadata changes from quirks v2
-            self._apply_entity_metadata_changes(entity)
+                # Apply any metadata changes from quirks v2.
+                self._apply_entity_metadata_changes(entity)
 
             self._enqueue_pending_entity(entity)
 

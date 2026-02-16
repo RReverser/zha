@@ -357,7 +357,9 @@ class Group(LogMixin):
             await devices[member.ieee].async_add_endpoint_to_group(
                 member.endpoint_id, self.group_id
             )
-        self.update_entity_subscriptions()
+        # Keep direct API calls deterministic: membership changes should be
+        # reflected in group entities before returning.
+        await self.async_reconcile_discovered_entities()
 
     async def async_remove_members(self, members: list[GroupMemberReference]) -> None:
         """Remove members from this group."""
@@ -376,7 +378,9 @@ class Group(LogMixin):
             await devices[member.ieee].async_remove_endpoint_from_group(
                 member.endpoint_id, self.group_id
             )
-        self.update_entity_subscriptions()
+        # Keep direct API calls deterministic: membership changes should be
+        # reflected in group entities before returning.
+        await self.async_reconcile_discovered_entities()
 
     def get_platform_entities(self, platform: str) -> list[PlatformEntity]:
         """Return entities belonging to the specified platform for this group."""
