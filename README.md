@@ -66,10 +66,6 @@ To bootstrap a development environment for ZHA, follow these steps:
     python -m tools.regenerate_diagnostics
     ```
 
-## Architecture Documentation
-
-Architecture documentation intended for coding agents and large refactors is available in [docs/architecture](docs/architecture/README.md).
-
 ## License
 
 ZHA is released under the [Apache 2.0 License](https://opensource.org/license/apache-2-0). Please refer to the LICENSE file for more details
