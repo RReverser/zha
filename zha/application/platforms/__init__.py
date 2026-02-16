@@ -515,6 +515,7 @@ class PlatformEntity(BaseEntity):
             for cluster_name, init_attrs in self.ZCL_INIT_ATTRS.items()
         }
         self.quirks_v2_direct_report_attrs: dict[str, set[str]] = {}
+        self.quirks_v2_direct_init_attrs: dict[str, set[str]] = {}
 
         for cluster_handler in cluster_handlers:
             self.cluster_handlers[cluster_handler.name] = cluster_handler
@@ -564,7 +565,12 @@ class PlatformEntity(BaseEntity):
         )
 
     def add_entity_init_attr(
-        self, cluster_name: str, attr: str, use_cache: bool
+        self,
+        cluster_name: str,
+        attr: str,
+        use_cache: bool,
+        *,
+        is_quirks_v2_direct: bool = False,
     ) -> None:
         """Add/merge one entity-owned initialization attribute setting."""
         cluster_attrs = self.entity_init_attrs.setdefault(cluster_name, {})
@@ -573,6 +579,9 @@ class PlatformEntity(BaseEntity):
             cluster_attrs[attr] = cluster_attrs[attr] and use_cache
         else:
             cluster_attrs[attr] = use_cache
+
+        if is_quirks_v2_direct:
+            self.quirks_v2_direct_init_attrs.setdefault(cluster_name, set()).add(attr)
 
     def _init_from_quirks_metadata(self, entity_metadata: EntityMetadata) -> None:
         """Init this entity from the quirks metadata."""

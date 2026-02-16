@@ -50,7 +50,6 @@ from zha.application.platforms import (  # noqa: F401 pylint: disable=unused-imp
 
 # importing cluster handlers updates registries
 from zha.zigbee.cluster_handlers import (  # noqa: F401 pylint: disable=unused-import
-    AttrReportConfig,
     ClientClusterHandler,
     ClusterHandler,
     closures,
@@ -301,6 +300,7 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
             )
 
         assert cluster_handler
+        cluster_name = endpoint.resolve_cluster_name(cluster)
 
         # flags to determine if we need to claim/bind the cluster handler
         attribute_initialization_found: bool = False
@@ -326,48 +326,37 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
                 )
                 continue
 
-            # process the entity metadata for ZCL_INIT_ATTRS and REPORT_CONFIG
-            if attr_name := getattr(entity_metadata, "attribute_name", None):
-                # TODO: ignore "attribute write buttons"? currently, we claim ch
-                # if the entity has a reporting config, add it to the cluster handler
-                if rep_conf := getattr(entity_metadata, "reporting_config", None):
-                    # if attr is already in REPORT_CONFIG, remove it first
-                    cluster_handler.REPORT_CONFIG = tuple(
-                        filter(
-                            lambda cfg: cfg["attr"] != attr_name,
-                            cluster_handler.REPORT_CONFIG,
-                        )
-                    )
-                    # tuples are immutable and we re-set the REPORT_CONFIG here,
-                    # so no need to check for an instance variable
-                    cluster_handler.REPORT_CONFIG += (
-                        AttrReportConfig(attr=attr_name, config=astuple(rep_conf)),
-                    )
-                    # mark cluster handler for claiming and binding later
-                    reporting_found = True
-
-                # not in REPORT_CONFIG, add to ZCL_INIT_ATTRS if it not already in
-                elif attr_name not in cluster_handler.ZCL_INIT_ATTRS:
-                    # copy existing ZCL_INIT_ATTRS into instance variable once,
-                    # so we don't modify other instances of the same cluster handler
-                    if zha_const.ZCL_INIT_ATTRS not in cluster_handler.__dict__:
-                        cluster_handler.ZCL_INIT_ATTRS = (
-                            cluster_handler.ZCL_INIT_ATTRS.copy()
-                        )
-                    # add the attribute to the guaranteed instance variable
-                    cluster_handler.ZCL_INIT_ATTRS[attr_name] = (
-                        entity_metadata.attribute_initialized_from_cache
-                    )
-                    # mark cluster handler for claiming later, but not binding
-                    attribute_initialization_found = True
-
-            yield entity_class(
+            # Process quirks metadata into entity-owned cluster requirements.
+            entity = entity_class(
                 cluster_handlers=[cluster_handler],
                 endpoint=endpoint,
                 device=device,
                 entity_metadata=entity_metadata,
                 legacy_discovery_unique_id=f"{device.ieee}-{endpoint.id}",
             )
+
+            if attr_name := getattr(entity_metadata, "attribute_name", None):
+                if rep_conf := getattr(entity_metadata, "reporting_config", None):
+                    entity.add_entity_report_config(
+                        cluster_name=cluster_name,
+                        attr=attr_name,
+                        config=astuple(rep_conf),
+                        is_quirks_v2_direct=True,
+                    )
+                    # Mark cluster handler for claiming and binding later.
+                    reporting_found = True
+
+                else:
+                    entity.add_entity_init_attr(
+                        cluster_name=cluster_name,
+                        attr=attr_name,
+                        use_cache=entity_metadata.attribute_initialized_from_cache,
+                        is_quirks_v2_direct=True,
+                    )
+                    # Mark cluster handler for claiming later, but not binding.
+                    attribute_initialization_found = True
+
+            yield entity
 
             _LOGGER.debug(
                 "'%s' platform -> '%s' using %s",

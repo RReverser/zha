@@ -13,7 +13,7 @@ from enum import Enum
 from functools import cached_property
 import logging
 import time
-from typing import TYPE_CHECKING, Any, Final, Self
+from typing import TYPE_CHECKING, Any, Final, Self, cast
 
 from zigpy.device import Device as ZigpyDevice
 import zigpy.exceptions
@@ -83,6 +83,7 @@ from zha.event import EventBase
 from zha.exceptions import ZHAException
 from zha.mixins import LogMixin
 from zha.zigbee.cluster_handlers import ClusterHandler, ClusterHandlerStatus
+from zha.zigbee.cluster_handlers.const import REPORT_CONFIG_ATTR, REPORT_CONFIG_CONFIG
 from zha.zigbee.endpoint import Endpoint
 
 if TYPE_CHECKING:
@@ -148,6 +149,18 @@ class DeviceStatus(Enum):
 
     CREATED = 1
     INITIALIZED = 2
+
+
+def _merge_aggressive_reporting_config(
+    existing: tuple[int, int, int | float],
+    incoming: tuple[int, int, int | float],
+) -> tuple[int, int, int | float]:
+    """Merge reporting configs by choosing the fastest/lowest thresholds."""
+    return (
+        min(existing[0], incoming[0]),
+        min(existing[1], incoming[1]),
+        min(existing[2], incoming[2]),
+    )
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -850,6 +863,7 @@ class Device(LogMixin, EventBase):
 
         # Try to add entities to claim the cluster handlers
         self._discover_new_entities()
+        self._sync_pending_entity_cluster_requirements()
 
         await asyncio.gather(
             *(endpoint.async_configure() for endpoint in self._endpoints.values())
@@ -989,11 +1003,115 @@ class Device(LogMixin, EventBase):
             entity.on_add()
             self._pending_entities.append(entity)
 
+    def _sync_pending_entity_cluster_requirements(self) -> None:
+        """Apply pending entity report/init requirements to cluster handlers."""
+        if not self._pending_entities:
+            return
+
+        # De-duplicate by platform+unique_id to avoid double-applying merges when
+        # discovery runs in both configure and initialize phases.
+        pending_entities: dict[tuple[Platform, str], PlatformEntity] = {
+            (entity.PLATFORM, entity.unique_id): entity
+            for entity in self._pending_entities
+            if isinstance(entity, PlatformEntity)
+        }
+
+        pending_report_config: dict[
+            ClusterHandler, dict[str, tuple[int, int, int | float]]
+        ] = defaultdict(dict)
+        pending_direct_report_attrs: dict[ClusterHandler, set[str]] = defaultdict(set)
+        pending_init_attrs: dict[ClusterHandler, dict[str, bool]] = defaultdict(dict)
+
+        for entity in pending_entities.values():
+            for cluster_name, report_entries in entity.entity_report_config.items():
+                cluster_handler = entity.cluster_handlers.get(cluster_name)
+                if cluster_handler is None:
+                    continue
+
+                direct_report_attrs = entity.quirks_v2_direct_report_attrs.get(
+                    cluster_name, set()
+                )
+                if not direct_report_attrs:
+                    continue
+
+                handler_report_map = pending_report_config[cluster_handler]
+                handler_direct_attrs = pending_direct_report_attrs[cluster_handler]
+
+                for entry in report_entries:
+                    attr = cast(str, entry[REPORT_CONFIG_ATTR])
+                    if attr not in direct_report_attrs:
+                        continue
+                    config = cast(
+                        tuple[int, int, int | float], entry[REPORT_CONFIG_CONFIG]
+                    )
+                    handler_report_map[attr] = config
+                    handler_direct_attrs.add(attr)
+
+            for cluster_name, init_attrs in entity.entity_init_attrs.items():
+                cluster_handler = entity.cluster_handlers.get(cluster_name)
+                if cluster_handler is None:
+                    continue
+
+                direct_init_attrs = entity.quirks_v2_direct_init_attrs.get(
+                    cluster_name, set()
+                )
+                if not direct_init_attrs:
+                    continue
+
+                handler_init_attrs = pending_init_attrs[cluster_handler]
+                for attr, use_cache in init_attrs.items():
+                    if attr not in direct_init_attrs:
+                        continue
+                    if attr in handler_init_attrs:
+                        handler_init_attrs[attr] = (
+                            handler_init_attrs[attr] and use_cache
+                        )
+                    else:
+                        handler_init_attrs[attr] = use_cache
+
+        for cluster_handler, report_map in pending_report_config.items():
+            existing_report_map = {
+                entry["attr"]: entry["config"]
+                for entry in cluster_handler.REPORT_CONFIG
+            }
+            direct_attrs = pending_direct_report_attrs[cluster_handler]
+
+            for attr, config in report_map.items():
+                if attr in direct_attrs:
+                    existing_report_map[attr] = config
+                    continue
+
+                if attr in existing_report_map:
+                    existing_report_map[attr] = _merge_aggressive_reporting_config(
+                        existing_report_map[attr], config
+                    )
+                else:
+                    existing_report_map[attr] = config
+
+            cluster_handler.REPORT_CONFIG = tuple(
+                {
+                    "attr": attr,
+                    "config": config,
+                }
+                for attr, config in sorted(existing_report_map.items())
+            )
+
+        for cluster_handler, init_attrs in pending_init_attrs.items():
+            existing_init_attrs = dict(cluster_handler.ZCL_INIT_ATTRS)
+            for attr, use_cache in init_attrs.items():
+                if attr in existing_init_attrs:
+                    existing_init_attrs[attr] = existing_init_attrs[attr] and use_cache
+                else:
+                    existing_init_attrs[attr] = use_cache
+
+            cluster_handler.ZCL_INIT_ATTRS = existing_init_attrs
+
     async def async_initialize(self, from_cache: bool = False) -> None:
         """Initialize cluster handlers."""
         self.debug("started initialization")
 
         self._discover_new_entities()
+        self._sync_pending_entity_cluster_requirements()
 
         self._zdo_status = ClusterHandlerStatus.INITIALIZED
         self.debug("'async_initialize' stage succeeded for ZDO")
