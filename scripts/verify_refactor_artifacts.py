@@ -24,6 +24,7 @@ EXPECTED_SHA256 = {
 
 
 def sha256(path: Path) -> str:
+    """Return the SHA256 checksum for a file."""
     digest = hashlib.sha256()
     with path.open("rb") as file:
         for chunk in iter(lambda: file.read(1024 * 1024), b""):
@@ -32,6 +33,7 @@ def sha256(path: Path) -> str:
 
 
 def main() -> int:
+    """Verify that all frozen refactor artifacts exist and match expected hashes."""
     missing = []
     mismatches = []
 
@@ -45,19 +47,19 @@ def main() -> int:
             mismatches.append((filename, expected, actual))
 
     if missing:
-        print("Missing artifacts:")
+        sys.stderr.write("Missing artifacts:\n")
         for filename in missing:
-            print(f"  - {filename}")
+            sys.stderr.write(f"  - {filename}\n")
 
     if mismatches:
-        print("Checksum mismatches:")
+        sys.stderr.write("Checksum mismatches:\n")
         for filename, expected, actual in mismatches:
-            print(f"  - {filename}: expected={expected} actual={actual}")
+            sys.stderr.write(f"  - {filename}: expected={expected} actual={actual}\n")
 
     if missing or mismatches:
         return 1
 
-    print("All refactor scaffolding artifacts verified.")
+    sys.stdout.write("All refactor scaffolding artifacts verified.\n")
     return 0
 
 
