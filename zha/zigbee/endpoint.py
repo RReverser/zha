@@ -29,9 +29,9 @@ from zigpy.zcl.helpers import ReportingConfig
 
 from zha.application import const
 from zha.application.const import (
-    ZHA_CLUSTER_HANDLER_MSG,
-    ZHA_CLUSTER_HANDLER_MSG_BIND,
-    ZHA_CLUSTER_HANDLER_MSG_CFG_RPT,
+    ZHA_CLUSTER_MSG,
+    ZHA_CLUSTER_MSG_BIND,
+    ZHA_CLUSTER_MSG_CFG_RPT,
 )
 from zha.application.helpers import retry_request
 from zha.exceptions import ZHAException
@@ -94,8 +94,8 @@ class ClusterBindEvent:
     cluster_id: int
     success: bool
     cluster_handler_unique_id: str
-    event_type: Final[str] = ZHA_CLUSTER_HANDLER_MSG
-    event: Final[str] = ZHA_CLUSTER_HANDLER_MSG_BIND
+    event_type: Final[str] = ZHA_CLUSTER_MSG
+    event: Final[str] = ZHA_CLUSTER_MSG_BIND
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -106,8 +106,8 @@ class ClusterConfigureReportingEvent:
     cluster_id: int
     attributes: dict[str, dict[str, Any]]
     cluster_handler_unique_id: str
-    event_type: Final[str] = ZHA_CLUSTER_HANDLER_MSG
-    event: Final[str] = ZHA_CLUSTER_HANDLER_MSG_CFG_RPT
+    event_type: Final[str] = ZHA_CLUSTER_MSG
+    event: Final[str] = ZHA_CLUSTER_MSG_CFG_RPT
 
 
 def _merge_aggressive_reporting_config(
@@ -476,7 +476,7 @@ class Endpoint:
             )
 
         self.device.emit(
-            ZHA_CLUSTER_HANDLER_MSG_BIND,
+            ZHA_CLUSTER_MSG_BIND,
             ClusterBindEvent(
                 cluster_name=cluster.name,
                 cluster_id=cluster.cluster_id,
@@ -534,7 +534,7 @@ class Endpoint:
             )
 
         self.device.emit(
-            ZHA_CLUSTER_HANDLER_MSG_CFG_RPT,
+            ZHA_CLUSTER_MSG_CFG_RPT,
             ClusterConfigureReportingEvent(
                 cluster_name=cluster.name,
                 cluster_id=cluster.cluster_id,

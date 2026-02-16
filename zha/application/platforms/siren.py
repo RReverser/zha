@@ -34,7 +34,7 @@ from zha.application.platforms import (
     PlatformEntity,
     register_entity,
 )
-from zha.zigbee.const import CLUSTER_HANDLER_IAS_WD
+from zha.zigbee.const import CLUSTER_IAS_WD
 
 if TYPE_CHECKING:
     from zha.zigbee.device import Device
@@ -77,7 +77,7 @@ class Siren(PlatformEntity):
     _attr_primary_weight = 4
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_IAS_WD}),
+        in_clusters=frozenset({CLUSTER_IAS_WD}),
     )
 
     def __init__(

@@ -37,13 +37,13 @@ from zha.application.platforms.number.const import ICONS, NumberDeviceClass, Num
 from zha.units import UnitOfMass, UnitOfTemperature, UnitOfTime
 from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
-    CLUSTER_HANDLER_ANALOG_OUTPUT,
-    CLUSTER_HANDLER_BASIC,
-    CLUSTER_HANDLER_COLOR,
-    CLUSTER_HANDLER_INOVELLI,
-    CLUSTER_HANDLER_LEVEL,
-    CLUSTER_HANDLER_OCCUPANCY,
-    CLUSTER_HANDLER_THERMOSTAT,
+    CLUSTER_ANALOG_OUTPUT,
+    CLUSTER_BASIC,
+    CLUSTER_COLOR,
+    CLUSTER_INOVELLI,
+    CLUSTER_LEVEL,
+    CLUSTER_OCCUPANCY,
+    CLUSTER_THERMOSTAT,
     IKEA_AIR_PURIFIER_CLUSTER,
     INOVELLI_CLUSTER,
     REPORT_CONFIG_ASAP,
@@ -185,9 +185,7 @@ class AnalogOutputNumber(BaseNumber):
             AnalogOutput.AttributeDefs.resolution.name: True,
         },
     }
-    _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_ANALOG_OUTPUT})
-    )
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_ANALOG_OUTPUT}))
     _cluster: Cluster
 
     def __init__(
@@ -446,7 +444,7 @@ class OnOffTransitionTimeConfigurationEntity(NumberConfigurationEntity):
     _attribute_name = "on_off_transition_time"
     _attr_translation_key: str = "on_off_transition_time"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_LEVEL}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_LEVEL}))
 
 
 @register_entity(LevelControl.cluster_id)
@@ -470,7 +468,7 @@ class OnLevelConfigurationEntity(NumberConfigurationEntity):
     _attribute_name = "on_level"
     _attr_translation_key: str = "on_level"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_LEVEL}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_LEVEL}))
 
 
 @register_entity(LevelControl.cluster_id)
@@ -494,7 +492,7 @@ class OnTransitionTimeConfigurationEntity(NumberConfigurationEntity):
     _attribute_name = "on_transition_time"
     _attr_translation_key: str = "on_transition_time"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_LEVEL}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_LEVEL}))
 
 
 @register_entity(LevelControl.cluster_id)
@@ -518,7 +516,7 @@ class OffTransitionTimeConfigurationEntity(NumberConfigurationEntity):
     _attribute_name = "off_transition_time"
     _attr_translation_key: str = "off_transition_time"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_LEVEL}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_LEVEL}))
 
 
 @register_entity(LevelControl.cluster_id)
@@ -542,7 +540,7 @@ class DefaultMoveRateConfigurationEntity(NumberConfigurationEntity):
     _attribute_name = "default_move_rate"
     _attr_translation_key: str = "default_move_rate"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_LEVEL}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_LEVEL}))
 
 
 @register_entity(LevelControl.cluster_id)
@@ -566,7 +564,7 @@ class StartUpCurrentLevelConfigurationEntity(NumberConfigurationEntity):
     _attribute_name = "start_up_current_level"
     _attr_translation_key: str = "start_up_current_level"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_LEVEL}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_LEVEL}))
 
 
 @register_entity(Color.cluster_id)
@@ -598,7 +596,7 @@ class StartUpColorTemperatureConfigurationEntity(NumberConfigurationEntity):
     _attribute_name = "start_up_color_temperature"
     _attr_translation_key: str = "start_up_color_temperature"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_COLOR}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_COLOR}))
 
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
@@ -704,7 +702,7 @@ class TiRouterTransmitPower(NumberConfigurationEntity):
     _attr_translation_key: str = "transmit_power"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_BASIC}),
+        in_clusters=frozenset({CLUSTER_BASIC}),
         manufacturers=frozenset({"TexasInstruments"}),
         models=frozenset({"ti.router"}),
     )
@@ -721,7 +719,7 @@ class InovelliRemoteDimmingUpSpeed(NumberConfigurationEntity):
     _attribute_name = "dimming_speed_up_remote"
     _attr_translation_key: str = "dimming_speed_up_remote"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -735,7 +733,7 @@ class InovelliButtonDelay(NumberConfigurationEntity):
     _attribute_name = "button_delay"
     _attr_translation_key: str = "button_delay"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -749,7 +747,7 @@ class InovelliLocalDimmingUpSpeed(NumberConfigurationEntity):
     _attribute_name = "dimming_speed_up_local"
     _attr_translation_key: str = "dimming_speed_up_local"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -763,7 +761,7 @@ class InovelliLocalRampRateOffToOn(NumberConfigurationEntity):
     _attribute_name = "ramp_rate_off_to_on_local"
     _attr_translation_key: str = "ramp_rate_off_to_on_local"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -777,7 +775,7 @@ class InovelliRemoteDimmingSpeedOffToOn(NumberConfigurationEntity):
     _attribute_name = "ramp_rate_off_to_on_remote"
     _attr_translation_key: str = "ramp_rate_off_to_on_remote"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -791,7 +789,7 @@ class InovelliRemoteDimmingDownSpeed(NumberConfigurationEntity):
     _attribute_name = "dimming_speed_down_remote"
     _attr_translation_key: str = "dimming_speed_down_remote"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -805,7 +803,7 @@ class InovelliLocalDimmingDownSpeed(NumberConfigurationEntity):
     _attribute_name = "dimming_speed_down_local"
     _attr_translation_key: str = "dimming_speed_down_local"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -819,7 +817,7 @@ class InovelliLocalRampRateOnToOff(NumberConfigurationEntity):
     _attribute_name = "ramp_rate_on_to_off_local"
     _attr_translation_key: str = "ramp_rate_on_to_off_local"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -833,7 +831,7 @@ class InovelliRemoteDimmingSpeedOnToOff(NumberConfigurationEntity):
     _attribute_name = "ramp_rate_on_to_off_remote"
     _attr_translation_key: str = "ramp_rate_on_to_off_remote"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -847,7 +845,7 @@ class InovelliMinimumLoadDimmingLevel(NumberConfigurationEntity):
     _attribute_name = "minimum_level"
     _attr_translation_key: str = "minimum_level"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -861,7 +859,7 @@ class InovelliMaximumLoadDimmingLevel(NumberConfigurationEntity):
     _attribute_name = "maximum_level"
     _attr_translation_key: str = "maximum_level"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -875,7 +873,7 @@ class InovelliAutoShutoffTimer(NumberConfigurationEntity):
     _attribute_name = "auto_off_timer"
     _attr_translation_key: str = "auto_off_timer"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -889,7 +887,7 @@ class InovelliLocalDefaultLevel(NumberConfigurationEntity):
     _attribute_name = "default_level_local"
     _attr_translation_key: str = "default_level_local"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -903,7 +901,7 @@ class InovelliRemoteDefaultLevel(NumberConfigurationEntity):
     _attribute_name = "default_level_remote"
     _attr_translation_key: str = "default_level_remote"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -917,7 +915,7 @@ class InovelliStartupDefaultLevel(NumberConfigurationEntity):
     _attribute_name = "state_after_power_restored"
     _attr_translation_key: str = "state_after_power_restored"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -932,7 +930,7 @@ class InovelliQuickStartTime(NumberConfigurationEntity):
     _attr_translation_key: str = "quick_start_time"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
         models=frozenset({"VZM35-SN"}),
     )
 
@@ -948,7 +946,7 @@ class InovelliLoadLevelIndicatorTimeout(NumberConfigurationEntity):
     _attribute_name = "load_level_indicator_timeout"
     _attr_translation_key: str = "load_level_indicator_timeout"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -962,7 +960,7 @@ class InovelliDefaultAllLEDOnColor(NumberConfigurationEntity):
     _attribute_name = "led_color_when_on"
     _attr_translation_key: str = "led_color_when_on"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -976,7 +974,7 @@ class InovelliDefaultAllLEDOffColor(NumberConfigurationEntity):
     _attribute_name = "led_color_when_off"
     _attr_translation_key: str = "led_color_when_off"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -990,7 +988,7 @@ class InovelliDefaultAllLEDOnIntensity(NumberConfigurationEntity):
     _attribute_name = "led_intensity_when_on"
     _attr_translation_key: str = "led_intensity_when_on"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -1004,7 +1002,7 @@ class InovelliDefaultAllLEDOffIntensity(NumberConfigurationEntity):
     _attribute_name = "led_intensity_when_off"
     _attr_translation_key: str = "led_intensity_when_off"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -1018,7 +1016,7 @@ class InovelliDoubleTapUpLevel(NumberConfigurationEntity):
     _attribute_name = "double_tap_up_level"
     _attr_translation_key: str = "double_tap_up_level"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(INOVELLI_CLUSTER)
@@ -1032,7 +1030,7 @@ class InovelliDoubleTapDownLevel(NumberConfigurationEntity):
     _attribute_name = "double_tap_down_level"
     _attr_translation_key: str = "double_tap_down_level"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_INOVELLI}))
 
 
 @register_entity(AQARA_OPPLE_CLUSTER)
@@ -1217,7 +1215,7 @@ class ThermostatLocalTempCalibration(NumberConfigurationEntity):
     _attr_native_unit_of_measurement: str = UnitOfTemperature.CELSIUS
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         feature_priority=(PlatformFeatureGroup.LOCAL_TEMPERATURE_CALIBRATION, 0),
     )
 
@@ -1337,7 +1335,7 @@ class SonoffThermostatLocalTempCalibration(ThermostatLocalTempCalibration):
     _attr_native_step: float = 0.1
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         models=frozenset({"TRVZB"}),
         feature_priority=(PlatformFeatureGroup.LOCAL_TEMPERATURE_CALIBRATION, 1),
     )
@@ -1458,7 +1456,7 @@ class BoschThermostatLocalTempCalibration(ThermostatLocalTempCalibration):
     _attr_native_step: float = 0.1
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         models=frozenset(
             {
                 "RBSH-RTH0-ZB-EU",
@@ -1494,7 +1492,7 @@ class SonoffPresenceSenorTimeout(NumberConfigurationEntity):
     _attr_mode: NumberMode = NumberMode.BOX
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_OCCUPANCY}),
+        in_clusters=frozenset({CLUSTER_OCCUPANCY}),
         models=frozenset({"SNZB-06P", "SNZB-03P"}),
     )
 
@@ -1648,7 +1646,7 @@ class MaxHeatSetpointLimit(ZCLHeatSetpointLimitEntity):
     _attr_translation_key: str = "max_heat_setpoint_limit"
     _attr_entity_category = EntityCategory.CONFIG
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_THERMOSTAT}))
 
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
@@ -1779,7 +1777,7 @@ class MinHeatSetpointLimit(ZCLHeatSetpointLimitEntity):
     _attr_translation_key: str = "min_heat_setpoint_limit"
     _attr_entity_category = EntityCategory.CONFIG
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_THERMOSTAT}))
 
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
@@ -1911,7 +1909,7 @@ class DanfossExerciseTriggerTime(NumberConfigurationEntity):
     _attr_native_unit_of_measurement: str = UnitOfTime.MINUTES
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2033,7 +2031,7 @@ class DanfossExternalMeasuredRoomSensor(ZCLTemperatureEntity):
     _attr_native_max_value: float = 35
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2156,7 +2154,7 @@ class DanfossLoadRoomMean(NumberConfigurationEntity):
     _attr_mode: NumberMode = NumberMode.BOX
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2282,7 +2280,7 @@ class DanfossRegulationSetpointOffset(NumberConfigurationEntity):
     _multiplier = 1 / 10
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 

@@ -44,12 +44,12 @@ from zha.application.platforms.light.const import LIGHT_PROFILE_DEVICE_TYPES
 from zha.exceptions import ZHAException
 from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
-    CLUSTER_HANDLER_BASIC,
-    CLUSTER_HANDLER_BINARY_OUTPUT,
-    CLUSTER_HANDLER_COVER,
-    CLUSTER_HANDLER_INOVELLI,
-    CLUSTER_HANDLER_ON_OFF,
-    CLUSTER_HANDLER_THERMOSTAT,
+    CLUSTER_BASIC,
+    CLUSTER_BINARY_OUTPUT,
+    CLUSTER_COVER,
+    CLUSTER_INOVELLI,
+    CLUSTER_ON_OFF,
+    CLUSTER_THERMOSTAT,
     IKEA_AIR_PURIFIER_CLUSTER,
     INOVELLI_CLUSTER,
     REPORT_CONFIG_ASAP,
@@ -110,7 +110,7 @@ class BaseSwitch(BaseEntity, ABC):
             return False
         return on_off
 
-    # TODO revert this once group entities use cluster handlers
+    # TODO revert this once group entities use clusters directly
     async def async_turn_on(self, **kwargs: Any) -> None:  # pylint: disable=unused-argument
         """Turn the entity on."""
         result = await safe_cluster_command(self._on_off_cluster, "on")
@@ -150,7 +150,7 @@ class Switch(PlatformEntity, BaseSwitch):
     _attribute_name = OnOff.AttributeDefs.on_off.name
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
+        in_clusters=frozenset({CLUSTER_ON_OFF}),
         # Switch entities have the lowest priority
         feature_priority=(PlatformFeatureGroup.LIGHT_OR_SWITCH_OR_SHADE, -1),
     )
@@ -262,9 +262,7 @@ class BinaryOutputSwitch(PlatformEntity, BaseSwitch):
             BinaryOutput.AttributeDefs.description.name: True,
         },
     }
-    _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_BINARY_OUTPUT})
-    )
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_BINARY_OUTPUT}))
 
     def __init__(
         self,
@@ -640,7 +638,7 @@ class HueMotionTriggerIndicatorSwitch(ConfigurableAttributeSwitch):
     _attr_translation_key = "trigger_indicator"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_BASIC}),
+        in_clusters=frozenset({CLUSTER_BASIC}),
         manufacturers=frozenset({"Philips", "Signify Netherlands B.V."}),
         models=frozenset({"SML001", "SML002", "SML003", "SML004"}),
     )
@@ -765,7 +763,7 @@ class InovelliInvertSwitch(ConfigurableAttributeSwitch):
     _attr_translation_key = "invert_switch"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -778,7 +776,7 @@ class InovelliSmartBulbMode(ConfigurableAttributeSwitch):
     _attr_translation_key = "smart_bulb_mode"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -791,7 +789,7 @@ class InovelliSmartFanMode(ConfigurableAttributeSwitch):
     _attr_translation_key = "smart_fan_mode"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
         models=frozenset({"VZM35-SN"}),
     )
 
@@ -805,7 +803,7 @@ class InovelliDoubleTapUpEnabled(ConfigurableAttributeSwitch):
     _attr_translation_key = "double_tap_up_enabled"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -818,7 +816,7 @@ class InovelliDoubleTapDownEnabled(ConfigurableAttributeSwitch):
     _attr_translation_key = "double_tap_down_enabled"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -831,7 +829,7 @@ class InovelliAuxSwitchScenes(ConfigurableAttributeSwitch):
     _attr_translation_key = "aux_switch_scenes"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -844,7 +842,7 @@ class InovelliBindingOffToOnSyncLevel(ConfigurableAttributeSwitch):
     _attr_translation_key = "binding_off_to_on_sync_level"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -857,7 +855,7 @@ class InovelliLocalProtection(ConfigurableAttributeSwitch):
     _attr_translation_key = "local_protection"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -870,7 +868,7 @@ class InovelliOnOffLEDMode(ConfigurableAttributeSwitch):
     _attr_translation_key = "one_led_mode"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -883,7 +881,7 @@ class InovelliFirmwareProgressLED(ConfigurableAttributeSwitch):
     _attr_translation_key = "firmware_progress_led"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -896,7 +894,7 @@ class InovelliRelayClickInOnOffMode(ConfigurableAttributeSwitch):
     _attr_translation_key = "relay_click_in_on_off_mode"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -909,7 +907,7 @@ class InovelliDisableDoubleTapClearNotificationsMode(ConfigurableAttributeSwitch
     _attr_translation_key = "disable_clear_notifications_double_tap"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_INOVELLI}),
+        in_clusters=frozenset({CLUSTER_INOVELLI}),
     )
 
 
@@ -964,7 +962,7 @@ class TuyaChildLockSwitch(ConfigurableAttributeSwitch):
     _attr_translation_key = "child_lock"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
+        in_clusters=frozenset({CLUSTER_ON_OFF}),
         exposed_features=frozenset({TUYA_PLUG_ONOFF}),
     )
 
@@ -1102,7 +1100,7 @@ class WindowCoveringInversionSwitch(ConfigurableAttributeSwitch):
     _attr_translation_key = "inverted"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_COVER}),
+        in_clusters=frozenset({CLUSTER_COVER}),
     )
 
     def _is_supported(self) -> bool:
@@ -1298,7 +1296,7 @@ class DanfossExternalOpenWindowDetected(ConfigurableAttributeSwitch):
     _attr_translation_key: str = "external_window_sensor"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -1418,7 +1416,7 @@ class DanfossWindowOpenFeature(ConfigurableAttributeSwitch):
     _attr_translation_key: str = "use_internal_window_detection"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -1538,7 +1536,7 @@ class DanfossMountingModeControl(ConfigurableAttributeSwitch):
     _attr_translation_key: str = "mounting_mode"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -1658,7 +1656,7 @@ class DanfossRadiatorCovered(ConfigurableAttributeSwitch):
     _attr_translation_key: str = "prioritize_external_temperature_sensor"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -1778,7 +1776,7 @@ class DanfossHeatAvailable(ConfigurableAttributeSwitch):
     _attr_translation_key: str = "heat_available"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -1898,7 +1896,7 @@ class DanfossLoadBalancingEnable(ConfigurableAttributeSwitch):
     _attr_translation_key: str = "use_load_balancing"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
@@ -2021,7 +2019,7 @@ class DanfossAdaptationRunSettings(ConfigurableAttributeSwitch):
     _attr_translation_key: str = "adaptation_run_enabled"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 

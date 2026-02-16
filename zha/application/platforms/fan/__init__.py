@@ -55,7 +55,7 @@ from zha.application.platforms.fan.helpers import (
     ranged_value_to_percentage,
 )
 from zha.zigbee.const import (
-    CLUSTER_HANDLER_FAN,
+    CLUSTER_FAN,
     IKEA_AIR_PURIFIER_CLUSTER,
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_CONFIG,
@@ -274,7 +274,7 @@ class Fan(BaseFan, PlatformEntity):
         },
     }
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
+        in_clusters=frozenset({CLUSTER_FAN}),
         # We prefer Thermostat entities if possible
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, -1),
     )
@@ -581,7 +581,7 @@ class KofFan(Fan):
     )
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
+        in_clusters=frozenset({CLUSTER_FAN}),
         models=frozenset({"HBUniversalCFRemote", "HDC52EastwindFan"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 1),
     )

@@ -65,8 +65,8 @@ from zha.application.const import (
     UNKNOWN,
     UNKNOWN_MANUFACTURER,
     UNKNOWN_MODEL,
-    ZHA_CLUSTER_HANDLER_CFG_DONE,
-    ZHA_CLUSTER_HANDLER_MSG,
+    ZHA_CLUSTER_CFG_DONE,
+    ZHA_CLUSTER_MSG,
     ZHA_DEVICE_UPDATED_EVENT,
     ZHA_EVENT,
 )
@@ -198,13 +198,13 @@ class DeviceFirmwareInfoUpdatedEvent:
 
 
 @dataclass(kw_only=True, frozen=True)
-class ClusterHandlerConfigurationComplete:
-    """Event generated when all cluster handlers are configured."""
+class ClusterConfigurationComplete:
+    """Event generated when all clusters are configured."""
 
     device_ieee: EUI64
     unique_id: str
-    event_type: Final[str] = ZHA_CLUSTER_HANDLER_MSG
-    event: Final[str] = ZHA_CLUSTER_HANDLER_CFG_DONE
+    event_type: Final[str] = ZHA_CLUSTER_MSG
+    event: Final[str] = ZHA_CLUSTER_CFG_DONE
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -748,10 +748,10 @@ class Device(LogMixin, EventBase):
         availability_changed = self.available ^ available
         self.available = available
         if availability_changed and available:
-            # reinit cluster handlers then signal entities
+            # Reinitialize clusters then signal entities.
             self.debug(
                 "Device availability changed and device became available,"
-                " reinitializing cluster handlers"
+                " reinitializing clusters"
             )
             self._gateway.async_create_task(
                 self._async_became_available(),
@@ -887,8 +887,8 @@ class Device(LogMixin, EventBase):
         )
 
         self.emit(
-            ZHA_CLUSTER_HANDLER_CFG_DONE,
-            ClusterHandlerConfigurationComplete(
+            ZHA_CLUSTER_CFG_DONE,
+            ClusterConfigurationComplete(
                 device_ieee=self.ieee,
                 unique_id=self.ieee,
             ),
@@ -1195,7 +1195,7 @@ class Device(LogMixin, EventBase):
             endpoint.set_cluster_init_attrs(cluster=cluster, init_attrs=init_attrs)
 
     async def async_initialize(self, from_cache: bool = False) -> None:
-        """Initialize cluster handlers."""
+        """Initialize clusters."""
         self.debug("started initialization")
 
         self._discover_new_entities()

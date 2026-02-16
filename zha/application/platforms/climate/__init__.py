@@ -61,8 +61,8 @@ from zha.application.platforms.climate.const import (
 from zha.decorators import periodic
 from zha.units import UnitOfTemperature
 from zha.zigbee.const import (
-    CLUSTER_HANDLER_FAN,
-    CLUSTER_HANDLER_THERMOSTAT,
+    CLUSTER_FAN,
+    CLUSTER_THERMOSTAT,
     REPORT_CONFIG_ASAP,
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_CONFIG,
@@ -227,8 +227,8 @@ class Thermostat(PlatformEntity):
     }
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
-        optional_in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
+        optional_in_clusters=frozenset({CLUSTER_FAN}),
         # We prefer Thermostat entities over Fan entities if possible
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 1),
     )
@@ -256,8 +256,8 @@ class Thermostat(PlatformEntity):
         self._preset: Preset | str = Preset.NONE
         self._presets: list[Preset | str] = []
 
-        self._thermostat_cluster: Cluster = self.in_clusters[CLUSTER_HANDLER_THERMOSTAT]
-        self._fan_cluster: Cluster | None = self.in_clusters.get(CLUSTER_HANDLER_FAN)
+        self._thermostat_cluster: Cluster = self.in_clusters[CLUSTER_THERMOSTAT]
+        self._fan_cluster: Cluster | None = self.in_clusters.get(CLUSTER_FAN)
 
         self._supported_features = ClimateEntityFeature(0)
         self.recompute_capabilities()
@@ -725,7 +725,7 @@ class Thermostat(PlatformEntity):
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set fan mode."""
         if self._fan_cluster is None:
-            self.warning("Fan cluster handler is not available")
+            self.warning("Fan cluster is not available")
             return
 
         if not self.fan_modes or fan_mode not in self.fan_modes:
@@ -937,9 +937,7 @@ class SinopeTechnologiesThermostat(Thermostat):
     __polling_interval: int
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset(
-            {CLUSTER_HANDLER_THERMOSTAT, "sinope_manufacturer_specific"}
-        ),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT, "sinope_manufacturer_specific"}),
         manufacturers=frozenset({"Sinope Technologies"}),
     )
 
@@ -1167,8 +1165,8 @@ class ZenWithinThermostat(Thermostat):
         },
     }
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
-        optional_in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
+        optional_in_clusters=frozenset({CLUSTER_FAN}),
         manufacturers=frozenset({"Zen Within", "LUX"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
     )
@@ -1285,7 +1283,7 @@ class ZehnderThermostat(Thermostat):
         },
     }
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         manufacturers=frozenset(
             {"ZEHNDER GROUP VAUX ANDIGNY      ", "ZEHNDER GROUP VAUX ANDIGNY"}
         ),
@@ -1472,8 +1470,8 @@ class CentralitePearl(Thermostat):
         },
     }
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
-        optional_in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
+        optional_in_clusters=frozenset({CLUSTER_FAN}),
         manufacturers=frozenset({"Centralite"}),
         models=frozenset({"3157100", "3157100-E"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
@@ -1610,7 +1608,7 @@ class MoesThermostat(Thermostat):
         },
     }
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         manufacturers=MOES_MANUFACTURERS,
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
     )
@@ -1817,7 +1815,7 @@ class BecaThermostat(Thermostat):
         },
     }
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         manufacturers=frozenset({"_TZE200_b6wax7g0"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
     )
@@ -2015,7 +2013,7 @@ class StelproFanHeater(Thermostat):
         },
     }
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         manufacturers=frozenset({"Stelpro"}),
         models=frozenset({"SORB"}),
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
@@ -2159,7 +2157,7 @@ class ZONNSMARTThermostat(Thermostat):
         },
     }
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
+        in_clusters=frozenset({CLUSTER_THERMOSTAT}),
         manufacturers=ZONNSMART_MANUFACTURERS,
         feature_priority=(PlatformFeatureGroup.THERMOSTAT_FAN, 2),
     )

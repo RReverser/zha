@@ -23,7 +23,7 @@ from zha.application.platforms.lock.const import (
     VALUE_TO_STATE,
 )
 from zha.zigbee.const import (
-    CLUSTER_HANDLER_DOORLOCK,
+    CLUSTER_DOORLOCK,
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_CONFIG,
     REPORT_CONFIG_IMMEDIATE,
@@ -51,7 +51,7 @@ class DoorLock(PlatformEntity):
     _attr_translation_key: str = "door_lock"
     _attr_primary_weight = 5
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_DOORLOCK}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_DOORLOCK}))
 
     def __init__(
         self,

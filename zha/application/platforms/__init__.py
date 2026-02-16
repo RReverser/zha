@@ -471,7 +471,7 @@ class PlatformEntity(BaseEntity):
     """Class that represents an entity for a device platform."""
 
     # suffix to add to the unique_id of the entity. Used for multi
-    # entities using the same cluster handler/cluster id for the entity.
+    # entities using the same cluster/cluster id for the entity.
     REPORT_CONFIG: dict[str, tuple[EntityAttrReportConfig, ...]] = {}
     ZCL_INIT_ATTRS: dict[str, dict[str, bool]] = {}
     _unique_id_suffix: str | None = None

@@ -77,9 +77,9 @@ from zha.application.platforms.light.helpers import (
 from zha.debounce import Debouncer
 from zha.decorators import periodic
 from zha.zigbee.const import (
-    CLUSTER_HANDLER_COLOR,
-    CLUSTER_HANDLER_LEVEL,
-    CLUSTER_HANDLER_ON_OFF,
+    CLUSTER_COLOR,
+    CLUSTER_LEVEL,
+    CLUSTER_ON_OFF,
     REPORT_CONFIG_ASAP,
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_CONFIG,
@@ -266,7 +266,7 @@ class BaseLight(BaseEntity, ABC):
             self._effect = effect
 
 
-class BaseClusterHandlerLight(BaseLight):
+class BaseLightEntity(BaseLight):
     """Operations common to all light entities."""
 
     _FORCE_ON = False
@@ -820,7 +820,7 @@ class BaseClusterHandlerLight(BaseLight):
 
 
 @register_entity(OnOff.cluster_id)
-class Light(BaseClusterHandlerLight, PlatformEntity):
+class Light(BaseLightEntity, PlatformEntity):
     """Representation of a ZHA or ZLL light."""
 
     REPORT_CONFIG = {
@@ -878,8 +878,8 @@ class Light(BaseClusterHandlerLight, PlatformEntity):
     __polling_interval: int
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_in_clusters=frozenset({CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}),
+        in_clusters=frozenset({CLUSTER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_COLOR, CLUSTER_LEVEL}),
         profile_device_types=LIGHT_PROFILE_DEVICE_TYPES,
         feature_priority=(PlatformFeatureGroup.LIGHT_OR_SWITCH_OR_SHADE, 0),
     )
@@ -899,10 +899,10 @@ class Light(BaseClusterHandlerLight, PlatformEntity):
             **kwargs,
             legacy_discovery_unique_id=f"{endpoint.device.ieee}-{endpoint.id}",
         )
-        self._on_off_cluster = self.in_clusters[CLUSTER_HANDLER_ON_OFF]
+        self._on_off_cluster = self.in_clusters[CLUSTER_ON_OFF]
         self._state = bool(self._on_off_cluster.get(OnOff.AttributeDefs.on_off.name))
-        self._level_cluster = self.in_clusters.get(CLUSTER_HANDLER_LEVEL)
-        self._color_cluster = self.in_clusters.get(CLUSTER_HANDLER_COLOR)
+        self._level_cluster = self.in_clusters.get(CLUSTER_LEVEL)
+        self._color_cluster = self.in_clusters.get(CLUSTER_COLOR)
         self._identify_cluster = device.identify_ch
 
         self._refresh_task: asyncio.Task | None = None
@@ -1290,8 +1290,8 @@ class HueLight(Light):
     _REFRESH_INTERVAL = (180, 300)
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_in_clusters=frozenset({CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}),
+        in_clusters=frozenset({CLUSTER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_COLOR, CLUSTER_LEVEL}),
         manufacturers=frozenset({"Philips", "Signify Netherlands B.V."}),
         profile_device_types=LIGHT_PROFILE_DEVICE_TYPES,
         # We want this entity to be preferred over the base light
@@ -1356,8 +1356,8 @@ class ForceOnLight(Light):
     _FORCE_ON = True
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_in_clusters=frozenset({CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}),
+        in_clusters=frozenset({CLUSTER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_COLOR, CLUSTER_LEVEL}),
         manufacturers=frozenset(
             {
                 "Jasco",
@@ -1431,8 +1431,8 @@ class MinTransitionLight(Light):
     _DEFAULT_MIN_TRANSITION_TIME = 0.1
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_in_clusters=frozenset({CLUSTER_HANDLER_COLOR, CLUSTER_HANDLER_LEVEL}),
+        in_clusters=frozenset({CLUSTER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_COLOR, CLUSTER_LEVEL}),
         manufacturers=DEFAULT_MIN_TRANSITION_MANUFACTURERS,
         profile_device_types=LIGHT_PROFILE_DEVICE_TYPES,
         # We want this entity to be preferred over the base light
@@ -1441,7 +1441,7 @@ class MinTransitionLight(Light):
 
 
 @register_group_entity
-class LightGroup(BaseClusterHandlerLight, GroupEntity):
+class LightGroup(BaseLightEntity, GroupEntity):
     """Representation of a light group."""
 
     _attr_always_supported = True

@@ -38,7 +38,7 @@ from tests.common import (
     zigpy_device_from_json,
 )
 from zha.application import Platform
-from zha.application.const import ZHA_CLUSTER_HANDLER_READS_PER_REQ
+from zha.application.const import ZHA_CLUSTER_READS_PER_REQ
 from zha.application.gateway import Gateway
 from zha.application.platforms import PlatformEntity, sensor
 from zha.application.platforms.sensor import (
@@ -1467,7 +1467,7 @@ async def test_elec_measurement_skip_unsupported_attribute(
     await entity.async_update()
     await zha_dev.gateway.async_block_till_done()
     assert cluster.read_attributes.call_count == math.ceil(
-        len(supported_attributes) / ZHA_CLUSTER_HANDLER_READS_PER_REQ
+        len(supported_attributes) / ZHA_CLUSTER_READS_PER_REQ
     )
     read_attrs = {
         a for call in cluster.read_attributes.call_args_list for a in call[0][0]
@@ -1683,12 +1683,12 @@ async def test_state_class(
     assert "Quirks provided an invalid state class: energy" in caplog.text
 
 
-async def test_cluster_handler_quirks_attribute_reporting(zha_gateway: Gateway) -> None:
+async def test_cluster_quirks_attribute_reporting(zha_gateway: Gateway) -> None:
     """Test quirks sensor cluster claiming/reporting/init requirements."""
 
-    # Suppress normal endpoint probing, as this will claim the Opple cluster handler
+    # Suppress normal endpoint probing, as this will claim the Opple cluster
     # already due to entityless configure-required cluster policy.
-    # We want to test the handler also gets claimed via quirks v2 reporting config.
+    # We want to test the cluster also gets claimed via quirks v2 reporting config.
     with patch("zha.application.discovery.discover_entities_for_endpoint"):
         zha_device, cluster = await zigpy_device_aqara_sensor_v2_mock(zha_gateway)
 
@@ -1714,7 +1714,7 @@ async def test_cluster_handler_quirks_attribute_reporting(zha_gateway: Gateway) 
     }
 
 
-async def test_cluster_handler_quirks_attribute_reading(zha_gateway: Gateway) -> None:
+async def test_cluster_quirks_attribute_reading(zha_gateway: Gateway) -> None:
     """Test quirks sensor init-only requirements claim cluster without binding."""
 
     registry = DeviceRegistry()
@@ -1750,9 +1750,9 @@ async def test_cluster_handler_quirks_attribute_reading(zha_gateway: Gateway) ->
     )
     zigpy_device = registry.get_device(zigpy_device)
 
-    # Suppress normal endpoint probing, as this will claim the Opple cluster handler
+    # Suppress normal endpoint probing, as this will claim the Opple cluster
     # already due to entityless configure-required cluster policy.
-    # We want to test the handler also gets claimed via quirks v2 attributes init.
+    # We want to test the cluster also gets claimed via quirks v2 attributes init.
     with patch("zha.application.discovery.discover_entities_for_endpoint"):
         zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
 

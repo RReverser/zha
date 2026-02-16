@@ -75,7 +75,7 @@ def _get_identify_cluster(zigpy_device):
             return endpoint.identify
 
 
-def test_cluster_match_no_legacy_cluster_handler_fallback_names() -> None:
+def test_cluster_match_fallback_names() -> None:
     """Ensure all entity matches use `cluster_0xNNNN` fallback names."""
     unique_entity_classes = {
         entity_class
@@ -93,7 +93,8 @@ def test_cluster_match_no_legacy_cluster_handler_fallback_names() -> None:
             | set(match.out_clusters)
             | set(match.optional_in_clusters)
         ):
-            assert not cluster_name.startswith("cluster_handler_0x")
+            if cluster_name.startswith("cluster_"):
+                assert cluster_name.startswith("cluster_0x")
 
 
 def test_endpoint_cluster_name_fallback_uses_cluster_prefix() -> None:

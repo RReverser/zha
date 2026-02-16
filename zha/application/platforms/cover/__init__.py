@@ -45,10 +45,10 @@ from zha.application.platforms.cover.const import (
 )
 from zha.exceptions import ZHAException
 from zha.zigbee.const import (
-    CLUSTER_HANDLER_COVER,
-    CLUSTER_HANDLER_LEVEL,
-    CLUSTER_HANDLER_ON_OFF,
-    CLUSTER_HANDLER_SHADE,
+    CLUSTER_COVER,
+    CLUSTER_LEVEL,
+    CLUSTER_ON_OFF,
+    CLUSTER_SHADE,
     REPORT_CONFIG_ASAP,
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_CONFIG,
@@ -159,7 +159,7 @@ class Cover(BaseCover):
     _attr_translation_key: str = "cover"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_COVER}),
+        in_clusters=frozenset({CLUSTER_COVER}),
     )
 
     def __init__(
@@ -342,7 +342,7 @@ class Cover(BaseCover):
         In HA None is unknown, 0 is closed, 100 is fully open.
         In ZCL 0 is fully open, 100 is fully closed.
         Keep in mind the values have already been flipped to match HA
-        in the WindowCovering cluster handler.
+        in the WindowCovering cluster.
         """
         if not self.supported_features & CoverEntityFeature.OPEN:
             return None
@@ -360,7 +360,7 @@ class Cover(BaseCover):
         In HA None is unknown, 0 is closed, 100 is fully open.
         In ZCL 0 is fully open, 100 is fully closed.
         Keep in mind the values have already been flipped to match HA
-        in the WindowCovering cluster handler.
+        in the WindowCovering cluster.
         """
         if not self.supported_features & CoverEntityFeature.OPEN_TILT:
             return None
@@ -804,8 +804,8 @@ class Shade(BaseCover):
     _attr_translation_key: str = "shade"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_ON_OFF}),
-        optional_in_clusters=frozenset({CLUSTER_HANDLER_LEVEL, CLUSTER_HANDLER_SHADE}),
+        in_clusters=frozenset({CLUSTER_ON_OFF}),
+        optional_in_clusters=frozenset({CLUSTER_LEVEL, CLUSTER_SHADE}),
         profile_device_types=frozenset(
             {
                 (zha.PROFILE_ID, zha.DeviceType.SHADE),
@@ -1120,7 +1120,7 @@ class KeenVent(Shade):
     _attr_translation_key: str = "keen_vent"
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_LEVEL, CLUSTER_HANDLER_ON_OFF}),
+        in_clusters=frozenset({CLUSTER_LEVEL, CLUSTER_ON_OFF}),
         manufacturers=frozenset({"Keen Home Inc"}),
         feature_priority=(PlatformFeatureGroup.LIGHT_OR_SWITCH_OR_SHADE, 1),
     )

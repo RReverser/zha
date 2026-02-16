@@ -30,7 +30,7 @@ from zha.application.platforms.alarm_control_panel.const import (
 )
 from zha.zigbee.const import (
     ARGS,
-    CLUSTER_HANDLER_IAS_ACE,
+    CLUSTER_IAS_ACE,
     CLUSTER_ID,
     COMMAND,
     PARAMS,
@@ -64,7 +64,7 @@ class AlarmControlPanel(PlatformEntity):
     PLATFORM = Platform.ALARM_CONTROL_PANEL
 
     _cluster_match = ClusterMatch(
-        out_clusters=frozenset({CLUSTER_HANDLER_IAS_ACE}),
+        out_clusters=frozenset({CLUSTER_IAS_ACE}),
     )
 
     def __init__(
@@ -148,7 +148,7 @@ class AlarmControlPanel(PlatformEntity):
             self._command_map[command_id](*args)
 
     def _emit_cluster_event(self, command: str, args: list | dict) -> None:
-        """Emit zha_event payload compatible with legacy cluster handlers."""
+        """Emit zha_event payload compatible with legacy cluster flow."""
         self.endpoint.emit_zha_event(
             {
                 UNIQUE_ID: self._cluster_unique_id,

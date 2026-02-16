@@ -13,10 +13,7 @@ from zigpy.typing import UNDEFINED
 from zigpy.zcl.clusters.general import LevelControl, OnOff
 
 from tests.common import create_mock_zigpy_device
-from zha.application.const import (
-    ZHA_CLUSTER_HANDLER_MSG_BIND,
-    ZHA_CLUSTER_HANDLER_MSG_CFG_RPT,
-)
+from zha.application.const import ZHA_CLUSTER_MSG_BIND, ZHA_CLUSTER_MSG_CFG_RPT
 from zha.application.gateway import Gateway
 from zha.zigbee.endpoint import Endpoint
 
@@ -121,7 +118,7 @@ async def test_endpoint_configure_emits_legacy_bind_and_reporting_events(
     bind_events = [
         mock_call.args[1]
         for mock_call in endpoint.device.emit.call_args_list
-        if mock_call.args[0] == ZHA_CLUSTER_HANDLER_MSG_BIND
+        if mock_call.args[0] == ZHA_CLUSTER_MSG_BIND
     ]
     assert len(bind_events) == 1
     bind_event = bind_events[0]
@@ -131,7 +128,7 @@ async def test_endpoint_configure_emits_legacy_bind_and_reporting_events(
     reporting_events = [
         mock_call.args[1]
         for mock_call in endpoint.device.emit.call_args_list
-        if mock_call.args[0] == ZHA_CLUSTER_HANDLER_MSG_CFG_RPT
+        if mock_call.args[0] == ZHA_CLUSTER_MSG_CFG_RPT
     ]
     assert len(reporting_events) == 1
     reporting_event = reporting_events[0]
@@ -158,7 +155,7 @@ async def test_endpoint_configure_bind_error_emits_failed_bind_event(
     bind_events = [
         mock_call.args[1]
         for mock_call in endpoint.device.emit.call_args_list
-        if mock_call.args[0] == ZHA_CLUSTER_HANDLER_MSG_BIND
+        if mock_call.args[0] == ZHA_CLUSTER_MSG_BIND
     ]
     assert len(bind_events) == 1
     assert bind_events[0].success is False
@@ -182,7 +179,7 @@ async def test_endpoint_configure_reporting_error_emits_config_event(
     reporting_events = [
         mock_call.args[1]
         for mock_call in endpoint.device.emit.call_args_list
-        if mock_call.args[0] == ZHA_CLUSTER_HANDLER_MSG_CFG_RPT
+        if mock_call.args[0] == ZHA_CLUSTER_MSG_CFG_RPT
     ]
     assert len(reporting_events) == 1
     assert reporting_events[0].attributes["on_off"]["status"] is None

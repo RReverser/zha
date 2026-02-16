@@ -371,10 +371,10 @@ def globally_load_quirks():
 
 
 @pytest.fixture
-def cluster_handler() -> Callable:
-    """Clueter handler mock factory fixture."""
+def cluster_entity() -> Callable:
+    """Cluster mock factory fixture."""
 
-    def cluster_handler_factory(
+    def cluster_entity_factory(
         name: str, cluster_id: int, endpoint_id: int = 1
     ) -> MagicMock:
         ch = MagicMock()
@@ -385,7 +385,7 @@ def cluster_handler() -> Callable:
         ch.async_initialize = AsyncMock()
         return ch
 
-    return cluster_handler_factory
+    return cluster_entity_factory
 
 
 def pytest_collection_modifyitems(config, items):
