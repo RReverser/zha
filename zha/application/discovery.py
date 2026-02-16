@@ -10,6 +10,8 @@ import itertools
 import logging
 from typing import TYPE_CHECKING
 
+from zigpy.profiles.zha import PROFILE_ID as ZHA_PROFILE_ID
+from zigpy.profiles.zll import PROFILE_ID as ZLL_PROFILE_ID
 from zigpy.quirks.v2 import (
     BinarySensorMetadata,
     CustomDeviceV2,
@@ -46,23 +48,6 @@ from zha.application.platforms import (  # noqa: F401 pylint: disable=unused-imp
     siren,
     switch,
     update,
-)
-
-# importing cluster handlers updates registries
-from zha.zigbee.cluster_handlers import (  # noqa: F401 pylint: disable=unused-import
-    ClientClusterHandler,
-    ClusterHandler,
-    closures,
-    general,
-    homeautomation,
-    hvac,
-    lighting,
-    lightlink,
-    manufacturerspecific,
-    measurement,
-    protocol,
-    security,
-    smartenergy,
 )
 from zha.zigbee.cluster_policies import ENTITYLESS_CONFIGURE_REQUIRED_CLUSTER_IDS
 from zha.zigbee.group import Group
@@ -290,19 +275,9 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
             )
             continue
 
-        if cluster_type is ClusterType.Server:
-            cluster_handler = endpoint.all_cluster_handlers.get(
-                f"{endpoint.id}:0x{cluster.cluster_id:04x}"
-            )
-        else:
-            cluster_handler = endpoint.client_cluster_handlers.get(
-                f"{endpoint.id}:0x{cluster.cluster_id:04x}_client"
-            )
-
-        assert cluster_handler
         cluster_name = endpoint.resolve_cluster_name(cluster)
 
-        # flags to determine if we need to claim/bind the cluster handler
+        # Flags to determine if we need to claim/bind the cluster.
         attribute_initialization_found: bool = False
         reporting_found: bool = False
 
@@ -328,7 +303,7 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
 
             # Process quirks metadata into entity-owned cluster requirements.
             entity = entity_class(
-                cluster_handlers=[cluster_handler],
+                clusters=[cluster],
                 endpoint=endpoint,
                 device=device,
                 entity_metadata=entity_metadata,
@@ -343,7 +318,7 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
                         config=astuple(rep_conf),
                         is_quirks_v2_direct=True,
                     )
-                    # Mark cluster handler for claiming and binding later.
+                    # Mark cluster for claiming and binding later.
                     reporting_found = True
 
                 else:
@@ -353,7 +328,7 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
                         use_cache=entity_metadata.attribute_initialized_from_cache,
                         is_quirks_v2_direct=True,
                     )
-                    # Mark cluster handler for claiming later, but not binding.
+                    # Mark cluster for claiming later, but not binding.
                     attribute_initialization_found = True
 
             yield entity
@@ -362,25 +337,28 @@ def discover_quirks_v2_entities(device: Device) -> Iterator[PlatformEntity]:
                 "'%s' platform -> '%s' using %s",
                 platform,
                 entity_class.__name__,
-                [cluster_handler.name],
+                [cluster_name],
             )
 
-        # if the cluster handler is unclaimed, claim it and set BIND accordingly,
-        # so ZHA configures the cluster handler: reporting + reads attributes
+        # If the cluster is unclaimed, claim it and set bind accordingly so
+        # ZHA configures lifecycle (reporting + init reads).
         if (attribute_initialization_found or reporting_found) and (
-            cluster_handler not in endpoint.claimed_cluster_handlers.values()
+            not endpoint.is_cluster_claimed(cluster)
         ):
-            endpoint.claim_cluster_handlers([cluster_handler])
-            # BIND is True by default, so only set to False if no reporting found.
-            # We can safely do this, since quirks v2 entities are initialized last,
-            # so if the cluster handler wasn't claimed by endpoint probing so far,
-            # only v2 entities need it.
+            endpoint.claim_clusters([cluster])
+            # Bind is True by default, so only set to False if no reporting found.
+            # Quirks v2 entities are initialized last, so if the cluster wasn't
+            # already claimed, only v2 entities need it.
             if not reporting_found:
-                cluster_handler.BIND = False
+                endpoint.set_cluster_bind(cluster, False)
 
 
-def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntity]:
+def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntity]:  # noqa: C901
     """Discover entities for an endpoint using the new registry-based discovery."""
+    profile_id = endpoint.zigpy_endpoint.profile_id
+    if profile_id is None or profile_id not in (ZHA_PROFILE_ID, ZLL_PROFILE_ID):
+        return
+
     device = endpoint.device
 
     # TODO: deprecate device platform overrides. The only use case is to swap between
@@ -518,43 +496,51 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
 
             out_clusters = set(match.out_clusters)
 
-            in_cluster_handlers = [
-                endpoint.cluster_handlers_by_name[name] for name in in_clusters
+            in_clusters_for_entity = [
+                endpoint.in_clusters_by_name[name] for name in in_clusters
             ]
-            out_cluster_handlers = [
-                endpoint.client_cluster_handlers_by_name[name] for name in out_clusters
+            out_clusters_for_entity = [
+                endpoint.out_clusters_by_name[name] for name in out_clusters
             ]
 
             # Claim on endpoint
-            endpoint.claim_cluster_handlers(in_cluster_handlers)
-            endpoint.claim_cluster_handlers(out_cluster_handlers)
+            endpoint.claim_clusters(in_clusters_for_entity)
+            endpoint.claim_clusters(out_clusters_for_entity)
 
             _LOGGER.debug(
                 "'%s' platform -> '%s' using %s + %s",
                 entity_class.PLATFORM,
                 entity_class.__name__,
-                [ch.name for ch in in_cluster_handlers],
-                [ch.name for ch in out_cluster_handlers],
+                [
+                    endpoint.resolve_cluster_name(cluster)
+                    for cluster in in_clusters_for_entity
+                ],
+                [
+                    endpoint.resolve_cluster_name(cluster)
+                    for cluster in out_clusters_for_entity
+                ],
             )
 
-            # XXX: Combining server and client cluster handlers should not be done
-            cluster_handlers: list[ClusterHandler | ClientClusterHandler] = (
-                in_cluster_handlers + out_cluster_handlers  # type: ignore[operator]
-            )
+            # XXX: Combining server and client clusters should not be done
+            clusters = in_clusters_for_entity + out_clusters_for_entity
 
             yield entity_class(
-                cluster_handlers=cluster_handlers,
+                clusters=clusters,
                 endpoint=endpoint,
                 device=device,
             )
 
-    # Claim any remaining unclaimed cluster handlers that don't produce entities but
-    # still need to be configured for bare events (bound, reporting set up, etc.)
-    for cluster_handler in endpoint.all_cluster_handlers.values():
+    # Claim remaining clusters that don't produce entities but still require
+    # lifecycle configuration for bare events and setup.
+    for cluster in itertools.chain(
+        endpoint.in_clusters_by_name.values(), endpoint.out_clusters_by_name.values()
+    ):
         if (
-            cluster_handler.id not in endpoint.claimed_cluster_handlers
-            and cluster_handler.cluster.cluster_id
-            in ENTITYLESS_CONFIGURE_REQUIRED_CLUSTER_IDS
+            not endpoint.is_cluster_claimed(cluster)
+            and cluster.cluster_id in ENTITYLESS_CONFIGURE_REQUIRED_CLUSTER_IDS
         ):
-            _LOGGER.debug("Claiming entityless cluster handler %s", cluster_handler)
-            endpoint.claim_cluster_handlers([cluster_handler])
+            _LOGGER.debug(
+                "Claiming entityless cluster %s",
+                endpoint.resolve_cluster_name(cluster),
+            )
+            endpoint.claim_clusters([cluster])

@@ -126,10 +126,6 @@ async def _send_time_changed(zha_gateway: Gateway, seconds: int):
     await zha_gateway.async_block_till_done(wait_background_tasks=True)
 
 
-@patch(
-    "zha.zigbee.cluster_handlers.general.BasicClusterHandler.async_initialize",
-    new=mock.AsyncMock(),
-)
 async def test_check_available_success(
     zha_gateway: Gateway,
     caplog: pytest.LogCaptureFixture,
@@ -222,10 +218,6 @@ async def test_check_available_success(
         entity.emit.reset_mock()
 
 
-@patch(
-    "zha.zigbee.cluster_handlers.general.BasicClusterHandler.async_initialize",
-    new=mock.AsyncMock(),
-)
 async def test_check_available_unsuccessful(
     zha_gateway: Gateway,
 ) -> None:
@@ -293,10 +285,6 @@ async def test_check_available_unsuccessful(
         entity.emit.reset_mock()
 
 
-@patch(
-    "zha.zigbee.cluster_handlers.general.BasicClusterHandler.async_initialize",
-    new=mock.AsyncMock(),
-)
 async def test_check_available_no_basic_cluster_handler(
     zha_gateway: Gateway,
     caplog: pytest.LogCaptureFixture,
@@ -826,7 +814,7 @@ async def test_device_firmware_version_syncing(zha_gateway: Gateway) -> None:
 
     # If we update the entity, the device updates as well
     update_entity = get_entity(zha_device, platform=Platform.UPDATE)
-    update_entity._ota_cluster_handler.cluster.update_attribute(
+    update_entity._ota_cluster.update_attribute(
         Ota.AttributeDefs.current_file_version.id,
         zigpy.types.uint32_t(0xABCD1234),
     )
@@ -834,7 +822,7 @@ async def test_device_firmware_version_syncing(zha_gateway: Gateway) -> None:
     assert zha_device.firmware_version == "0xabcd1234"
 
     # Duplicate updates are ignored
-    update_entity._ota_cluster_handler.cluster.update_attribute(
+    update_entity._ota_cluster.update_attribute(
         Ota.AttributeDefs.current_file_version.id,
         zigpy.types.uint32_t(0xABCD1234),
     )

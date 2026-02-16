@@ -6,17 +6,29 @@ from abc import ABC
 from dataclasses import dataclass
 import functools
 import logging
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from zhaquirks.quirk_ids import DANFOSS_ALLY_THERMOSTAT, TUYA_PLUG_ONOFF
 from zigpy.profiles import zha, zll
 from zigpy.quirks.v2 import SwitchMetadata
+from zigpy.zcl import (
+    AttributeReadEvent,
+    AttributeReportedEvent,
+    AttributeUpdatedEvent,
+    AttributeWrittenEvent,
+    Cluster,
+)
 from zigpy.zcl.clusters.closures import ConfigStatus, WindowCovering, WindowCoveringMode
 from zigpy.zcl.clusters.general import Basic, BinaryOutput, OnOff
 from zigpy.zcl.clusters.hvac import Thermostat
 from zigpy.zcl.foundation import Status
 
 from zha.application import Platform
+from zha.application.helpers import (
+    safe_cluster_command,
+    safe_read,
+    safe_write_attributes,
+)
 from zha.application.platforms import (
     BaseEntity,
     BaseEntityInfo,
@@ -29,14 +41,9 @@ from zha.application.platforms import (
     register_group_entity,
 )
 from zha.application.platforms.light.const import LIGHT_PROFILE_DEVICE_TYPES
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.general import (
-    BinaryOutputClusterHandler,
-    OnOffClusterHandler,
-)
+from zha.exceptions import ZHAException
 from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_BASIC,
     CLUSTER_HANDLER_BINARY_OUTPUT,
     CLUSTER_HANDLER_COVER,
@@ -56,7 +63,6 @@ from zha.zigbee.const import (
 from zha.zigbee.group import Group
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -86,7 +92,7 @@ class BaseSwitch(BaseEntity, ABC):
         **kwargs: Any,
     ):
         """Initialize the switch."""
-        self._on_off_cluster_handler: OnOffClusterHandler
+        self._on_off_cluster: Cluster
         super().__init__(*args, **kwargs)
 
     @property
@@ -97,21 +103,28 @@ class BaseSwitch(BaseEntity, ABC):
         return response
 
     @property
-    def is_on(self) -> bool:
+    def is_on(self) -> bool | int:
         """Return if the switch is on based on the statemachine."""
-        if self._on_off_cluster_handler.on_off is None:
+        on_off = self._on_off_cluster.get(OnOff.AttributeDefs.on_off.name)
+        if on_off is None:
             return False
-        return self._on_off_cluster_handler.on_off
+        return on_off
 
     # TODO revert this once group entities use cluster handlers
     async def async_turn_on(self, **kwargs: Any) -> None:  # pylint: disable=unused-argument
         """Turn the entity on."""
-        await self._on_off_cluster_handler.turn_on()
+        result = await safe_cluster_command(self._on_off_cluster, "on")
+        if result[1] is not Status.SUCCESS:
+            raise ZHAException(f"Failed to turn on: {result[1]}")
+        self._on_off_cluster.update_attribute(OnOff.AttributeDefs.on_off.id, True)
         self.maybe_emit_state_changed_event()
 
     async def async_turn_off(self, **kwargs: Any) -> None:  # pylint: disable=unused-argument
         """Turn the entity off."""
-        await self._on_off_cluster_handler.turn_off()
+        result = await safe_cluster_command(self._on_off_cluster, "off")
+        if result[1] is not Status.SUCCESS:
+            raise ZHAException(f"Failed to turn off: {result[1]}")
+        self._on_off_cluster.update_attribute(OnOff.AttributeDefs.on_off.id, False)
         self.maybe_emit_state_changed_event()
 
 
@@ -144,7 +157,7 @@ class Switch(PlatformEntity, BaseSwitch):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -173,30 +186,32 @@ class Switch(PlatformEntity, BaseSwitch):
         )
 
         super().__init__(
-            cluster_handlers,
+            clusters,
             endpoint,
             device,
             **kwargs,
             legacy_discovery_unique_id=legacy_discovery_unique_id,
         )
-        self._on_off_cluster_handler: OnOffClusterHandler = cast(
-            OnOffClusterHandler, self.cluster_handlers[CLUSTER_HANDLER_ON_OFF]
-        )
+        self._on_off_cluster = clusters[0]
 
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._on_off_cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._on_off_cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
             )
-        )
 
     def _is_supported(self) -> bool:
-        if self._on_off_cluster_handler.cluster.is_attribute_unsupported(
-            self._attribute_name
-        ):
+        if self._on_off_cluster.is_attribute_unsupported(self._attribute_name):
             _LOGGER.debug(
                 "%s is not supported - skipping %s entity creation",
                 self._attribute_name,
@@ -206,13 +221,28 @@ class Switch(PlatformEntity, BaseSwitch):
 
         return super()._is_supported()
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
-        event: ClusterAttributeUpdatedEvent,  # pylint: disable=unused-argument
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
     ) -> None:
-        """Handle state update from cluster handler."""
-        if event.attribute_name == self._attribute_name:
+        """Handle state update from cluster."""
+        if event.attribute_id == OnOff.AttributeDefs.on_off.id:
             self.maybe_emit_state_changed_event()
+
+    async def async_update(self) -> None:
+        """Attempt to retrieve the state of the entity."""
+        from_cache = not self.device.is_mains_powered
+        self.debug("attempting to update onoff state - from cache: %s", from_cache)
+        await safe_read(
+            self._on_off_cluster,
+            [OnOff.AttributeDefs.on_off.name],
+            allow_cache=from_cache,
+            only_cache=False,
+        )
+        self.maybe_emit_state_changed_event()
 
 
 @register_entity(BinaryOutput.cluster_id)
@@ -238,20 +268,20 @@ class BinaryOutputSwitch(PlatformEntity, BaseSwitch):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Initialize the switch."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
-        self._binary_output_cluster_handler: BinaryOutputClusterHandler = cast(
-            BinaryOutputClusterHandler,
-            self.cluster_handlers[CLUSTER_HANDLER_BINARY_OUTPUT],
-        )
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._binary_output_cluster: Cluster = clusters[0]
 
     def _is_supported(self) -> bool:
-        if self._binary_output_cluster_handler.description is None:
+        if (
+            self._binary_output_cluster.get(BinaryOutput.AttributeDefs.description.name)
+            is None
+        ):
             return False
 
         return super()._is_supported()
@@ -259,42 +289,79 @@ class BinaryOutputSwitch(PlatformEntity, BaseSwitch):
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
         super().recompute_capabilities()
-        self._attr_fallback_name = self._binary_output_cluster_handler.description
+        self._attr_fallback_name = self._binary_output_cluster.get(
+            BinaryOutput.AttributeDefs.description.name
+        )
 
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._binary_output_cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._binary_output_cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
             )
-        )
 
     @property
     def is_on(self) -> bool:
         """Return if the switch is on."""
-        if self._binary_output_cluster_handler.present_value is None:
+        value = self._binary_output_cluster.get(
+            BinaryOutput.AttributeDefs.present_value.name
+        )
+        if value is None:
             return False
-        return bool(self._binary_output_cluster_handler.present_value)
+        return bool(value)
 
     async def async_turn_on(self, **kwargs: Any) -> None:  # pylint: disable=unused-argument
         """Turn the entity on."""
-        await self._binary_output_cluster_handler.async_set_present_value(True)
+        await safe_write_attributes(
+            self._binary_output_cluster,
+            {BinaryOutput.AttributeDefs.present_value.name: True},
+        )
+        self._binary_output_cluster.update_attribute(
+            BinaryOutput.AttributeDefs.present_value.id, True
+        )
         self.maybe_emit_state_changed_event()
 
     async def async_turn_off(self, **kwargs: Any) -> None:  # pylint: disable=unused-argument
         """Turn the entity off."""
-        await self._binary_output_cluster_handler.async_set_present_value(False)
+        await safe_write_attributes(
+            self._binary_output_cluster,
+            {BinaryOutput.AttributeDefs.present_value.name: False},
+        )
+        self._binary_output_cluster.update_attribute(
+            BinaryOutput.AttributeDefs.present_value.id, False
+        )
         self.maybe_emit_state_changed_event()
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
-        event: ClusterAttributeUpdatedEvent,  # pylint: disable=unused-argument
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
     ) -> None:
-        """Handle state update from cluster handler."""
-        if event.attribute_name == BinaryOutput.AttributeDefs.present_value.name:
+        """Handle state update from cluster."""
+        if event.attribute_id == BinaryOutput.AttributeDefs.present_value.id:
             self.maybe_emit_state_changed_event()
+
+    async def async_update(self) -> None:
+        """Attempt to retrieve the state of the entity."""
+        self.debug("Polling current state")
+        await safe_read(
+            self._binary_output_cluster,
+            [BinaryOutput.AttributeDefs.present_value.name],
+            allow_cache=False,
+            only_cache=False,
+        )
+        self.maybe_emit_state_changed_event()
 
 
 @register_group_entity
@@ -305,7 +372,7 @@ class SwitchGroup(GroupEntity, BaseSwitch):
         """Initialize a switch group."""
         super().__init__(group)
         self._state: bool
-        self._on_off_cluster_handler = group.zigpy_group.endpoint[OnOff.cluster_id]
+        self._on_off_cluster = group.zigpy_group.endpoint[OnOff.cluster_id]
         if hasattr(self, "info_object"):
             delattr(self, "info_object")
         self.update()
@@ -317,7 +384,7 @@ class SwitchGroup(GroupEntity, BaseSwitch):
 
     async def async_turn_on(self, **kwargs: Any) -> None:  # pylint: disable=unused-argument
         """Turn the entity on."""
-        result = await self._on_off_cluster_handler.on()
+        result = await safe_cluster_command(self._on_off_cluster, "on")
         if isinstance(result, Exception) or result[1] is not Status.SUCCESS:
             return
         self._state = True
@@ -325,7 +392,7 @@ class SwitchGroup(GroupEntity, BaseSwitch):
 
     async def async_turn_off(self, **kwargs: Any) -> None:  # pylint: disable=unused-argument
         """Turn the entity off."""
-        result = await self._on_off_cluster_handler.off()
+        result = await safe_cluster_command(self._on_off_cluster, "off")
         if isinstance(result, Exception) or result[1] is not Status.SUCCESS:
             return
         self._state = False
@@ -360,7 +427,7 @@ class ConfigurableAttributeSwitch(PlatformEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         *,
@@ -368,7 +435,7 @@ class ConfigurableAttributeSwitch(PlatformEntity):
         **kwargs: Any,
     ) -> None:
         """Init this number configuration entity."""
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
+        self._cluster: Cluster = clusters[0]
 
         if legacy_discovery_unique_id is None:
             legacy_discovery_unique_id = (
@@ -383,20 +450,28 @@ class ConfigurableAttributeSwitch(PlatformEntity):
                     (zha.PROFILE_ID, zha.DeviceType.SMART_PLUG),
                     (zll.PROFILE_ID, zll.DeviceType.ON_OFF_PLUGIN_UNIT),
                 }
-                else f"{endpoint.device.ieee}-{endpoint.id}-{int(cluster_handlers[0].cluster.cluster_id)}"
+                else f"{endpoint.device.ieee}-{endpoint.id}-{int(self._cluster.cluster_id)}"
             )
 
         super().__init__(
-            cluster_handlers,
+            clusters,
             endpoint,
             device,
             **kwargs,
             legacy_discovery_unique_id=legacy_discovery_unique_id,
         )
-        self._cluster_handler.on_event(
-            CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-            self.handle_cluster_handler_attribute_updated,
-        )
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
+            )
 
     def _init_from_quirks_metadata(self, entity_metadata: SwitchMetadata) -> None:
         """Init this entity from the quirks metadata."""
@@ -411,11 +486,9 @@ class ConfigurableAttributeSwitch(PlatformEntity):
 
     def _is_supported(self) -> bool:
         if (
-            self._attribute_name not in self._cluster_handler.cluster.attributes_by_name
-            or self._cluster_handler.cluster.is_attribute_unsupported(
-                self._attribute_name
-            )
-            or self._cluster_handler.cluster.get(self._attribute_name) is None
+            self._attribute_name not in self._cluster.attributes_by_name
+            or self._cluster.is_attribute_unsupported(self._attribute_name)
+            or self._cluster.get(self._attribute_name) is None
         ):
             _LOGGER.debug(
                 "%s is not supported - skipping %s entity creation",
@@ -450,26 +523,27 @@ class ConfigurableAttributeSwitch(PlatformEntity):
     def inverted(self) -> bool:
         """Return True if the switch is inverted."""
         if self._inverter_attribute_name:
-            return bool(
-                self._cluster_handler.cluster.get(self._inverter_attribute_name)
-            )
+            return bool(self._cluster.get(self._inverter_attribute_name))
         return self._force_inverted
 
     @property
     def is_on(self) -> bool:
         """Return if the switch is on based on the statemachine."""
         if self._on_value != 1:
-            val = self._cluster_handler.cluster.get(self._attribute_name)
+            val = self._cluster.get(self._attribute_name)
             val = val == self._on_value
         else:
-            val = bool(self._cluster_handler.cluster.get(self._attribute_name))
+            val = bool(self._cluster.get(self._attribute_name))
         return (not val) if self.inverted else val
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
-        event: ClusterAttributeUpdatedEvent,  # pylint: disable=unused-argument
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
     ) -> None:
-        """Handle state update from cluster handler."""
+        """Handle state update from cluster."""
         if event.attribute_name == self._attribute_name:
             self.maybe_emit_state_changed_event()
 
@@ -478,12 +552,12 @@ class ConfigurableAttributeSwitch(PlatformEntity):
         if self.inverted:
             state = not state
         if state:
-            await self._cluster_handler.write_attributes_safe(
-                {self._attribute_name: self._on_value}
+            await safe_write_attributes(
+                self._cluster, {self._attribute_name: self._on_value}
             )
         else:
-            await self._cluster_handler.write_attributes_safe(
-                {self._attribute_name: self._off_value}
+            await safe_write_attributes(
+                self._cluster, {self._attribute_name: self._off_value}
             )
         self.maybe_emit_state_changed_event()
 
@@ -503,8 +577,11 @@ class ConfigurableAttributeSwitch(PlatformEntity):
         if self._inverter_attribute_name:
             polling_attrs.append(self._inverter_attribute_name)
 
-        results = await self._cluster_handler.get_attributes(
-            polling_attrs, from_cache=False, only_cache=False
+        results = await safe_read(
+            self._cluster,
+            polling_attrs,
+            allow_cache=False,
+            only_cache=False,
         )
 
         self.debug("read values=%s", results)
@@ -1035,16 +1112,9 @@ class WindowCoveringInversionSwitch(ConfigurableAttributeSwitch):
 
         # this entity needs a second attribute to function
         if (
-            (
-                self._cluster_handler.cluster.is_attribute_unsupported(
-                    window_covering_mode_attr
-                )
-            )
-            or (
-                window_covering_mode_attr
-                not in self._cluster_handler.cluster.attributes_by_name
-            )
-            or self._cluster_handler.cluster.get(window_covering_mode_attr) is None
+            (self._cluster.is_attribute_unsupported(window_covering_mode_attr))
+            or (window_covering_mode_attr not in self._cluster.attributes_by_name)
+            or self._cluster.get(window_covering_mode_attr) is None
         ):
             _LOGGER.debug(
                 "%s is not supported - skipping %s entity creation",
@@ -1058,9 +1128,7 @@ class WindowCoveringInversionSwitch(ConfigurableAttributeSwitch):
     @property
     def is_on(self) -> bool:
         """Return if the switch is on based on the statemachine."""
-        config_status = ConfigStatus(
-            self._cluster_handler.cluster.get(self._attribute_name)
-        )
+        config_status = ConfigStatus(self._cluster.get(self._attribute_name))
         return ConfigStatus.Open_up_commands_reversed in config_status
 
     async def async_turn_on(self, **kwargs: Any) -> None:
@@ -1074,12 +1142,13 @@ class WindowCoveringInversionSwitch(ConfigurableAttributeSwitch):
     async def async_update(self) -> None:
         """Attempt to retrieve the state of the entity."""
         self.debug("Polling current state")
-        await self._cluster_handler.get_attributes(
+        await safe_read(
+            self._cluster,
             [
                 self._attribute_name,
                 WindowCovering.AttributeDefs.window_covering_mode.name,
             ],
-            from_cache=False,
+            allow_cache=False,
             only_cache=False,
         )
         self.maybe_emit_state_changed_event()
@@ -1087,9 +1156,7 @@ class WindowCoveringInversionSwitch(ConfigurableAttributeSwitch):
     async def _async_on_off(self, invert: bool) -> None:
         """Turn the entity on or off."""
         name: str = WindowCovering.AttributeDefs.window_covering_mode.name
-        current_mode: WindowCoveringMode = WindowCoveringMode(
-            self._cluster_handler.cluster.get(name)
-        )
+        current_mode: WindowCoveringMode = WindowCoveringMode(self._cluster.get(name))
         send_command: bool = False
         if invert and WindowCoveringMode.Motor_direction_reversed not in current_mode:
             current_mode |= WindowCoveringMode.Motor_direction_reversed
@@ -1098,7 +1165,7 @@ class WindowCoveringInversionSwitch(ConfigurableAttributeSwitch):
             current_mode &= ~WindowCoveringMode.Motor_direction_reversed
             send_command = True
         if send_command:
-            await self._cluster_handler.write_attributes_safe({name: current_mode})
+            await safe_write_attributes(self._cluster, {name: current_mode})
             await self.async_update()
 
 

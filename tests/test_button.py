@@ -36,7 +36,6 @@ from tests.common import (
     update_attribute_cache,
 )
 from zha.application import Platform
-from zha.application.const import ZCL_INIT_ATTRS
 from zha.application.gateway import Gateway
 from zha.application.platforms import EntityCategory, PlatformEntity
 from zha.application.platforms.button import (
@@ -46,7 +45,6 @@ from zha.application.platforms.button import (
 )
 from zha.application.platforms.button.const import ButtonDeviceClass
 from zha.exceptions import ZHAException
-from zha.zigbee.cluster_handlers.manufacturerspecific import OppleRemoteClusterHandler
 from zha.zigbee.device import Device
 
 ZIGPY_DEVICE = {
@@ -377,7 +375,7 @@ class OppleCluster(CustomCluster, ManufacturerSpecificCluster):
 async def test_cluster_handler_quirks_unnecessary_claiming(
     zha_gateway: Gateway,
 ) -> None:
-    """Test quirks button doesn't claim cluster handlers unnecessarily."""
+    """Test quirks button doesn't claim clusters unnecessarily."""
 
     registry = DeviceRegistry()
     (
@@ -421,27 +419,12 @@ async def test_cluster_handler_quirks_unnecessary_claiming(
 
     assert isinstance(zha_device.device, CustomDeviceV2)
 
-    # get cluster handler of OppleCluster
-    opple_ch = zha_device.endpoints[1].all_cluster_handlers["1:0xfcc0"]
-    assert isinstance(opple_ch, OppleRemoteClusterHandler)
+    endpoint = zha_device.endpoints[1]
+    opple_cluster = endpoint.zigpy_endpoint.in_clusters[OppleCluster.cluster_id]
+    cluster_key = endpoint._cluster_key(opple_cluster)
 
-    # make sure the cluster handler was not claimed,
-    # as no reporting is configured and no attributes are to be read
-    assert opple_ch not in zha_device.endpoints[1].claimed_cluster_handlers.values()
-
-    # check that BIND is left at default of True, though ZHA will ignore it
-    assert opple_ch.BIND is True
-
-    # check ZCL_INIT_ATTRS is empty
-    assert opple_ch.ZCL_INIT_ATTRS == {}
-
-    # check that no ZCL_INIT_ATTRS instance variable was created
-    assert opple_ch.__dict__.get(ZCL_INIT_ATTRS) is None
-    assert opple_ch.ZCL_INIT_ATTRS is OppleRemoteClusterHandler.ZCL_INIT_ATTRS
-
-    # double check we didn't modify the class variable
-    assert OppleRemoteClusterHandler.ZCL_INIT_ATTRS == {}
-
-    # check if REPORT_CONFIG is empty, both instance and class variable
-    assert opple_ch.REPORT_CONFIG == ()
-    assert OppleRemoteClusterHandler.REPORT_CONFIG == ()
+    # No reporting/init metadata exists for this command button, so cluster remains unclaimed.
+    assert not endpoint.is_cluster_claimed(opple_cluster)
+    assert cluster_key not in endpoint._cluster_bind
+    assert cluster_key not in endpoint._cluster_init_attrs
+    assert cluster_key not in endpoint._cluster_report_config

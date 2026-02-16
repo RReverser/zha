@@ -135,10 +135,8 @@ async def test_cover_non_tilt_initial_state(  # pylint: disable=unused-argument
     )
 
     cluster = zigpy_cover_device.endpoints[1].window_covering
-    assert (
-        not zha_device.endpoints[1]
-        .all_cluster_handlers[f"1:0x{cluster.cluster_id:04x}"]
-        .inverted
+    assert WCCS.Open_up_commands_reversed not in WCCS(
+        cluster.get(WCAttrs.config_status.name)
     )
     assert cluster.read_attributes.call_count == 3
     assert (
@@ -183,10 +181,8 @@ async def test_cover_non_lift_initial_state(  # pylint: disable=unused-argument
     )
 
     cluster = zigpy_cover_device.endpoints[1].window_covering
-    assert (
-        not zha_device.endpoints[1]
-        .all_cluster_handlers[f"1:0x{cluster.cluster_id:04x}"]
-        .inverted
+    assert WCCS.Open_up_commands_reversed not in WCCS(
+        cluster.get(WCAttrs.config_status.name)
     )
     assert cluster.read_attributes.call_count == 3
     assert (
@@ -231,10 +227,8 @@ async def test_cover(
     )
 
     cluster = zigpy_cover_device.endpoints[1].window_covering
-    assert (
-        not zha_device.endpoints[1]
-        .all_cluster_handlers[f"1:0x{cluster.cluster_id:04x}"]
-        .inverted
+    assert WCCS.Open_up_commands_reversed not in WCCS(
+        cluster.get(WCAttrs.config_status.name)
     )
     assert cluster.read_attributes.call_count == 3
     assert (

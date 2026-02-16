@@ -2,31 +2,34 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal
 
+from zigpy.zcl import (
+    AttributeReadEvent,
+    AttributeReportedEvent,
+    AttributeUpdatedEvent,
+    AttributeWrittenEvent,
+    Cluster,
+)
 from zigpy.zcl.clusters.closures import DoorLock as DoorLockCluster
 from zigpy.zcl.foundation import Status
 
 from zha.application import Platform
+from zha.application.helpers import safe_cluster_command, safe_read
 from zha.application.platforms import ClusterMatch, PlatformEntity, register_entity
 from zha.application.platforms.lock.const import (
     STATE_LOCKED,
     STATE_UNLOCKED,
     VALUE_TO_STATE,
 )
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.closures import DoorLockClusterHandler
 from zha.zigbee.const import (
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_DOORLOCK,
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_CONFIG,
-    REPORT_CONFIG_DEFAULT,
     REPORT_CONFIG_IMMEDIATE,
 )
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -42,10 +45,6 @@ class DoorLock(PlatformEntity):
                 REPORT_CONFIG_ATTR: DoorLockCluster.AttributeDefs.lock_state.name,
                 REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
             },
-            {
-                REPORT_CONFIG_ATTR: "present_value",
-                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
-            },
         ),
     }
     ZCL_INIT_ATTRS = {}
@@ -56,29 +55,34 @@ class DoorLock(PlatformEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs,
     ) -> None:
         """Initialize the lock."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
-        self._doorlock_cluster_handler: DoorLockClusterHandler = cast(
-            DoorLockClusterHandler, self.cluster_handlers[CLUSTER_HANDLER_DOORLOCK]
-        )
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._doorlock_cluster: Cluster = clusters[0]
         self._state: str | None = VALUE_TO_STATE.get(
-            self._doorlock_cluster_handler.cluster.get("lock_state"), None
+            self._doorlock_cluster.get(DoorLockCluster.AttributeDefs.lock_state.name),
+            None,
         )
 
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._doorlock_cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._doorlock_cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
             )
-        )
 
     @property
     def state(self) -> dict[str, Any]:
@@ -96,7 +100,7 @@ class DoorLock(PlatformEntity):
 
     async def async_lock(self) -> None:
         """Lock the lock."""
-        result = await self._doorlock_cluster_handler.lock_door()
+        result = await safe_cluster_command(self._doorlock_cluster, "lock_door")
         if result[0] is not Status.SUCCESS:
             self.error("Error with lock_door: %s", result)
             return
@@ -106,7 +110,7 @@ class DoorLock(PlatformEntity):
 
     async def async_unlock(self) -> None:
         """Unlock the lock."""
-        result = await self._doorlock_cluster_handler.unlock_door()
+        result = await safe_cluster_command(self._doorlock_cluster, "unlock_door")
         if result[0] is not Status.SUCCESS:
             self.error("Error with unlock_door: %s", result)
             return
@@ -116,37 +120,67 @@ class DoorLock(PlatformEntity):
 
     async def async_set_lock_user_code(self, code_slot: int, user_code: str) -> None:
         """Set the user_code to index X on the lock."""
-        if self._doorlock_cluster_handler:
-            await self._doorlock_cluster_handler.async_set_user_code(
-                code_slot, user_code
-            )
-            self.debug("User code at slot %s set", code_slot)
+        await safe_cluster_command(
+            self._doorlock_cluster,
+            "set_pin_code",
+            code_slot - 1,
+            DoorLockCluster.UserStatus.Enabled,
+            DoorLockCluster.UserType.Unrestricted,
+            user_code,
+        )
+        self.debug("User code at slot %s set", code_slot)
 
     async def async_enable_lock_user_code(self, code_slot: int) -> None:
         """Enable user_code at index X on the lock."""
-        if self._doorlock_cluster_handler:
-            await self._doorlock_cluster_handler.async_enable_user_code(code_slot)
-            self.debug("User code at slot %s enabled", code_slot)
+        await safe_cluster_command(
+            self._doorlock_cluster,
+            "set_user_status",
+            code_slot - 1,
+            DoorLockCluster.UserStatus.Enabled,
+        )
+        self.debug("User code at slot %s enabled", code_slot)
 
     async def async_disable_lock_user_code(self, code_slot: int) -> None:
         """Disable user_code at index X on the lock."""
-        if self._doorlock_cluster_handler:
-            await self._doorlock_cluster_handler.async_disable_user_code(code_slot)
-            self.debug("User code at slot %s disabled", code_slot)
+        await safe_cluster_command(
+            self._doorlock_cluster,
+            "set_user_status",
+            code_slot - 1,
+            DoorLockCluster.UserStatus.Disabled,
+        )
+        self.debug("User code at slot %s disabled", code_slot)
 
     async def async_clear_lock_user_code(self, code_slot: int) -> None:
         """Clear the user_code at index X on the lock."""
-        if self._doorlock_cluster_handler:
-            await self._doorlock_cluster_handler.async_clear_user_code(code_slot)
-            self.debug("User code at slot %s cleared", code_slot)
+        await safe_cluster_command(
+            self._doorlock_cluster, "clear_pin_code", code_slot - 1
+        )
+        self.debug("User code at slot %s cleared", code_slot)
 
-    def handle_cluster_handler_attribute_updated(
-        self, event: ClusterAttributeUpdatedEvent
+    async def async_update(self) -> None:
+        """Retrieve latest lock state."""
+        result = await safe_read(
+            self._doorlock_cluster,
+            [DoorLockCluster.AttributeDefs.lock_state.name],
+            allow_cache=True,
+            only_cache=True,
+        )
+        self._state = VALUE_TO_STATE.get(
+            result.get(DoorLockCluster.AttributeDefs.lock_state.name), self._state
+        )
+        self.maybe_emit_state_changed_event()
+
+    def handle_cluster_attribute_updated(
+        self,
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
     ) -> None:
-        """Handle state update from cluster handler."""
+        """Handle state update from cluster."""
         if event.attribute_id != DoorLockCluster.AttributeDefs.lock_state.id:
             return
-        self._state = VALUE_TO_STATE.get(event.attribute_value, self._state)
+        self._state = VALUE_TO_STATE.get(event.value, self._state)
         self.maybe_emit_state_changed_event()
 
     def restore_external_state_attributes(

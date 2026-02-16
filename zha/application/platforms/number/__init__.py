@@ -9,12 +9,20 @@ from typing import TYPE_CHECKING, Any
 
 from zhaquirks.quirk_ids import DANFOSS_ALLY_THERMOSTAT
 from zigpy.quirks.v2 import NumberMetadata
+from zigpy.zcl import (
+    AttributeReadEvent,
+    AttributeReportedEvent,
+    AttributeUpdatedEvent,
+    AttributeWrittenEvent,
+    Cluster,
+)
 from zigpy.zcl.clusters.general import AnalogOutput, Basic, LevelControl
 from zigpy.zcl.clusters.hvac import Thermostat
 from zigpy.zcl.clusters.lighting import Color
 from zigpy.zcl.clusters.measurement import OccupancySensing
 
 from zha.application import Platform
+from zha.application.helpers import safe_read, safe_write_attributes
 from zha.application.platforms import (
     BaseEntityInfo,
     ClusterMatch,
@@ -27,11 +35,9 @@ from zha.application.platforms.helpers import validate_device_class
 from zha.application.platforms.number.bacnet import BACNET_UNITS_TO_HA_UNITS
 from zha.application.platforms.number.const import ICONS, NumberDeviceClass, NumberMode
 from zha.units import UnitOfMass, UnitOfTemperature, UnitOfTime
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
 from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
     CLUSTER_HANDLER_ANALOG_OUTPUT,
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_BASIC,
     CLUSTER_HANDLER_COLOR,
     CLUSTER_HANDLER_INOVELLI,
@@ -50,11 +56,31 @@ from zha.zigbee.const import (
 )
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
 _LOGGER = logging.getLogger(__name__)
+
+
+LEVEL_CONTROL_INIT_ATTRS: dict[str, bool] = {
+    LevelControl.AttributeDefs.on_off_transition_time.name: True,
+    LevelControl.AttributeDefs.on_level.name: True,
+    LevelControl.AttributeDefs.on_transition_time.name: True,
+    LevelControl.AttributeDefs.off_transition_time.name: True,
+    LevelControl.AttributeDefs.default_move_rate.name: True,
+    LevelControl.AttributeDefs.start_up_current_level.name: True,
+}
+
+
+COLOR_CONTROL_INIT_ATTRS: dict[str, bool] = {
+    Color.AttributeDefs.color_mode.name: False,
+    Color.AttributeDefs.color_temp_physical_min.name: True,
+    Color.AttributeDefs.color_temp_physical_max.name: True,
+    Color.AttributeDefs.color_capabilities.name: True,
+    Color.AttributeDefs.color_loop_active.name: False,
+    Color.AttributeDefs.start_up_color_temperature.name: True,
+    Color.AttributeDefs.options.name: True,
+}
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -162,64 +188,96 @@ class AnalogOutputNumber(BaseNumber):
     _cluster_match = ClusterMatch(
         in_clusters=frozenset({CLUSTER_HANDLER_ANALOG_OUTPUT})
     )
+    _cluster: Cluster
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ):
         """Initialize the number."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
-        self._analog_output_cluster_handler: ClusterHandler = self.cluster_handlers[
-            CLUSTER_HANDLER_ANALOG_OUTPUT
-        ]
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._cluster = clusters[0]
 
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
         super().recompute_capabilities()
 
-        analog_output = self._analog_output_cluster_handler
-        self._attr_native_min_value = analog_output.min_present_value or 0
-        self._attr_native_max_value = analog_output.max_present_value or 1023
-        self._attr_native_step = analog_output.resolution
+        self._attr_native_min_value = (
+            self._cluster.get(AnalogOutput.AttributeDefs.min_present_value.name) or 0
+        )
+        self._attr_native_max_value = (
+            self._cluster.get(AnalogOutput.AttributeDefs.max_present_value.name) or 1023
+        )
+        self._attr_native_step = self._cluster.get(
+            AnalogOutput.AttributeDefs.resolution.name
+        )
         self._attr_native_unit_of_measurement = BACNET_UNITS_TO_HA_UNITS.get(
-            analog_output.engineering_units
+            self._cluster.get(AnalogOutput.AttributeDefs.engineering_units.name)
         )
 
-        if analog_output.application_type is not None:
-            self._attr_icon = ICONS.get(analog_output.application_type >> 16)
+        if (
+            application_type := self._cluster.get(
+                AnalogOutput.AttributeDefs.application_type.name
+            )
+        ) is not None:
+            self._attr_icon = ICONS.get(application_type >> 16)
         else:
             self._attr_icon = None
 
-        self._attr_fallback_name = analog_output.description
+        self._attr_fallback_name = self._cluster.get(
+            AnalogOutput.AttributeDefs.description.name
+        )
 
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._analog_output_cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
             )
-        )
 
     @property
     def native_value(self) -> float | None:
         """Return the current value."""
-        return self._analog_output_cluster_handler.present_value
+        return self._cluster.get(AnalogOutput.AttributeDefs.present_value.name)
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value from HA."""
-        await self._analog_output_cluster_handler.async_set_present_value(float(value))
+        await safe_write_attributes(
+            self._cluster,
+            {AnalogOutput.AttributeDefs.present_value.name: float(value)},
+        )
         self.maybe_emit_state_changed_event()
 
-    def handle_cluster_handler_attribute_updated(
+    async def async_update(self) -> None:
+        """Attempt to retrieve the state of the entity."""
+        await super().async_update()
+        await safe_read(
+            self._cluster,
+            [AnalogOutput.AttributeDefs.present_value.name],
+            allow_cache=False,
+            only_cache=False,
+        )
+
+    def handle_cluster_attribute_updated(
         self,
-        event: ClusterAttributeUpdatedEvent,  # pylint: disable=unused-argument
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,  # pylint: disable=unused-argument
     ) -> None:
-        """Handle value update from cluster handler."""
+        """Handle value update from cluster."""
         self.maybe_emit_state_changed_event()
 
 
@@ -232,29 +290,25 @@ class NumberConfigurationEntity(BaseNumber):
     _attr_native_step: float = 1.0
     _multiplier: float = 1
     _attribute_name: str
+    _cluster: Cluster
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this number configuration entity."""
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._cluster = clusters[0]
 
     def _is_supported(self) -> bool:
         """Return if the entity is supported for the device, internal."""
         if (
-            (
-                self._attribute_name
-                not in self._cluster_handler.cluster.attributes_by_name
-            )
-            or self._cluster_handler.cluster.is_attribute_unsupported(
-                self._attribute_name
-            )
-            or self._cluster_handler.cluster.get(self._attribute_name) is None
+            self._attribute_name not in self._cluster.attributes_by_name
+            or self._cluster.is_attribute_unsupported(self._attribute_name)
+            or self._cluster.get(self._attribute_name) is None
         ):
             _LOGGER.debug(
                 "%s is not supported - skipping %s entity creation",
@@ -268,12 +322,18 @@ class NumberConfigurationEntity(BaseNumber):
     def on_add(self) -> None:
         """Initialize entity."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
             )
-        )
 
     def _init_from_quirks_metadata(self, entity_metadata: NumberMetadata) -> None:
         """Init this entity from the quirks metadata."""
@@ -310,15 +370,15 @@ class NumberConfigurationEntity(BaseNumber):
     @property
     def native_value(self) -> float | None:
         """Return the current value."""
-        value = self._cluster_handler.cluster.get(self._attribute_name)
+        value = self._cluster.get(self._attribute_name)
         if value is None:
             return None
         return value * self._multiplier
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value from HA."""
-        await self._cluster_handler.write_attributes_safe(
-            {self._attribute_name: int(value / self._multiplier)}
+        await safe_write_attributes(
+            self._cluster, {self._attribute_name: int(value / self._multiplier)}
         )
         self.maybe_emit_state_changed_event()
 
@@ -326,18 +386,25 @@ class NumberConfigurationEntity(BaseNumber):
         """Attempt to retrieve the state of the entity."""
         await super().async_update()
         _LOGGER.debug("polling current state")
-        if self._cluster_handler:
-            value = await self._cluster_handler.get_attribute_value(
-                self._attribute_name, from_cache=False
+        value = (
+            await safe_read(
+                self._cluster,
+                [self._attribute_name],
+                allow_cache=False,
+                only_cache=False,
             )
-            _LOGGER.debug("read value=%s", value)
-            # The attribute update handler below takes care of the rest
+        ).get(self._attribute_name)
+        _LOGGER.debug("read value=%s", value)
+        # The attribute update handler below takes care of the rest
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
-        event: ClusterAttributeUpdatedEvent,  # pylint: disable=unused-argument
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,  # pylint: disable=unused-argument
     ) -> None:
-        """Handle value update from cluster handler."""
+        """Handle value update from cluster."""
         if event.attribute_name == self._attribute_name:
             self.maybe_emit_state_changed_event()
 
@@ -371,14 +438,7 @@ class OnOffTransitionTimeConfigurationEntity(NumberConfigurationEntity):
         ),
     }
     ZCL_INIT_ATTRS = {
-        LevelControl.ep_attribute: {
-            LevelControl.AttributeDefs.default_move_rate.name: True,
-            LevelControl.AttributeDefs.off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_level.name: True,
-            LevelControl.AttributeDefs.on_off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_transition_time.name: True,
-            LevelControl.AttributeDefs.start_up_current_level.name: True,
-        },
+        LevelControl.ep_attribute: LEVEL_CONTROL_INIT_ATTRS,
     }
     _unique_id_suffix = "on_off_transition_time"
     _attr_native_min_value: float = 0x0000
@@ -402,14 +462,7 @@ class OnLevelConfigurationEntity(NumberConfigurationEntity):
         ),
     }
     ZCL_INIT_ATTRS = {
-        LevelControl.ep_attribute: {
-            LevelControl.AttributeDefs.default_move_rate.name: True,
-            LevelControl.AttributeDefs.off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_level.name: True,
-            LevelControl.AttributeDefs.on_off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_transition_time.name: True,
-            LevelControl.AttributeDefs.start_up_current_level.name: True,
-        },
+        LevelControl.ep_attribute: LEVEL_CONTROL_INIT_ATTRS,
     }
     _unique_id_suffix = "on_level"
     _attr_native_min_value: float = 0x00
@@ -433,14 +486,7 @@ class OnTransitionTimeConfigurationEntity(NumberConfigurationEntity):
         ),
     }
     ZCL_INIT_ATTRS = {
-        LevelControl.ep_attribute: {
-            LevelControl.AttributeDefs.default_move_rate.name: True,
-            LevelControl.AttributeDefs.off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_level.name: True,
-            LevelControl.AttributeDefs.on_off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_transition_time.name: True,
-            LevelControl.AttributeDefs.start_up_current_level.name: True,
-        },
+        LevelControl.ep_attribute: LEVEL_CONTROL_INIT_ATTRS,
     }
     _unique_id_suffix = "on_transition_time"
     _attr_native_min_value: float = 0x0000
@@ -464,14 +510,7 @@ class OffTransitionTimeConfigurationEntity(NumberConfigurationEntity):
         ),
     }
     ZCL_INIT_ATTRS = {
-        LevelControl.ep_attribute: {
-            LevelControl.AttributeDefs.default_move_rate.name: True,
-            LevelControl.AttributeDefs.off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_level.name: True,
-            LevelControl.AttributeDefs.on_off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_transition_time.name: True,
-            LevelControl.AttributeDefs.start_up_current_level.name: True,
-        },
+        LevelControl.ep_attribute: LEVEL_CONTROL_INIT_ATTRS,
     }
     _unique_id_suffix = "off_transition_time"
     _attr_native_min_value: float = 0x0000
@@ -495,14 +534,7 @@ class DefaultMoveRateConfigurationEntity(NumberConfigurationEntity):
         ),
     }
     ZCL_INIT_ATTRS = {
-        LevelControl.ep_attribute: {
-            LevelControl.AttributeDefs.default_move_rate.name: True,
-            LevelControl.AttributeDefs.off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_level.name: True,
-            LevelControl.AttributeDefs.on_off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_transition_time.name: True,
-            LevelControl.AttributeDefs.start_up_current_level.name: True,
-        },
+        LevelControl.ep_attribute: LEVEL_CONTROL_INIT_ATTRS,
     }
     _unique_id_suffix = "default_move_rate"
     _attr_native_min_value: float = 0x00
@@ -526,14 +558,7 @@ class StartUpCurrentLevelConfigurationEntity(NumberConfigurationEntity):
         ),
     }
     ZCL_INIT_ATTRS = {
-        LevelControl.ep_attribute: {
-            LevelControl.AttributeDefs.default_move_rate.name: True,
-            LevelControl.AttributeDefs.off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_level.name: True,
-            LevelControl.AttributeDefs.on_off_transition_time.name: True,
-            LevelControl.AttributeDefs.on_transition_time.name: True,
-            LevelControl.AttributeDefs.start_up_current_level.name: True,
-        },
+        LevelControl.ep_attribute: LEVEL_CONTROL_INIT_ATTRS,
     }
     _unique_id_suffix = "start_up_current_level"
     _attr_native_min_value: float = 0x00
@@ -565,15 +590,7 @@ class StartUpColorTemperatureConfigurationEntity(NumberConfigurationEntity):
         ),
     }
     ZCL_INIT_ATTRS = {
-        Color.ep_attribute: {
-            Color.AttributeDefs.color_capabilities.name: True,
-            Color.AttributeDefs.color_loop_active.name: False,
-            Color.AttributeDefs.color_mode.name: False,
-            Color.AttributeDefs.color_temp_physical_max.name: True,
-            Color.AttributeDefs.color_temp_physical_min.name: True,
-            Color.AttributeDefs.options.name: True,
-            Color.AttributeDefs.start_up_color_temperature.name: True,
-        },
+        Color.ep_attribute: COLOR_CONTROL_INIT_ATTRS,
     }
     _unique_id_suffix = "start_up_color_temperature"
     _attr_native_min_value: float = 153
@@ -586,8 +603,20 @@ class StartUpColorTemperatureConfigurationEntity(NumberConfigurationEntity):
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
         super().recompute_capabilities()
-        self._attr_native_min_value = self._cluster_handler.min_mireds
-        self._attr_native_max_value = self._cluster_handler.max_mireds
+        min_mireds = self._cluster.get(
+            Color.AttributeDefs.color_temp_physical_min.name, 153
+        )
+        if min_mireds == 0:
+            min_mireds = 153
+
+        max_mireds = self._cluster.get(
+            Color.AttributeDefs.color_temp_physical_max.name, 500
+        )
+        if max_mireds == 0:
+            max_mireds = 500
+
+        self._attr_native_min_value = min_mireds
+        self._attr_native_max_value = max_mireds
 
 
 @register_entity(TUYA_MANUFACTURER_CLUSTER)
@@ -1488,13 +1517,13 @@ class ZCLHeatSetpointLimitEntity(ZCLTemperatureEntity):
         """Recompute capabilities."""
         super().recompute_capabilities()
         self._attr_native_min_value = (
-            self._cluster_handler.cluster.get(
+            self._cluster.get(
                 Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name, -27315
             )
             * self._multiplier
         )
         self._attr_native_max_value = (
-            self._cluster_handler.cluster.get(
+            self._cluster.get(
                 Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name, 0x7FFF
             )
             * self._multiplier
@@ -1625,7 +1654,7 @@ class MaxHeatSetpointLimit(ZCLHeatSetpointLimitEntity):
         """Recompute capabilities."""
         super().recompute_capabilities()
         self._attr_native_min_value = (
-            self._cluster_handler.cluster.get(
+            self._cluster.get(
                 Thermostat.AttributeDefs.min_heat_setpoint_limit.name, -27315
             )
             * self._multiplier
@@ -1756,7 +1785,7 @@ class MinHeatSetpointLimit(ZCLHeatSetpointLimitEntity):
         """Recompute capabilities."""
         super().recompute_capabilities()
         self._attr_native_max_value = (
-            self._cluster_handler.cluster.get(
+            self._cluster.get(
                 Thermostat.AttributeDefs.max_heat_setpoint_limit.name, 0x7FFF
             )
             * self._multiplier

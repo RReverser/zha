@@ -38,7 +38,7 @@ from tests.common import (
     zigpy_device_from_json,
 )
 from zha.application import Platform
-from zha.application.const import ZCL_INIT_ATTRS, ZHA_CLUSTER_HANDLER_READS_PER_REQ
+from zha.application.const import ZHA_CLUSTER_HANDLER_READS_PER_REQ
 from zha.application.gateway import Gateway
 from zha.application.platforms import PlatformEntity, sensor
 from zha.application.platforms.sensor import (
@@ -55,8 +55,6 @@ from zha.units import (
     UnitOfPressure,
     UnitOfVolume,
 )
-from zha.zigbee.cluster_handlers import AttrReportConfig
-from zha.zigbee.cluster_handlers.manufacturerspecific import OppleRemoteClusterHandler
 from zha.zigbee.device import Device
 
 EMAttrs = homeautomation.ElectricalMeasurement.AttributeDefs
@@ -927,11 +925,8 @@ async def test_electrical_measurement_init(
     )
     assert entity.state["state"] == 100
 
-    cluster_handler = list(zha_device._endpoints.values())[0].all_cluster_handlers[
-        "1:0x0b04"
-    ]
-    assert cluster_handler.ac_power_divisor == 1
-    assert cluster_handler.ac_power_multiplier == 1
+    assert entity._divisor == 1
+    assert entity._multiplier == 1
 
     # update power divisor
     await send_attributes_report(
@@ -939,8 +934,8 @@ async def test_electrical_measurement_init(
         cluster,
         {EMAttrs.active_power.id: 20, EMAttrs.power_divisor.id: 5},
     )
-    assert cluster_handler.ac_power_divisor == 5
-    assert cluster_handler.ac_power_multiplier == 1
+    assert entity._divisor == 5
+    assert entity._multiplier == 1
     assert entity.state["state"] == 4.0
 
     zha_device.on_network = False
@@ -959,8 +954,8 @@ async def test_electrical_measurement_init(
         cluster,
         {EMAttrs.active_power.id: 30, EMAttrs.ac_power_divisor.id: 10},
     )
-    assert cluster_handler.ac_power_divisor == 10
-    assert cluster_handler.ac_power_multiplier == 1
+    assert entity._divisor == 10
+    assert entity._multiplier == 1
     assert entity.state["state"] == 3.0
 
     # update power multiplier
@@ -969,8 +964,8 @@ async def test_electrical_measurement_init(
         cluster,
         {EMAttrs.active_power.id: 20, EMAttrs.power_multiplier.id: 6},
     )
-    assert cluster_handler.ac_power_divisor == 10
-    assert cluster_handler.ac_power_multiplier == 6
+    assert entity._divisor == 10
+    assert entity._multiplier == 6
     assert entity.state["state"] == 12.0
 
     await send_attributes_report(
@@ -978,8 +973,8 @@ async def test_electrical_measurement_init(
         cluster,
         {EMAttrs.active_power.id: 30, EMAttrs.ac_power_multiplier.id: 20},
     )
-    assert cluster_handler.ac_power_divisor == 10
-    assert cluster_handler.ac_power_multiplier == 20
+    assert entity._divisor == 10
+    assert entity._multiplier == 20
     assert entity.state["state"] == 60.0
 
     entity._refresh = AsyncMock(wraps=entity._refresh)
@@ -1689,7 +1684,7 @@ async def test_state_class(
 
 
 async def test_cluster_handler_quirks_attribute_reporting(zha_gateway: Gateway) -> None:
-    """Test quirks sensor setting up ZCL_INIT_ATTRS and REPORT_CONFIG correctly."""
+    """Test quirks sensor cluster claiming/reporting/init requirements."""
 
     # Suppress normal endpoint probing, as this will claim the Opple cluster handler
     # already due to entityless configure-required cluster policy.
@@ -1699,48 +1694,28 @@ async def test_cluster_handler_quirks_attribute_reporting(zha_gateway: Gateway) 
 
     assert isinstance(zha_device.device, CustomDeviceV2)
 
-    # get cluster handler of OppleCluster
-    opple_ch = zha_device.endpoints[1].all_cluster_handlers["1:0xfcc0"]
-    assert isinstance(opple_ch, OppleRemoteClusterHandler)
+    endpoint = zha_device.endpoints[1]
+    opple_cluster = endpoint.zigpy_endpoint.in_clusters[OppleCluster.cluster_id]
+    cluster_key = endpoint._cluster_key(opple_cluster)
 
-    # make sure the cluster handler was claimed due to reporting config, so ZHA binds it
-    assert opple_ch in zha_device.endpoints[1].claimed_cluster_handlers.values()
+    # Reporting config should claim the cluster and keep bind enabled.
+    assert endpoint.is_cluster_claimed(opple_cluster)
+    assert endpoint._cluster_bind[cluster_key] is True
 
-    # check that BIND is not set to False, as reporting is configured
-    assert opple_ch.BIND is True
-
-    # check ZCL_INIT_ATTRS contains sensor attributes that are not in REPORT_CONFIG
-    assert opple_ch.ZCL_INIT_ATTRS == {
+    # Init-only attributes from the remaining quirk sensor entities.
+    assert endpoint._cluster_init_attrs[cluster_key] == {
         "energy": True,
         "energy_delivered": True,
         "energy_invalid_state_class": True,
         "power": True,
     }
-    # check that ZCL_INIT_ATTRS is an instance variable and not a class variable now
-    assert opple_ch.ZCL_INIT_ATTRS is opple_ch.__dict__[ZCL_INIT_ATTRS]
-    assert opple_ch.ZCL_INIT_ATTRS is not OppleRemoteClusterHandler.ZCL_INIT_ATTRS
-
-    # double check we didn't modify the class variable
-    assert OppleRemoteClusterHandler.ZCL_INIT_ATTRS == {}
-
-    # check if REPORT_CONFIG is set correctly
-    assert (
-        (
-            AttrReportConfig(
-                attr="last_feeding_size",
-                config=(0, 60, 1),
-            ),
-        )
-    ) == opple_ch.REPORT_CONFIG
-
-    # this cannot be wrong, as REPORT_CONFIG is an immutable tuple and not a list/dict,
-    # but let's check it anyway in case the type changes in the future
-    assert opple_ch.REPORT_CONFIG is not OppleRemoteClusterHandler.REPORT_CONFIG
-    assert OppleRemoteClusterHandler.REPORT_CONFIG == ()
+    assert endpoint._cluster_report_config[cluster_key] == {
+        "last_feeding_size": (0, 60, 1)
+    }
 
 
 async def test_cluster_handler_quirks_attribute_reading(zha_gateway: Gateway) -> None:
-    """Test quirks sensor setting up ZCL_INIT_ATTRS, claiming cluster handler."""
+    """Test quirks sensor init-only requirements claim cluster without binding."""
 
     registry = DeviceRegistry()
     (
@@ -1783,31 +1758,15 @@ async def test_cluster_handler_quirks_attribute_reading(zha_gateway: Gateway) ->
 
     assert isinstance(zha_device.device, CustomDeviceV2)
 
-    # get cluster handler of OppleCluster
-    opple_ch = zha_device.endpoints[1].all_cluster_handlers["1:0xfcc0"]
-    assert isinstance(opple_ch, OppleRemoteClusterHandler)
+    endpoint = zha_device.endpoints[1]
+    opple_cluster = endpoint.zigpy_endpoint.in_clusters[OppleCluster.cluster_id]
+    cluster_key = endpoint._cluster_key(opple_cluster)
 
-    # make sure the cluster handler was claimed due to attributes to be initialized
-    # otherwise, ZHA won't configure the cluster handler, so attributes are not read
-    assert opple_ch in zha_device.endpoints[1].claimed_cluster_handlers.values()
-
-    # check that BIND is set to False, as no reporting is configured
-    assert opple_ch.BIND is False
-
-    # check ZCL_INIT_ATTRS contains sensor attributes that are not in REPORT_CONFIG
-    assert opple_ch.ZCL_INIT_ATTRS == {
-        "last_feeding_size": True,
-    }
-    # check that ZCL_INIT_ATTRS is an instance variable and not a class variable now
-    assert opple_ch.ZCL_INIT_ATTRS is opple_ch.__dict__[ZCL_INIT_ATTRS]
-    assert opple_ch.ZCL_INIT_ATTRS is not OppleRemoteClusterHandler.ZCL_INIT_ATTRS
-
-    # double check we didn't modify the class variable
-    assert OppleRemoteClusterHandler.ZCL_INIT_ATTRS == {}
-
-    # check if REPORT_CONFIG is empty, both instance and class variable
-    assert opple_ch.REPORT_CONFIG == ()
-    assert OppleRemoteClusterHandler.REPORT_CONFIG == ()
+    # Init-only quirk metadata claims the cluster, but bind stays disabled.
+    assert endpoint.is_cluster_claimed(opple_cluster)
+    assert endpoint._cluster_bind[cluster_key] is False
+    assert endpoint._cluster_init_attrs[cluster_key] == {"last_feeding_size": True}
+    assert endpoint._cluster_report_config.get(cluster_key, {}) == {}
 
 
 async def test_device_counter_sensors(zha_gateway: Gateway) -> None:

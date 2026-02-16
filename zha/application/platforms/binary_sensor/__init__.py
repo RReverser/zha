@@ -11,12 +11,20 @@ from typing import TYPE_CHECKING, Any
 from zhaquirks.quirk_ids import DANFOSS_ALLY_THERMOSTAT
 from zigpy.profiles import zha, zll
 from zigpy.quirks.v2 import BinarySensorMetadata
+from zigpy.zcl import (
+    AttributeReadEvent,
+    AttributeReportedEvent,
+    AttributeUpdatedEvent,
+    AttributeWrittenEvent,
+    Cluster,
+)
 from zigpy.zcl.clusters.general import BinaryInput as BinaryInputCluster, OnOff
 from zigpy.zcl.clusters.hvac import Thermostat
 from zigpy.zcl.clusters.measurement import OccupancySensing
 from zigpy.zcl.clusters.security import IasZone
 
 from zha.application import Platform
+from zha.application.helpers import safe_read
 from zha.application.platforms import (
     BaseEntityInfo,
     ClusterMatch,
@@ -30,11 +38,9 @@ from zha.application.platforms.binary_sensor.const import (
     BinarySensorDeviceClass,
 )
 from zha.application.platforms.helpers import validate_device_class
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
 from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
     CLUSTER_HANDLER_ACCELEROMETER,
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_BINARY_INPUT,
     CLUSTER_HANDLER_HUE_OCCUPANCY,
     CLUSTER_HANDLER_OCCUPANCY,
@@ -52,7 +58,6 @@ from zha.zigbee.const import (
 )
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -73,30 +78,37 @@ class BinarySensor(PlatformEntity):
     _attr_device_class: BinarySensorDeviceClass | None
     _attribute_name: str
     _attribute_converter: Callable[[Any], Any] | None = None
+    _cluster: Cluster
     PLATFORM: Platform = Platform.BINARY_SENSOR
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs,
     ) -> None:
         """Initialize the ZHA binary sensor."""
-        self._cluster_handler = cluster_handlers[0]
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._cluster = clusters[0]
         self._state: bool = self.is_on
         self.recompute_capabilities()
 
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
             )
-        )
 
     def _init_from_quirks_metadata(self, entity_metadata: BinarySensorMetadata) -> None:
         """Init this entity from the quirks metadata."""
@@ -130,30 +142,39 @@ class BinarySensor(PlatformEntity):
     @property
     def is_on(self) -> bool:
         """Return True if the switch is on based on the state machine."""
-        self._state = raw_state = self._cluster_handler.cluster.get(
-            self._attribute_name
-        )
+        self._state = raw_state = self._cluster.get(self._attribute_name)
         if raw_state is None:
             return False
         if self._attribute_converter:
             return self._attribute_converter(raw_state)
         return self.parse(raw_state)
 
-    def handle_cluster_handler_attribute_updated(
-        self, event: ClusterAttributeUpdatedEvent
+    def handle_cluster_attribute_updated(
+        self,
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
     ) -> None:
-        """Handle attribute updates from the cluster handler."""
+        """Handle attribute updates from the cluster."""
         if self._attribute_name is None or self._attribute_name != event.attribute_name:
             return
-        self._state = bool(event.attribute_value)
+        self._state = bool(event.value)
         self.maybe_emit_state_changed_event()
 
     async def async_update(self) -> None:
         """Attempt to retrieve on off state from the binary sensor."""
         await super().async_update()
-        attribute = getattr(self._cluster_handler, "value_attribute", "on_off")
         # this is a cached read to get the value for state mgt so there is no double read
-        attr_value = await self._cluster_handler.get_attribute_value(attribute)
+        attribute = self._attribute_name
+        attr_value = (
+            await safe_read(
+                self._cluster,
+                [attribute],
+                allow_cache=True,
+                only_cache=True,
+            )
+        ).get(attribute)
         if attr_value is not None:
             self._state = attr_value
             self.maybe_emit_state_changed_event()
@@ -289,10 +310,12 @@ class BinaryInputWithDescription(BinarySensor):
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
         super().recompute_capabilities()
-        self._attr_fallback_name = self._cluster_handler.description
+        self._attr_fallback_name = self._cluster.get(
+            BinaryInputCluster.AttributeDefs.description.name
+        )
 
     def _is_supported(self) -> bool:
-        if self._cluster_handler.description is None:
+        if self._cluster.get(BinaryInputCluster.AttributeDefs.description.name) is None:
             return False
 
         return super()._is_supported()
@@ -322,7 +345,10 @@ class BinaryInput(BinarySensor):
 
     def _is_supported(self) -> bool:
         # Prefer to use the "WithDescription" variant above
-        if self._cluster_handler.description is not None:
+        if (
+            self._cluster.get(BinaryInputCluster.AttributeDefs.description.name)
+            is not None
+        ):
             return False
 
         return super()._is_supported()
@@ -382,7 +408,7 @@ class IASZone(BinarySensor):
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
         super().recompute_capabilities()
-        zone_type = self._cluster_handler.cluster.get("zone_type")
+        zone_type = self._cluster.get(IasZone.AttributeDefs.zone_type.name)
 
         if zone_type is None:
             self._attr_translation_key = "ias_zone"
@@ -403,6 +429,18 @@ class IASZone(BinarySensor):
     async def async_update(self) -> None:
         """Attempt to retrieve on off state from the IAS Zone sensor."""
         await PlatformEntity.async_update(self)
+        attribute = self._attribute_name
+        attr_value = (
+            await safe_read(
+                self._cluster,
+                [attribute],
+                allow_cache=False,
+                only_cache=False,
+            )
+        ).get(attribute)
+        if attr_value is not None:
+            self._state = attr_value
+            self.maybe_emit_state_changed_event()
 
 
 @register_entity(IasZone.cluster_id)

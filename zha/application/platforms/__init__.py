@@ -29,7 +29,6 @@ from zha.zigbee.const import REPORT_CONFIG_ATTR, REPORT_CONFIG_CONFIG
 if TYPE_CHECKING:
     from zigpy.zcl import Cluster
 
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
     from zha.zigbee.group import Group
@@ -484,7 +483,7 @@ class PlatformEntity(BaseEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         *,
@@ -498,7 +497,7 @@ class PlatformEntity(BaseEntity):
 
         if legacy_discovery_unique_id is None:
             legacy_discovery_unique_id = (
-                f"{device.ieee}-{endpoint.id}-{cluster_handlers[0].cluster.cluster_id}"
+                f"{device.ieee}-{endpoint.id}-{clusters[0].cluster_id}"
             )
 
         if self._unique_id_suffix is not None:
@@ -508,8 +507,7 @@ class PlatformEntity(BaseEntity):
 
         super().__init__(unique_id=unique_id, **kwargs)
 
-        self._cluster_handlers: list[ClusterHandler] = cluster_handlers
-        self.cluster_handlers: dict[str, ClusterHandler] = {}
+        self._clusters: list[Cluster] = clusters
         self.in_clusters: dict[str, Cluster] = {}
         self.out_clusters: dict[str, Cluster] = {}
         self.clusters: dict[str, Cluster] = {}
@@ -526,14 +524,13 @@ class PlatformEntity(BaseEntity):
         self.quirks_v2_direct_report_attrs: dict[str, set[str]] = {}
         self.quirks_v2_direct_init_attrs: dict[str, set[str]] = {}
 
-        for cluster_handler in cluster_handlers:
-            self.cluster_handlers[cluster_handler.name] = cluster_handler
-            cluster_name = endpoint.resolve_cluster_name(cluster_handler.cluster)
-            if cluster_handler.cluster.is_client:
-                self.out_clusters[cluster_name] = cluster_handler.cluster
+        for cluster in clusters:
+            cluster_name = endpoint.resolve_cluster_name(cluster)
+            if cluster.is_client:
+                self.out_clusters[cluster_name] = cluster
             else:
-                self.in_clusters[cluster_name] = cluster_handler.cluster
-            self.clusters[cluster_name] = cluster_handler.cluster
+                self.in_clusters[cluster_name] = cluster
+            self.clusters[cluster_name] = cluster
 
         self._device: Device = device
         self._endpoint = endpoint
@@ -647,14 +644,14 @@ class PlatformEntity(BaseEntity):
         """Return a representation of the platform entity."""
         clusters = [
             EntityClusterInfo(
-                id=cluster_handler.cluster.cluster_id,
-                name=cluster_handler.cluster.name,
-                type="client" if cluster_handler.cluster.is_client else "server",
-                endpoint_attribute=cluster_handler.cluster.ep_attribute,
+                id=cluster.cluster_id,
+                name=cluster.name,
+                type="client" if cluster.is_client else "server",
+                endpoint_attribute=cluster.ep_attribute,
             )
-            for cluster_handler in sorted(
-                self._cluster_handlers,
-                key=lambda ch: (ch.cluster.cluster_id, ch.cluster.is_client),
+            for cluster in sorted(
+                self._clusters,
+                key=lambda c: (c.cluster_id, c.is_client),
             )
         ]
         return dataclasses.replace(
@@ -696,9 +693,9 @@ class PlatformEntity(BaseEntity):
         """Retrieve latest state."""
         self.debug("polling current state")
         tasks = [
-            cluster_handler.async_update()
-            for cluster_handler in self.cluster_handlers.values()
-            if hasattr(cluster_handler, "async_update")
+            cluster.async_update()
+            for cluster in self.clusters.values()
+            if hasattr(cluster, "async_update")
         ]
         if tasks:
             await asyncio.gather(*tasks)

@@ -8,10 +8,12 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from zigpy.quirks.v2 import WriteAttributeButtonMetadata, ZCLCommandButtonMetadata
+from zigpy.zcl import Cluster
 from zigpy.zcl.clusters.general import Identify
 
 from zha.application import Platform
 from zha.application.const import ENTITY_METADATA
+from zha.application.helpers import safe_cluster_command, safe_write_attributes
 from zha.application.platforms import (
     BaseEntity,
     BaseEntityInfo,
@@ -21,14 +23,9 @@ from zha.application.platforms import (
     register_entity,
 )
 from zha.application.platforms.button.const import DEFAULT_DURATION, ButtonDeviceClass
-from zha.zigbee.const import (
-    AQARA_OPPLE_CLUSTER,
-    CLUSTER_HANDLER_IDENTIFY,
-    TUYA_MANUFACTURER_CLUSTER,
-)
+from zha.zigbee.const import AQARA_OPPLE_CLUSTER, TUYA_MANUFACTURER_CLUSTER
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -60,19 +57,20 @@ class Button(PlatformEntity):
     _command_name: str
     _args: list[Any]
     _kwargs: dict[str, Any]
+    _cluster: Cluster
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ):
         """Initialize button."""
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
         if ENTITY_METADATA in kwargs:
             self._init_from_quirks_metadata(kwargs[ENTITY_METADATA])
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._cluster = clusters[0]
 
     def _init_from_quirks_metadata(
         self, entity_metadata: ZCLCommandButtonMetadata
@@ -105,10 +103,11 @@ class Button(PlatformEntity):
 
     async def async_press(self) -> None:
         """Send out a update command."""
-        command = getattr(self._cluster_handler, self._command_name)
         arguments = self.args or []
         kwargs = self.kwargs or {}
-        await command(*arguments, **kwargs)
+        await safe_cluster_command(
+            self._cluster, self._command_name, *arguments, **kwargs
+        )
 
 
 @register_entity(Identify.cluster_id)
@@ -121,7 +120,7 @@ class IdentifyButton(Button):
     _kwargs = {}
     _args = [DEFAULT_DURATION]
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_IDENTIFY}))
+    _cluster_match = ClusterMatch(in_clusters=frozenset({Identify.ep_attribute}))
 
     def is_supported_in_list(self, entities: list[BaseEntity]) -> bool:
         """Check if this button is supported given the list of entities."""
@@ -139,16 +138,16 @@ class WriteAttributeButton(PlatformEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this button."""
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
         if ENTITY_METADATA in kwargs:
             self._init_from_quirks_metadata(kwargs[ENTITY_METADATA])
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._cluster = clusters[0]
         self.recompute_capabilities()
 
     def _init_from_quirks_metadata(
@@ -170,8 +169,8 @@ class WriteAttributeButton(PlatformEntity):
 
     async def async_press(self) -> None:
         """Write attribute with defined value."""
-        await self._cluster_handler.write_attributes_safe(
-            {self._attribute_name: self._attribute_value}
+        await safe_write_attributes(
+            self._cluster, {self._attribute_name: self._attribute_value}
         )
 
 

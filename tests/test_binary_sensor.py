@@ -230,20 +230,25 @@ async def test_smarttthings_multi(
     assert entity.PLATFORM == Platform.BINARY_SENSOR
     assert entity.is_on is False
 
-    st_ch = zha_device.endpoints[1].all_cluster_handlers["1:0xfc02"]
-    assert st_ch is not None
+    st_cluster = zha_device.device.endpoints[1].accelerometer
+    zha_device.emit = MagicMock(wraps=zha_device.emit)
+    zha_device.emit.reset_mock()
 
-    st_ch.emit_zha_event = MagicMock(wraps=st_ch.emit_zha_event)
+    await send_attributes_report(zha_gateway, st_cluster, {"x_axis": 120})
 
-    await send_attributes_report(zha_gateway, st_ch.cluster, {"x_axis": 120})
-
-    assert st_ch.emit_zha_event.call_count == 1
-    assert st_ch.emit_zha_event.mock_calls == [
-        call(
-            "attribute_updated",
-            {"attribute_id": 18, "attribute_name": "x_axis", "attribute_value": 120},
-        )
+    zha_event_calls = [
+        emit_call
+        for emit_call in zha_device.emit.mock_calls
+        if emit_call.args and emit_call.args[0] == "zha_event"
     ]
+    assert len(zha_event_calls) == 1
+    zha_event = zha_event_calls[0].args[1]
+    assert zha_event.data["command"] == "attribute_updated"
+    assert zha_event.data["args"] == {
+        "attribute_id": 18,
+        "attribute_name": "x_axis",
+        "attribute_value": 120,
+    }
 
 
 async def test_quirks_binary_sensor_attr_converter(zha_gateway: Gateway) -> None:

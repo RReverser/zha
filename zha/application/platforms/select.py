@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 import functools
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from zhaquirks.danfoss import thermostat as danfoss_thermostat
 from zhaquirks.quirk_ids import (
@@ -18,6 +18,13 @@ from zhaquirks.xiaomi.aqara.magnet_ac01 import OppleCluster as MagnetAC01OppleCl
 from zhaquirks.xiaomi.aqara.switch_acn047 import OppleCluster as T2RelayOppleCluster
 from zigpy import types
 from zigpy.quirks.v2 import ZCLEnumMetadata
+from zigpy.zcl import (
+    AttributeReadEvent,
+    AttributeReportedEvent,
+    AttributeUpdatedEvent,
+    AttributeWrittenEvent,
+    Cluster,
+)
 from zigpy.zcl.clusters.general import OnOff
 from zigpy.zcl.clusters.hvac import Thermostat, UserInterface
 from zigpy.zcl.clusters.measurement import OccupancySensing
@@ -25,6 +32,7 @@ from zigpy.zcl.clusters.security import IasWd
 
 from zha.application import Platform
 from zha.application.const import Strobe
+from zha.application.helpers import safe_write_attributes
 from zha.application.platforms import (
     BaseEntityInfo,
     ClusterMatch,
@@ -32,10 +40,8 @@ from zha.application.platforms import (
     PlatformEntity,
     register_entity,
 )
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
 from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_HUE_OCCUPANCY,
     CLUSTER_HANDLER_IAS_WD,
     CLUSTER_HANDLER_INOVELLI,
@@ -53,7 +59,6 @@ from zha.zigbee.const import (
 )
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -75,19 +80,21 @@ class EnumSelectEntity(PlatformEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _attribute_name: str
     _enum: type[Enum]
+    _cluster: Cluster
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this select entity."""
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
         self._attribute_name = self._enum.__name__
         self._attr_options = [entry.name.replace("_", " ") for entry in self._enum]
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._cluster = cast(Cluster, clusters[0])
+        self._state_cache: dict[str, Enum] = {}
 
     @functools.cached_property
     def info_object(self) -> EnumSelectInfo:
@@ -108,16 +115,14 @@ class EnumSelectEntity(PlatformEntity):
     @property
     def current_option(self) -> str | None:
         """Return the selected entity option to represent the entity state."""
-        option = self._cluster_handler.data_cache.get(self._attribute_name)
+        option = self._state_cache.get(self._attribute_name)
         if option is None:
             return None
         return option.name.replace("_", " ")
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        self._cluster_handler.data_cache[self._attribute_name] = self._enum[
-            option.replace(" ", "_")
-        ]
+        self._state_cache[self._attribute_name] = self._enum[option.replace(" ", "_")]
         self.maybe_emit_state_changed_event()
 
     def restore_external_state_attributes(
@@ -127,7 +132,7 @@ class EnumSelectEntity(PlatformEntity):
     ) -> None:
         """Restore extra state attributes that are stored outside of the ZCL cache."""
         value = state.replace(" ", "_")
-        self._cluster_handler.data_cache[self._attribute_name] = self._enum[value]
+        self._state_cache[self._attribute_name] = self._enum[value]
 
 
 class NonZCLSelectEntity(EnumSelectEntity):
@@ -190,36 +195,41 @@ class ZCLEnumSelectEntity(PlatformEntity):
     _attribute_name: str
     _attr_entity_category = EntityCategory.CONFIG
     _enum: type[Enum]
+    _cluster: Cluster
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this select entity."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._cluster = cast(Cluster, clusters[0])
         self._attr_options = [entry.name.replace("_", " ") for entry in self._enum]
 
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
             )
-        )
 
     def _is_supported(self) -> bool:
         if (
-            self._attribute_name not in self._cluster_handler.cluster.attributes_by_name
-            or self._cluster_handler.cluster.is_attribute_unsupported(
-                self._attribute_name
-            )
-            or self._cluster_handler.cluster.get(self._attribute_name) is None
+            self._attribute_name not in self._cluster.attributes_by_name
+            or self._cluster.is_attribute_unsupported(self._attribute_name)
+            or self._cluster.get(self._attribute_name) is None
         ):
             _LOGGER.debug(
                 "%s is not supported - skipping %s entity creation",
@@ -255,7 +265,7 @@ class ZCLEnumSelectEntity(PlatformEntity):
     @property
     def current_option(self) -> str | None:
         """Return the selected entity option to represent the entity state."""
-        option = self._cluster_handler.cluster.get(self._attribute_name)
+        option = self._cluster.get(self._attribute_name)
         if option is None:
             return None
         option = self._enum(option)
@@ -263,16 +273,19 @@ class ZCLEnumSelectEntity(PlatformEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        await self._cluster_handler.write_attributes_safe(
-            {self._attribute_name: self._enum[option.replace(" ", "_")]}
+        await safe_write_attributes(
+            self._cluster, {self._attribute_name: self._enum[option.replace(" ", "_")]}
         )
         self.maybe_emit_state_changed_event()
 
-    def handle_cluster_handler_attribute_updated(
+    def handle_cluster_attribute_updated(
         self,
-        event: ClusterAttributeUpdatedEvent,  # pylint: disable=unused-argument
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
     ) -> None:
-        """Handle value update from cluster handler."""
+        """Handle value update from cluster."""
         if event.attribute_name == self._attribute_name:
             self.maybe_emit_state_changed_event()
 

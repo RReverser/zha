@@ -6,15 +6,16 @@ import ast
 import asyncio
 import binascii
 import collections
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable, Coroutine, Iterator
 import contextlib
 import dataclasses
 from dataclasses import dataclass
 import datetime
 import enum
+import functools
 import logging
 import re
-from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 import zigpy.exceptions
@@ -35,17 +36,13 @@ from zha.application.const import (
 )
 from zha.async_ import gather_with_limited_concurrency
 from zha.decorators import periodic
+from zha.exceptions import ZHAException
 from zha.zigbee.cluster_policies import BINDABLE_CLUSTER_IDS
 
 if TYPE_CHECKING:
     from zha.application.gateway import Gateway
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
 
-_ClusterHandlerT = TypeVar("_ClusterHandlerT", bound="ClusterHandler")
-_T = TypeVar("_T")
-_R = TypeVar("_R")
-_P = ParamSpec("_P")
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -88,6 +85,68 @@ async def safe_read(
         return result
     except Exception:  # pylint: disable=broad-except
         return {}
+
+
+@contextlib.contextmanager
+def wrap_zigpy_exceptions() -> Iterator[None]:
+    """Wrap expected zigpy request exceptions with ZHAException."""
+    try:
+        yield
+    except TimeoutError as exc:
+        raise ZHAException("Failed to send request: device did not respond") from exc
+    except zigpy.exceptions.ZigbeeException as exc:
+        message = "Failed to send request"
+        if str(exc):
+            message = f"{message}: {exc}"
+        raise ZHAException(message) from exc
+
+
+def retry_request[**P, R](
+    func: Callable[P, Awaitable[R]],
+) -> Callable[P, Coroutine[Any, Any, R]]:
+    """Send a request with retries and consistent exception wrapping."""
+
+    @functools.wraps(func)
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        with wrap_zigpy_exceptions():
+            return await zigpy.util.retryable_request(tries=3)(func)(*args, **kwargs)
+
+    return wrapper
+
+
+async def safe_cluster_command(
+    cluster: zigpy.zcl.Cluster,
+    command_name: str,
+    *args: Any,
+    **kwargs: Any,
+) -> Any:
+    """Execute a cluster command by name with retries and wrapped exceptions."""
+    command = getattr(cluster, command_name)
+    return await retry_request(command)(*args, **kwargs)
+
+
+async def safe_write_attributes(
+    cluster: zigpy.zcl.Cluster,
+    attributes: dict[str, Any],
+    manufacturer: int | UndefinedType | None = UNDEFINED,
+) -> None:
+    """Write attributes and raise ZHAException on failed write status records."""
+    res = await retry_request(cluster.write_attributes)(
+        attributes,
+        manufacturer=manufacturer,
+    )
+    for record in res[0]:
+        if record.status == foundation.Status.SUCCESS:
+            continue
+
+        try:
+            name = cluster.attributes[record.attrid].name
+            value = attributes.get(name, "unknown")
+        except KeyError:
+            name = f"0x{record.attrid:04x}"
+            value = "unknown"
+
+        raise ZHAException(f"Failed to write attribute {name}={value}: {record.status}")
 
 
 async def get_matched_clusters(

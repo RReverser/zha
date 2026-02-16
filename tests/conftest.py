@@ -3,6 +3,7 @@
 import asyncio
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
+import functools
 import logging
 import os
 import reprlib
@@ -345,8 +346,8 @@ def disable_request_retry_delay():
     """Disable ZHA request retrying delay to speed up failures."""
 
     with patch(
-        "zha.zigbee.cluster_handlers.RETRYABLE_REQUEST_DECORATOR",
-        zigpy.util.retryable_request(tries=3, delay=0),
+        "zha.application.helpers.zigpy.util.retryable_request",
+        functools.partial(zigpy.util.retryable_request, delay=0),
     ):
         yield
 
@@ -378,7 +379,7 @@ def cluster_handler() -> Callable:
     ) -> MagicMock:
         ch = MagicMock()
         ch.name = name
-        ch.generic_id = f"cluster_handler_0x{cluster_id:04x}"
+        ch.generic_id = f"cluster_0x{cluster_id:04x}"
         ch.id = f"{endpoint_id}:0x{cluster_id:04x}"
         ch.async_configure = AsyncMock()
         ch.async_initialize = AsyncMock()

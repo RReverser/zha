@@ -18,7 +18,14 @@ from zhaquirks.quirk_ids import DANFOSS_ALLY_THERMOSTAT
 from zigpy import types
 from zigpy.quirks.v2 import ZCLEnumMetadata, ZCLSensorMetadata
 from zigpy.state import Counter, State
-from zigpy.zcl import foundation
+from zigpy.zcl import (
+    AttributeReadEvent,
+    AttributeReportedEvent,
+    AttributeUpdatedEvent,
+    AttributeWrittenEvent,
+    Cluster,
+    foundation,
+)
 from zigpy.zcl.clusters.closures import WindowCovering
 from zigpy.zcl.clusters.general import (
     AnalogInput,
@@ -26,6 +33,7 @@ from zigpy.zcl.clusters.general import (
     DeviceTemperature as DeviceTemperatureCluster,
     PowerConfiguration,
 )
+from zigpy.zcl.clusters.general_const import ApplicationType
 from zigpy.zcl.clusters.homeautomation import Diagnostic, ElectricalMeasurement
 from zigpy.zcl.clusters.hvac import Thermostat
 from zigpy.zcl.clusters.measurement import (
@@ -50,6 +58,7 @@ from zigpy.zcl.clusters.smartenergy import (
 )
 
 from zha.application import Platform
+from zha.application.helpers import safe_read
 from zha.application.platforms import (
     BaseEntity,
     BaseEntityInfo,
@@ -97,11 +106,9 @@ from zha.units import (
     UnitOfVolume,
     UnitOfVolumeFlowRate,
 )
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
 from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
     CLUSTER_HANDLER_ANALOG_INPUT,
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_BASIC,
     CLUSTER_HANDLER_COVER,
     CLUSTER_HANDLER_DEVICE_TEMPERATURE,
@@ -120,6 +127,7 @@ from zha.zigbee.const import (
     CLUSTER_HANDLER_TEMPERATURE,
     CLUSTER_HANDLER_THERMOSTAT,
     CLUSTER_HANDLER_WIND_SPEED,
+    CLUSTER_READS_PER_REQ,
     IKEA_AIR_PURIFIER_CLUSTER,
     INOVELLI_CLUSTER,
     REPORT_CONFIG_ASAP,
@@ -135,7 +143,6 @@ from zha.zigbee.const import (
 )
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -210,42 +217,46 @@ class Sensor(PlatformEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this sensor."""
-        self._cluster_handler: ClusterHandler = cluster_handlers[0]
+        self._cluster_handler: Cluster = clusters[0]
         self._attr_def: foundation.ZCLAttributeDef | None = None
 
         if self._attribute_name is not None:
             # If the attribute definition does not exist, this entity will be filtered
             # out via `is_supported`
             with contextlib.suppress(KeyError):
-                self._attr_def = self._cluster_handler.cluster.find_attribute(
+                self._attr_def = self._cluster_handler.find_attribute(
                     self._attribute_name
                 )
 
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
         self.recompute_capabilities()
 
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._cluster_handler.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_handler_attribute_updated,
+                )
             )
-        )
 
     def _is_supported(self) -> bool:
         if (
-            self._attribute_name not in self._cluster_handler.cluster.attributes_by_name
-        ) or self._cluster_handler.cluster.is_attribute_unsupported(
-            self._attribute_name
-        ):
+            self._attribute_name not in self._cluster_handler.attributes_by_name
+        ) or self._cluster_handler.is_attribute_unsupported(self._attribute_name):
             _LOGGER.debug(
                 "%s is not supported - skipping %s entity creation",
                 self._attribute_name,
@@ -255,7 +266,7 @@ class Sensor(PlatformEntity):
 
         if (
             self._skip_creation_if_no_attr_cache
-            and self._cluster_handler.cluster.get(self._attribute_name) is None
+            and self._cluster_handler.get(self._attribute_name) is None
         ):
             return False
 
@@ -325,7 +336,7 @@ class Sensor(PlatformEntity):
     def native_value(self) -> date | datetime | str | int | float | None:
         """Return the state of the entity."""
         assert self._attribute_name is not None
-        raw_state = self._cluster_handler.cluster.get(self._attribute_name)
+        raw_state = self._cluster_handler.get(self._attribute_name)
         if raw_state is None:
             return None
         if self._is_non_value(raw_state):
@@ -334,9 +345,57 @@ class Sensor(PlatformEntity):
             return self._attribute_converter(raw_state)
         return self.formatter(raw_state)
 
+    async def async_update(self) -> None:
+        """Retrieve latest state from the sensor cluster."""
+        await super().async_update()
+
+        attrs_to_read: list[str] = []
+        cluster_name = self.endpoint.resolve_cluster_name(self._cluster_handler)
+        polling_attrs = getattr(self, "_polling_attrs", None)
+        if polling_attrs:
+            attrs_to_read.extend(polling_attrs)
+        else:
+            report_entries = self.entity_report_config.get(cluster_name, ())
+            if report_entries:
+                attrs_to_read.extend(
+                    cast(str, report_entry[REPORT_CONFIG_ATTR])
+                    for report_entry in report_entries
+                )
+            elif self._attribute_name is not None:
+                attrs_to_read.append(self._attribute_name)
+
+        deduped_attrs: list[str] = []
+        seen: set[str] = set()
+        for attr in attrs_to_read:
+            if attr in seen:
+                continue
+            seen.add(attr)
+            if attr not in self._cluster_handler.attributes_by_name:
+                continue
+            if self._cluster_handler.is_attribute_unsupported(attr):
+                continue
+            deduped_attrs.append(attr)
+
+        if deduped_attrs:
+            chunk = deduped_attrs[:CLUSTER_READS_PER_REQ]
+            rest = deduped_attrs[CLUSTER_READS_PER_REQ:]
+            while chunk:
+                await safe_read(
+                    self._cluster_handler,
+                    chunk,
+                    allow_cache=False,
+                    only_cache=False,
+                )
+                chunk = rest[:CLUSTER_READS_PER_REQ]
+                rest = rest[CLUSTER_READS_PER_REQ:]
+            self.maybe_emit_state_changed_event()
+
     def handle_cluster_handler_attribute_updated(
         self,
-        event: ClusterAttributeUpdatedEvent,  # pylint: disable=unused-argument
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
     ) -> None:
         """Handle attribute updates from the cluster handler."""
         if (
@@ -387,13 +446,13 @@ class PollableSensor(Sensor):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this sensor."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
         self._polling_task: Task | None = None
 
     def on_add(self) -> None:
@@ -571,13 +630,13 @@ class EnumSensor(Sensor):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this sensor."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
         self._attr_options = [e.name for e in self._enum]
 
         # XXX: This class is not meant to be initialized directly, as `unique_id`
@@ -666,13 +725,25 @@ class AnalogInputSensor(Sensor):
     def recompute_capabilities(self) -> None:
         """Recompute capabilities."""
         super().recompute_capabilities()
+        description = self._cluster_handler.get(
+            AnalogInput.AttributeDefs.description.name
+        )
+        application_type = self._cluster_handler.get(
+            AnalogInput.AttributeDefs.application_type.name
+        )
+        engineering_units = self._cluster_handler.get(
+            AnalogInput.AttributeDefs.engineering_units.name
+        )
+        resolution = self._cluster_handler.get(
+            AnalogInput.AttributeDefs.resolution.name
+        )
 
-        self._attr_fallback_name = self._cluster_handler.description
+        self._attr_fallback_name = description
 
-        if self._cluster_handler.application_type is not None:
+        if application_type is not None:
             # The application type encodes a tiny bit more info but it's mostly
             # irrelevant, just use the `type` sub-field
-            app_type = self._cluster_handler.application_type.type
+            app_type = ApplicationType(int(application_type)).type
             self._attr_device_class = ANALOG_INPUT_APPTYPE_DEV_CLASS.get(app_type)
 
             # Application type units take precedence
@@ -681,24 +752,31 @@ class AnalogInputSensor(Sensor):
             )
         else:
             self._attr_native_unit_of_measurement = BACNET_UNITS_TO_HA_UNITS.get(
-                self._cluster_handler.engineering_units
+                engineering_units
             )
 
         # Resolution indicates the minimum change in value that can be detected
-        if self._cluster_handler.resolution is not None:
+        if resolution is not None:
             self._attr_suggested_display_precision = resolution_to_decimal_precision(
-                self._cluster_handler.resolution
+                resolution
             )
 
     def _is_supported(self) -> bool:
         """Return True if this sensor is supported."""
-        if self._cluster_handler.description is None:
+        if (
+            self._cluster_handler.get(AnalogInput.AttributeDefs.description.name)
+            is None
+        ):
             return False
 
         # The units are determined by one of these
         if (
-            self._cluster_handler.application_type is None
-            and self._cluster_handler.engineering_units is None
+            self._cluster_handler.get(AnalogInput.AttributeDefs.application_type.name)
+            is None
+            and self._cluster_handler.get(
+                AnalogInput.AttributeDefs.engineering_units.name
+            )
+            is None
         ):
             return False
 
@@ -721,7 +799,12 @@ class Battery(Sensor):
             },
         ),
     }
-    ZCL_INIT_ATTRS = {}
+    ZCL_INIT_ATTRS = {
+        PowerConfiguration.ep_attribute: {
+            PowerConfiguration.AttributeDefs.battery_size.name: True,
+            PowerConfiguration.AttributeDefs.battery_quantity.name: True,
+        },
+    }
     _attribute_name = "battery_percentage_remaining"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.BATTERY
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -754,13 +837,13 @@ class Battery(Sensor):
     def state(self) -> dict[str, Any]:
         """Return the state for battery sensors."""
         response = super().state
-        battery_size = self._cluster_handler.cluster.get("battery_size")
+        battery_size = self._cluster_handler.get("battery_size")
         if battery_size is not None:
             response["battery_size"] = BATTERY_SIZES.get(battery_size, "Unknown")
-        battery_quantity = self._cluster_handler.cluster.get("battery_quantity")
+        battery_quantity = self._cluster_handler.get("battery_quantity")
         if battery_quantity is not None:
             response["battery_quantity"] = battery_quantity
-        battery_voltage = self._cluster_handler.cluster.get("battery_voltage")
+        battery_voltage = self._cluster_handler.get("battery_voltage")
         if battery_voltage is not None:
             response["battery_voltage"] = round(battery_voltage / 10, 2)
         return response
@@ -768,6 +851,70 @@ class Battery(Sensor):
 
 class BaseElectricalMeasurement(PollableSensor):
     """Base class for electrical measurement."""
+
+    AC_POWER_DIVISOR_ATTR = ElectricalMeasurement.AttributeDefs.ac_power_divisor.name
+    AC_POWER_MULTIPLIER_ATTR = (
+        ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name
+    )
+    DC_POWER_DIVISOR_ATTR = ElectricalMeasurement.AttributeDefs.dc_power_divisor.name
+    DC_POWER_MULTIPLIER_ATTR = (
+        ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name
+    )
+    POWER_DIVISOR_ATTR = ElectricalMeasurement.AttributeDefs.power_divisor.name
+    POWER_MULTIPLIER_ATTR = ElectricalMeasurement.AttributeDefs.power_multiplier.name
+
+    POWER_DIVISOR_FALLBACK_ATTRS: dict[str, tuple[str, ...]] = {
+        AC_POWER_DIVISOR_ATTR: (POWER_DIVISOR_ATTR,),
+        DC_POWER_DIVISOR_ATTR: (POWER_DIVISOR_ATTR,),
+    }
+    POWER_MULTIPLIER_FALLBACK_ATTRS: dict[str, tuple[str, ...]] = {
+        AC_POWER_MULTIPLIER_ATTR: (POWER_MULTIPLIER_ATTR,),
+        DC_POWER_MULTIPLIER_ATTR: (POWER_MULTIPLIER_ATTR,),
+    }
+
+    _polling_attrs: tuple[str, ...] = (
+        ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+        ElectricalMeasurement.AttributeDefs.ac_frequency_max.name,
+        ElectricalMeasurement.AttributeDefs.active_power.name,
+        ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+        ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+        ElectricalMeasurement.AttributeDefs.active_power_max.name,
+        ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name,
+        ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name,
+        ElectricalMeasurement.AttributeDefs.total_active_power.name,
+        ElectricalMeasurement.AttributeDefs.apparent_power.name,
+        ElectricalMeasurement.AttributeDefs.power_factor.name,
+        ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name,
+        ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name,
+        ElectricalMeasurement.AttributeDefs.rms_current.name,
+        ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+        ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+        ElectricalMeasurement.AttributeDefs.rms_current_max.name,
+        ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name,
+        ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name,
+        ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+        ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+        ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+        ElectricalMeasurement.AttributeDefs.rms_voltage_max.name,
+        ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name,
+        ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name,
+        ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+        ElectricalMeasurement.AttributeDefs.dc_current.name,
+        ElectricalMeasurement.AttributeDefs.dc_power.name,
+    )
+
+    class MeasurementType(enum.IntFlag):
+        """Measurement type bitmask names for state output compatibility."""
+
+        ACTIVE_MEASUREMENT = 1
+        REACTIVE_MEASUREMENT = 2
+        APPARENT_MEASUREMENT = 4
+        PHASE_A_MEASUREMENT = 8
+        PHASE_B_MEASUREMENT = 16
+        PHASE_C_MEASUREMENT = 32
+        DC_MEASUREMENT = 64
+        HARMONICS_MEASUREMENT = 128
+        POWER_QUALITY_MEASUREMENT = 256
 
     _use_custom_polling: bool = False
     _attr_suggested_display_precision = 1
@@ -778,13 +925,13 @@ class BaseElectricalMeasurement(PollableSensor):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this sensor."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
         self._attr_extra_state_attribute_names: set[str] = {"measurement_type"}
         if self._attr_max_attribute_name is not None:
             self._attr_extra_state_attribute_names.add(self._attr_max_attribute_name)
@@ -793,13 +940,23 @@ class BaseElectricalMeasurement(PollableSensor):
     def state(self) -> dict[str, Any]:
         """Return the state for this sensor."""
         response = super().state
-        if self._cluster_handler.measurement_type is not None:
-            response["measurement_type"] = self._cluster_handler.measurement_type
+        if (
+            measurement_type := self._cluster_handler.get(
+                ElectricalMeasurement.AttributeDefs.measurement_type.name
+            )
+        ) is not None:
+            measurement_type_flags = self.MeasurementType(measurement_type)
+            response["measurement_type"] = ", ".join(
+                measurement.name
+                for measurement in self.MeasurementType
+                if measurement in measurement_type_flags
+                and measurement.name is not None
+            )
 
         if (max_attr_name := self._attr_max_attribute_name) is None:
             return response
 
-        if (max_v := self._cluster_handler.cluster.get(max_attr_name)) is not None:
+        if (max_v := self._cluster_handler.get(max_attr_name)) is not None:
             response[max_attr_name] = self.formatter(max_v)
 
         return response
@@ -809,7 +966,17 @@ class BaseElectricalMeasurement(PollableSensor):
         if not self._multiplier_attribute_name:
             return super()._multiplier
 
-        return getattr(self._cluster_handler, self._multiplier_attribute_name)
+        multiplier = self._cluster_handler.get(self._multiplier_attribute_name)
+        if multiplier is not None:
+            return multiplier
+
+        for fallback_attr in self.POWER_MULTIPLIER_FALLBACK_ATTRS.get(
+            self._multiplier_attribute_name, ()
+        ):
+            fallback = self._cluster_handler.get(fallback_attr)
+            if fallback is not None:
+                return fallback
+        return 1
 
     @_multiplier.setter
     def _multiplier(self, value: int | float | None) -> None:
@@ -820,7 +987,17 @@ class BaseElectricalMeasurement(PollableSensor):
         if not self._divisor_attribute_name:
             return super()._divisor
 
-        return getattr(self._cluster_handler, self._divisor_attribute_name)
+        divisor = self._cluster_handler.get(self._divisor_attribute_name)
+        if divisor is not None:
+            return divisor or 1
+
+        for fallback_attr in self.POWER_DIVISOR_FALLBACK_ATTRS.get(
+            self._divisor_attribute_name, ()
+        ):
+            fallback = self._cluster_handler.get(fallback_attr)
+            if fallback is not None:
+                return fallback or 1
+        return 1
 
     @_divisor.setter
     def _divisor(self, value: int | float | None) -> None:
@@ -835,8 +1012,8 @@ class ElectricalMeasurementActivePower(BaseElectricalMeasurement):
     # no unique id suffix for backwards compatibility
     # no translation key due to device class
     _attr_max_attribute_name = "active_power_max"
-    _divisor_attribute_name = "ac_power_divisor"
-    _multiplier_attribute_name = "ac_power_multiplier"
+    _divisor_attribute_name = BaseElectricalMeasurement.AC_POWER_DIVISOR_ATTR
+    _multiplier_attribute_name = BaseElectricalMeasurement.AC_POWER_MULTIPLIER_ATTR
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.POWER
     _attr_native_unit_of_measurement: str = UnitOfPower.WATT
 
@@ -1788,8 +1965,8 @@ class ElectricalMeasurementApparentPower(BaseElectricalMeasurement):
     }
     _attribute_name = "apparent_power"
     _unique_id_suffix = "apparent_power"
-    _divisor_attribute_name = "ac_power_divisor"
-    _multiplier_attribute_name = "ac_power_multiplier"
+    _divisor_attribute_name = BaseElectricalMeasurement.AC_POWER_DIVISOR_ATTR
+    _multiplier_attribute_name = BaseElectricalMeasurement.AC_POWER_MULTIPLIER_ATTR
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.APPARENT_POWER
     _attr_native_unit_of_measurement = UnitOfApparentPower.VOLT_AMPERE
 
@@ -3895,8 +4072,8 @@ class ElectricalMeasurementDCPower(BaseElectricalMeasurement):
     _attr_translation_key: str = "dc_power"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.POWER
     _attr_native_unit_of_measurement = UnitOfPower.WATT
-    _divisor_attribute_name = "dc_power_divisor"
-    _multiplier_attribute_name = "dc_power_multiplier"
+    _divisor_attribute_name = BaseElectricalMeasurement.DC_POWER_DIVISOR_ATTR
+    _multiplier_attribute_name = BaseElectricalMeasurement.DC_POWER_MULTIPLIER_ATTR
     _skip_creation_if_no_attr_cache = True
 
     _cluster_match = ClusterMatch(
@@ -4176,8 +4353,168 @@ class SmartEnergyMetering(PollableSensor):
         ),
     }
 
+    METERING_DEVICE_TYPES_ELECTRIC = {
+        0,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15,
+        127,
+        134,
+        135,
+        136,
+        137,
+        138,
+        140,
+        141,
+        142,
+    }
+    METERING_DEVICE_TYPES_GAS = {1, 128}
+    METERING_DEVICE_TYPES_WATER = {2, 129}
+    METERING_DEVICE_TYPES_HEATING_COOLING = {3, 5, 6, 130, 132, 133}
+    METERING_DEVICE_TYPE_MAP = {
+        0: "Electric Metering",
+        1: "Gas Metering",
+        2: "Water Metering",
+        3: "Thermal Metering",
+        4: "Pressure Metering",
+        5: "Heat Metering",
+        6: "Cooling Metering",
+        7: "End Use Measurement Device (EUMD) for metering electric vehicle charging",
+        8: "PV Generation Metering",
+        9: "Wind Turbine Generation Metering",
+        10: "Water Turbine Generation Metering",
+        11: "Micro Generation Metering",
+        12: "Solar Hot Water Generation Metering",
+        13: "Electric Metering Element/Phase 1",
+        14: "Electric Metering Element/Phase 2",
+        15: "Electric Metering Element/Phase 3",
+        127: "Mirrored Electric Metering",
+        128: "Mirrored Gas Metering",
+        129: "Mirrored Water Metering",
+        130: "Mirrored Thermal Metering",
+        131: "Mirrored Pressure Metering",
+        132: "Mirrored Heat Metering",
+        133: "Mirrored Cooling Metering",
+        134: "Mirrored End Use Measurement Device (EUMD) for metering electric vehicle charging",
+        135: "Mirrored PV Generation Metering",
+        136: "Mirrored Wind Turbine Generation Metering",
+        137: "Mirrored Water Turbine Generation Metering",
+        138: "Mirrored Micro Generation Metering",
+        139: "Mirrored Solar Hot Water Generation Metering",
+        140: "Mirrored Electric Metering Element/Phase 1",
+        141: "Mirrored Electric Metering Element/Phase 2",
+        142: "Mirrored Electric Metering Element/Phase 3",
+    }
+
+    class DeviceStatusElectric(enum.IntFlag):
+        """Device status bitfield for electric meters."""
+
+        NO_ALARMS = 0
+        CHECK_METER = 1
+        LOW_BATTERY = 2
+        TAMPER_DETECT = 4
+        POWER_FAILURE = 8
+        POWER_QUALITY = 16
+        LEAK_DETECT = 32
+        SERVICE_DISCONNECT = 64
+        RESERVED = 128
+
+    class DeviceStatusGas(enum.IntFlag):
+        """Device status bitfield for gas meters."""
+
+        NO_ALARMS = 0
+        CHECK_METER = 1
+        LOW_BATTERY = 2
+        TAMPER_DETECT = 4
+        NOT_DEFINED = 8
+        LOW_PRESSURE = 16
+        LEAK_DETECT = 32
+        SERVICE_DISCONNECT = 64
+        REVERSE_FLOW = 128
+
+    class DeviceStatusWater(enum.IntFlag):
+        """Device status bitfield for water meters."""
+
+        NO_ALARMS = 0
+        CHECK_METER = 1
+        LOW_BATTERY = 2
+        TAMPER_DETECT = 4
+        PIPE_EMPTY = 8
+        LOW_PRESSURE = 16
+        LEAK_DETECT = 32
+        SERVICE_DISCONNECT = 64
+        REVERSE_FLOW = 128
+
+    class DeviceStatusHeatingCooling(enum.IntFlag):
+        """Device status bitfield for heating/cooling meters."""
+
+        NO_ALARMS = 0
+        CHECK_METER = 1
+        LOW_BATTERY = 2
+        TAMPER_DETECT = 4
+        TEMPERATURE_SENSOR = 8
+        BURST_DETECT = 16
+        LEAK_DETECT = 32
+        SERVICE_DISCONNECT = 64
+        REVERSE_FLOW = 128
+
+    class DeviceStatusDefault(enum.IntFlag):
+        """Fallback device status bitfield."""
+
+        NO_ALARMS = 0
+
+    def _unit_of_measurement(self) -> int | None:
+        """Return metering cluster unit of measurement."""
+        return self._cluster_handler.get(Metering.AttributeDefs.unit_of_measure.name)
+
+    def _metering_device_type(self) -> str | int | None:
+        """Return metering device type."""
+        if (
+            metering_device_type := self._cluster_handler.get(
+                Metering.AttributeDefs.metering_device_type.name
+            )
+        ) is None:
+            return None
+        return self.METERING_DEVICE_TYPE_MAP.get(
+            metering_device_type, metering_device_type
+        )
+
+    def _metering_status(self) -> enum.IntFlag | int | None:
+        """Return metering status typed by metering device type."""
+        if (
+            status := self._cluster_handler.get(Metering.AttributeDefs.status.name)
+        ) is None:
+            return None
+        metering_device_type = self._cluster_handler.get(
+            Metering.AttributeDefs.metering_device_type.name
+        )
+        if metering_device_type in self.METERING_DEVICE_TYPES_ELECTRIC:
+            return self.DeviceStatusElectric(status)
+        if metering_device_type in self.METERING_DEVICE_TYPES_GAS:
+            return self.DeviceStatusGas(status)
+        if metering_device_type in self.METERING_DEVICE_TYPES_WATER:
+            return self.DeviceStatusWater(status)
+        if metering_device_type in self.METERING_DEVICE_TYPES_HEATING_COOLING:
+            return self.DeviceStatusHeatingCooling(status)
+        return self.DeviceStatusDefault(status)
+
+    def _demand_formatting(self) -> int | None:
+        """Return demand formatting."""
+        return self._cluster_handler.get(Metering.AttributeDefs.demand_formatting.name)
+
+    def _summation_formatting(self) -> int | None:
+        """Return summation formatting."""
+        return self._cluster_handler.get(
+            Metering.AttributeDefs.summation_formatting.name
+        )
+
     def _is_supported(self) -> bool:
-        unit = self._cluster_handler.unit_of_measurement
+        unit = self._unit_of_measurement()
         if self._is_non_value(unit, attr_def=Metering.AttributeDefs.unit_of_measure):
             return False
 
@@ -4187,7 +4524,7 @@ class SmartEnergyMetering(PollableSensor):
         """Recompute capabilities and feature flags."""
         super().recompute_capabilities()
         entity_description = self._ENTITY_DESCRIPTION_MAP.get(
-            self._cluster_handler.unit_of_measurement
+            self._unit_of_measurement()
         )
         if entity_description is not None:
             self.entity_description = entity_description
@@ -4198,21 +4535,21 @@ class SmartEnergyMetering(PollableSensor):
     def state(self) -> dict[str, Any]:
         """Return state for this sensor."""
         response = super().state
-        if self._cluster_handler.device_type is not None:
-            response["device_type"] = self._cluster_handler.device_type
-        if (status := self._cluster_handler.metering_status) is not None:
+        if (device_type := self._metering_device_type()) is not None:
+            response["device_type"] = device_type
+        if (status := self._metering_status()) is not None:
             if isinstance(status, enum.IntFlag):
                 response["status"] = str(
                     status.name if status.name is not None else status.value
                 )
             else:
                 response["status"] = str(status)[len(status.__class__.__name__) + 1 :]
-        response["zcl_unit_of_measurement"] = self._cluster_handler.unit_of_measurement
+        response["zcl_unit_of_measurement"] = self._unit_of_measurement()
         return response
 
     @property
     def _multiplier(self) -> int | float | None:
-        return self._cluster_handler.multiplier
+        return self._cluster_handler.get(Metering.AttributeDefs.multiplier.name) or 1
 
     @_multiplier.setter
     def _multiplier(self, value: int | float | None) -> None:
@@ -4220,7 +4557,7 @@ class SmartEnergyMetering(PollableSensor):
 
     @property
     def _divisor(self) -> int | float | None:
-        return self._cluster_handler.divisor
+        return self._cluster_handler.get(Metering.AttributeDefs.divisor.name) or 1
 
     @_divisor.setter
     def _divisor(self, value: int | float | None) -> None:
@@ -4231,10 +4568,7 @@ class SmartEnergyMetering(PollableSensor):
         # TODO: improve typing for base class
         scaled_value = cast(float, super().formatter(value))
 
-        if (
-            self._cluster_handler.unit_of_measurement
-            == MeteringUnitofMeasure.Kwh_and_Kwh_binary
-        ):
+        if self._unit_of_measurement() == MeteringUnitofMeasure.Kwh_and_Kwh_binary:
             # Zigbee spec power unit is kW, but we show the value in W
             value_watt = scaled_value * 1000
             if value_watt < 100:
@@ -4242,8 +4576,8 @@ class SmartEnergyMetering(PollableSensor):
             return round(value_watt)
 
         demand_formater = create_number_formatter(
-            self._cluster_handler.demand_formatting
-            if self._cluster_handler.demand_formatting is not None
+            self._demand_formatting()
+            if self._demand_formatting() is not None
             else DEFAULT_FORMATTING
         )
         return float(demand_formater.format(scaled_value))
@@ -4388,15 +4722,12 @@ class SmartEnergySummation(SmartEnergyMetering):
         # TODO: improve typing for base class
         scaled_value = cast(float, Sensor.formatter(self, value))
 
-        if (
-            self._cluster_handler.unit_of_measurement
-            == MeteringUnitofMeasure.Kwh_and_Kwh_binary
-        ):
+        if self._unit_of_measurement() == MeteringUnitofMeasure.Kwh_and_Kwh_binary:
             return scaled_value
 
         summation_formater = create_number_formatter(
-            self._cluster_handler.summation_formatting
-            if self._cluster_handler.summation_formatting is not None
+            self._summation_formatting()
+            if self._summation_formatting() is not None
             else DEFAULT_FORMATTING
         )
         return float(summation_formater.format(scaled_value))
@@ -5415,8 +5746,12 @@ class ThermostatHVACAction(Sensor):
         """Return the current HVAC action."""
         response = super().state
         if (
-            self._cluster_handler.pi_heating_demand is None
-            and self._cluster_handler.pi_cooling_demand is None
+            self._cluster_handler.get(Thermostat.AttributeDefs.pi_heating_demand.name)
+            is None
+            and self._cluster_handler.get(
+                Thermostat.AttributeDefs.pi_cooling_demand.name
+            )
+            is None
         ):
             response["state"] = self._rm_rs_action
         else:
@@ -5427,8 +5762,12 @@ class ThermostatHVACAction(Sensor):
     def native_value(self) -> str | None:
         """Return the current HVAC action."""
         if (
-            self._cluster_handler.pi_heating_demand is None
-            and self._cluster_handler.pi_cooling_demand is None
+            self._cluster_handler.get(Thermostat.AttributeDefs.pi_heating_demand.name)
+            is None
+            and self._cluster_handler.get(
+                Thermostat.AttributeDefs.pi_cooling_demand.name
+            )
+            is None
         ):
             return self._rm_rs_action
         return self._pi_demand_action
@@ -5437,36 +5776,47 @@ class ThermostatHVACAction(Sensor):
     def _rm_rs_action(self) -> HVACAction | None:
         """Return the current HVAC action based on running mode and running state."""
 
-        if (running_state := self._cluster_handler.running_state) is None:
+        if (
+            running_state := self._cluster_handler.get(
+                Thermostat.AttributeDefs.running_state.name
+            )
+        ) is None:
             return None
 
         rs_heat = (
-            self._cluster_handler.RunningState.Heat_State_On
-            | self._cluster_handler.RunningState.Heat_2nd_Stage_On
+            Thermostat.RunningState.Heat_State_On
+            | Thermostat.RunningState.Heat_2nd_Stage_On
         )
         if running_state & rs_heat:
             return HVACAction.HEATING
 
         rs_cool = (
-            self._cluster_handler.RunningState.Cool_State_On
-            | self._cluster_handler.RunningState.Cool_2nd_Stage_On
+            Thermostat.RunningState.Cool_State_On
+            | Thermostat.RunningState.Cool_2nd_Stage_On
         )
         if running_state & rs_cool:
             return HVACAction.COOLING
 
-        running_state = self._cluster_handler.running_state
+        running_state = self._cluster_handler.get(
+            Thermostat.AttributeDefs.running_state.name
+        )
         if running_state and running_state & (
-            self._cluster_handler.RunningState.Fan_State_On
-            | self._cluster_handler.RunningState.Fan_2nd_Stage_On
-            | self._cluster_handler.RunningState.Fan_3rd_Stage_On
+            Thermostat.RunningState.Fan_State_On
+            | Thermostat.RunningState.Fan_2nd_Stage_On
+            | Thermostat.RunningState.Fan_3rd_Stage_On
         ):
             return HVACAction.FAN
 
-        running_state = self._cluster_handler.running_state
-        if running_state and running_state & self._cluster_handler.RunningState.Idle:
+        running_state = self._cluster_handler.get(
+            Thermostat.AttributeDefs.running_state.name
+        )
+        if running_state and running_state & Thermostat.RunningState.Idle:
             return HVACAction.IDLE
 
-        if self._cluster_handler.system_mode != self._cluster_handler.SystemMode.Off:
+        if (
+            self._cluster_handler.get(Thermostat.AttributeDefs.system_mode.name)
+            != Thermostat.SystemMode.Off
+        ):
             return HVACAction.IDLE
         return HVACAction.OFF
 
@@ -5474,14 +5824,21 @@ class ThermostatHVACAction(Sensor):
     def _pi_demand_action(self) -> HVACAction:
         """Return the current HVAC action based on pi_demands."""
 
-        heating_demand = self._cluster_handler.pi_heating_demand
+        heating_demand = self._cluster_handler.get(
+            Thermostat.AttributeDefs.pi_heating_demand.name
+        )
         if heating_demand is not None and heating_demand > 0:
             return HVACAction.HEATING
-        cooling_demand = self._cluster_handler.pi_cooling_demand
+        cooling_demand = self._cluster_handler.get(
+            Thermostat.AttributeDefs.pi_cooling_demand.name
+        )
         if cooling_demand is not None and cooling_demand > 0:
             return HVACAction.COOLING
 
-        if self._cluster_handler.system_mode != self._cluster_handler.SystemMode.Off:
+        if (
+            self._cluster_handler.get(Thermostat.AttributeDefs.system_mode.name)
+            != Thermostat.SystemMode.Off
+        ):
             return HVACAction.IDLE
         return HVACAction.OFF
 
@@ -5606,22 +5963,27 @@ class SinopeHVACAction(ThermostatHVACAction):
     def _rm_rs_action(self) -> HVACAction:
         """Return the current HVAC action based on running mode and running state."""
 
-        running_mode = self._cluster_handler.running_mode
-        if running_mode == self._cluster_handler.RunningMode.Heat:
+        running_mode = self._cluster_handler.get(
+            Thermostat.AttributeDefs.running_mode.name
+        )
+        if running_mode == Thermostat.RunningMode.Heat:
             return HVACAction.HEATING
-        if running_mode == self._cluster_handler.RunningMode.Cool:
+        if running_mode == Thermostat.RunningMode.Cool:
             return HVACAction.COOLING
 
-        running_state = self._cluster_handler.running_state
+        running_state = self._cluster_handler.get(
+            Thermostat.AttributeDefs.running_state.name
+        )
         if running_state and running_state & (
-            self._cluster_handler.RunningState.Fan_State_On
-            | self._cluster_handler.RunningState.Fan_2nd_Stage_On
-            | self._cluster_handler.RunningState.Fan_3rd_Stage_On
+            Thermostat.RunningState.Fan_State_On
+            | Thermostat.RunningState.Fan_2nd_Stage_On
+            | Thermostat.RunningState.Fan_3rd_Stage_On
         ):
             return HVACAction.FAN
         if (
-            self._cluster_handler.system_mode != self._cluster_handler.SystemMode.Off
-            and running_mode == self._cluster_handler.SystemMode.Off
+            self._cluster_handler.get(Thermostat.AttributeDefs.system_mode.name)
+            != Thermostat.SystemMode.Off
+            and running_mode == Thermostat.SystemMode.Off
         ):
             return HVACAction.IDLE
         return HVACAction.OFF
@@ -5646,13 +6008,13 @@ class RSSISensor(Sensor):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
 
     def on_add(self) -> None:
         """Run when entity is added."""
@@ -6448,13 +6810,13 @@ class BitMapSensor(Sensor):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
     ) -> None:
         """Init this sensor."""
-        super().__init__(cluster_handlers, endpoint, device, **kwargs)
+        super().__init__(clusters, endpoint, device, **kwargs)
         self._attr_extra_state_attribute_names: set[str] = {
             bit.name for bit in list(self._bitmap)
         }
@@ -6464,7 +6826,7 @@ class BitMapSensor(Sensor):
         """Return the state for this sensor."""
         response = super().state
         response["state"] = self.native_value
-        value = self._cluster_handler.cluster.get(self._attribute_name)
+        value = self._cluster_handler.get(self._attribute_name)
         for bit in list(self._bitmap):
             if value is None:
                 response[bit.name] = False
@@ -6475,7 +6837,7 @@ class BitMapSensor(Sensor):
     def formatter(self, _value: int) -> str:
         """Summary of all attributes."""
 
-        value = self._cluster_handler.cluster.get(self._attribute_name)
+        value = self._cluster_handler.get(self._attribute_name)
         state_attr = {}
 
         for bit in list(self._bitmap):

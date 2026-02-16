@@ -8,24 +8,25 @@ import time
 from typing import TYPE_CHECKING, Any, cast
 
 from zigpy.profiles import zha
+from zigpy.zcl import (
+    AttributeReadEvent,
+    AttributeReportedEvent,
+    AttributeUpdatedEvent,
+    AttributeWrittenEvent,
+)
 from zigpy.zcl.clusters.general import PowerConfiguration
 
 from zha.application import Platform
 from zha.application.platforms import ClusterMatch, PlatformEntity, register_entity
 from zha.application.platforms.sensor import Battery
 from zha.decorators import periodic
-from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
-from zha.zigbee.cluster_handlers.general import PowerConfigurationClusterHandler
 from zha.zigbee.const import (
-    CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-    CLUSTER_HANDLER_POWER_CONFIGURATION,
     REPORT_CONFIG_ATTR,
     REPORT_CONFIG_BATTERY_SAVE,
     REPORT_CONFIG_CONFIG,
 )
 
 if TYPE_CHECKING:
-    from zha.zigbee.cluster_handlers import ClusterHandler
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -68,7 +69,7 @@ class DeviceScannerEntity(PlatformEntity):
     __polling_interval: int
 
     _cluster_match = ClusterMatch(
-        in_clusters=frozenset({CLUSTER_HANDLER_POWER_CONFIGURATION}),
+        in_clusters=frozenset({PowerConfiguration.ep_attribute}),
         profile_device_types=frozenset(
             {(zha.PROFILE_ID, SMARTTHINGS_ARRIVAL_SENSOR_DEVICE_TYPE)}
         ),
@@ -76,22 +77,22 @@ class DeviceScannerEntity(PlatformEntity):
 
     def __init__(
         self,
-        cluster_handlers: list[ClusterHandler],
+        clusters: list[Any],
         endpoint: Endpoint,
         device: Device,
         **kwargs,
     ):
         """Initialize the ZHA device tracker."""
         super().__init__(
-            cluster_handlers,
+            clusters,
             endpoint,
             device,
             **kwargs,
             legacy_discovery_unique_id=f"{endpoint.device.ieee}-{endpoint.id}",
         )
-        self._battery_cluster_handler: PowerConfigurationClusterHandler = cast(
-            PowerConfigurationClusterHandler,
-            self.cluster_handlers[CLUSTER_HANDLER_POWER_CONFIGURATION],
+        self._battery_cluster = cast(
+            PowerConfiguration,
+            self.in_clusters[PowerConfiguration.ep_attribute],
         )
         self._connected: bool = False
         self._keepalive_interval: int = 60
@@ -101,12 +102,18 @@ class DeviceScannerEntity(PlatformEntity):
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._on_remove_callbacks.append(
-            self._battery_cluster_handler.on_event(
-                CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
-                self.handle_cluster_handler_attribute_updated,
+        for event_type in (
+            AttributeReadEvent,
+            AttributeReportedEvent,
+            AttributeUpdatedEvent,
+            AttributeWrittenEvent,
+        ):
+            self._on_remove_callbacks.append(
+                self._battery_cluster.on_event(
+                    event_type.event_type,
+                    self.handle_cluster_attribute_updated,
+                )
             )
-        )
 
         self._tracked_tasks.append(
             self.device.gateway.async_create_background_task(
@@ -168,8 +175,12 @@ class DeviceScannerEntity(PlatformEntity):
                 self._connected = True
         self.maybe_emit_state_changed_event()
 
-    def handle_cluster_handler_attribute_updated(
-        self, event: ClusterAttributeUpdatedEvent
+    def handle_cluster_attribute_updated(
+        self,
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
     ) -> None:
         """Handle tracking."""
         if (
@@ -177,7 +188,7 @@ class DeviceScannerEntity(PlatformEntity):
             != PowerConfiguration.AttributeDefs.battery_percentage_remaining.name
         ):
             return
-        self.debug("battery_percentage_remaining updated: %s", event.attribute_value)
+        self.debug("battery_percentage_remaining updated: %s", event.value)
         self._connected = True
-        self._battery_level = Battery.formatter(event.attribute_value)
+        self._battery_level = Battery.formatter(event.value)
         self.maybe_emit_state_changed_event()
