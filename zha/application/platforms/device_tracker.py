@@ -18,6 +18,9 @@ from zha.zigbee.cluster_handlers import ClusterAttributeUpdatedEvent
 from zha.zigbee.cluster_handlers.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_POWER_CONFIGURATION,
+    REPORT_CONFIG_ATTR,
+    REPORT_CONFIG_BATTERY_SAVE,
+    REPORT_CONFIG_CONFIG,
 )
 from zha.zigbee.cluster_handlers.general import PowerConfigurationClusterHandler
 
@@ -47,6 +50,19 @@ class DeviceScannerEntity(PlatformEntity):
 
     PLATFORM = Platform.DEVICE_TRACKER
 
+    REPORT_CONFIG = {
+        PowerConfiguration.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: PowerConfiguration.AttributeDefs.battery_percentage_remaining.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_BATTERY_SAVE,
+            },
+            {
+                REPORT_CONFIG_ATTR: PowerConfiguration.AttributeDefs.battery_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_BATTERY_SAVE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attr_should_poll = True  # BaseZhaEntity defaults to False
     _attr_fallback_name: str = "Device scanner"
     __polling_interval: int

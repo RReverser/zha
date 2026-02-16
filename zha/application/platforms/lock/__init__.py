@@ -19,6 +19,10 @@ from zha.zigbee.cluster_handlers.closures import DoorLockClusterHandler
 from zha.zigbee.cluster_handlers.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_DOORLOCK,
+    REPORT_CONFIG_ATTR,
+    REPORT_CONFIG_CONFIG,
+    REPORT_CONFIG_DEFAULT,
+    REPORT_CONFIG_IMMEDIATE,
 )
 
 if TYPE_CHECKING:
@@ -32,6 +36,19 @@ class DoorLock(PlatformEntity):
     """Representation of a ZHA lock."""
 
     PLATFORM = Platform.LOCK
+    REPORT_CONFIG = {
+        DoorLockCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: DoorLockCluster.AttributeDefs.lock_state.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "present_value",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attr_translation_key: str = "door_lock"
     _attr_primary_weight = 5
 

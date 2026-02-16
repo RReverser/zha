@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from zigpy.profiles import zha
 from zigpy.zcl.clusters.closures import WindowCovering
-from zigpy.zcl.clusters.general import OnOff, OnOff as OnOffCluster
+from zigpy.zcl.clusters.general import LevelControl, OnOff, OnOff as OnOffCluster
 from zigpy.zcl.foundation import Status
 
 from zha.application import Platform
@@ -45,6 +45,10 @@ from zha.zigbee.cluster_handlers.const import (
     CLUSTER_HANDLER_LEVEL_CHANGED,
     CLUSTER_HANDLER_ON_OFF,
     CLUSTER_HANDLER_SHADE,
+    REPORT_CONFIG_ASAP,
+    REPORT_CONFIG_ATTR,
+    REPORT_CONFIG_CONFIG,
+    REPORT_CONFIG_IMMEDIATE,
 )
 from zha.zigbee.cluster_handlers.general import (
     LevelChangeEvent,
@@ -131,6 +135,29 @@ class BaseCover(PlatformEntity, ABC):
 class Cover(BaseCover):
     """Representation of a ZHA cover."""
 
+    REPORT_CONFIG = {
+        WindowCovering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: WindowCovering.AttributeDefs.current_position_lift_percentage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: WindowCovering.AttributeDefs.current_position_tilt_percentage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        WindowCovering.ep_attribute: {
+            WindowCovering.AttributeDefs.config_status.name: True,
+            WindowCovering.AttributeDefs.installed_closed_limit_lift.name: True,
+            WindowCovering.AttributeDefs.installed_closed_limit_tilt.name: True,
+            WindowCovering.AttributeDefs.installed_open_limit_lift.name: True,
+            WindowCovering.AttributeDefs.installed_open_limit_tilt.name: True,
+            WindowCovering.AttributeDefs.window_covering_mode.name: True,
+            WindowCovering.AttributeDefs.window_covering_type.name: True,
+        },
+    }
     _attr_translation_key: str = "cover"
 
     _cluster_match = ClusterMatch(
@@ -707,6 +734,33 @@ class Cover(BaseCover):
 class Shade(BaseCover):
     """ZHA Shade."""
 
+    REPORT_CONFIG = {
+        LevelControl.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: LevelControl.AttributeDefs.current_level.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+        OnOff.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: OnOff.AttributeDefs.on_off.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        LevelControl.ep_attribute: {
+            LevelControl.AttributeDefs.default_move_rate.name: True,
+            LevelControl.AttributeDefs.off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_level.name: True,
+            LevelControl.AttributeDefs.on_off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_transition_time.name: True,
+            LevelControl.AttributeDefs.start_up_current_level.name: True,
+        },
+        OnOff.ep_attribute: {
+            OnOff.AttributeDefs.start_up_on_off.name: True,
+        },
+    }
     _attr_device_class = CoverDeviceClass.SHADE
     _attr_translation_key: str = "shade"
 
@@ -904,6 +958,33 @@ class Shade(BaseCover):
 class KeenVent(Shade):
     """Keen vent cover."""
 
+    REPORT_CONFIG = {
+        LevelControl.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: LevelControl.AttributeDefs.current_level.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+        OnOff.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: OnOff.AttributeDefs.on_off.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        LevelControl.ep_attribute: {
+            LevelControl.AttributeDefs.default_move_rate.name: True,
+            LevelControl.AttributeDefs.off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_level.name: True,
+            LevelControl.AttributeDefs.on_off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_transition_time.name: True,
+            LevelControl.AttributeDefs.start_up_current_level.name: True,
+        },
+        OnOff.ep_attribute: {
+            OnOff.AttributeDefs.start_up_on_off.name: True,
+        },
+    }
     _attr_device_class = CoverDeviceClass.DAMPER
     _attr_translation_key: str = "keen_vent"
 

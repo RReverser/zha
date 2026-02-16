@@ -11,7 +11,7 @@ import dataclasses
 from enum import StrEnum
 from functools import cached_property
 import logging
-from typing import TYPE_CHECKING, Any, Final, Literal, final
+from typing import TYPE_CHECKING, Any, Final, Literal, cast, final
 
 from zigpy.profiles import zha, zll
 from zigpy.quirks.v2 import EntityMetadata, EntityType
@@ -25,6 +25,7 @@ from zha.debounce import Debouncer
 from zha.event import EventBase
 from zha.mixins import LogMixin
 from zha.zigbee.cluster_handlers import ClusterHandlerInfo
+from zha.zigbee.cluster_handlers.const import REPORT_CONFIG_ATTR, REPORT_CONFIG_CONFIG
 
 if TYPE_CHECKING:
     from zigpy.zcl import Cluster
@@ -41,6 +42,33 @@ DEFAULT_UPDATE_GROUP_FROM_CHILD_DELAY: float = 0.5
 
 ENTITY_REGISTRY: dict[ClusterId, list[type[PlatformEntity]]] = defaultdict(list)
 GROUP_ENTITY_REGISTRY: list[type[GroupEntity]] = []
+
+
+EntityAttrReportConfig = dict[str, str | tuple[int, int, int | float]]
+
+
+def _clone_entity_attr_report_config(
+    entry: EntityAttrReportConfig,
+) -> EntityAttrReportConfig:
+    """Clone one report config entry while preserving TypedDict typing."""
+    return {
+        REPORT_CONFIG_ATTR: cast(str, entry[REPORT_CONFIG_ATTR]),
+        REPORT_CONFIG_CONFIG: cast(
+            tuple[int, int, int | float], entry[REPORT_CONFIG_CONFIG]
+        ),
+    }
+
+
+def _merge_aggressive_entity_attr_report_config(
+    existing: tuple[int, int, int | float],
+    incoming: tuple[int, int, int | float],
+) -> tuple[int, int, int | float]:
+    """Merge two reporting configs using aggressive interval/change resolution."""
+    return (
+        min(existing[0], incoming[0]),
+        min(existing[1], incoming[1]),
+        min(existing[2], incoming[2]),
+    )
 
 
 class PlatformFeatureGroup(StrEnum):
@@ -436,6 +464,8 @@ class PlatformEntity(BaseEntity):
 
     # suffix to add to the unique_id of the entity. Used for multi
     # entities using the same cluster handler/cluster id for the entity.
+    REPORT_CONFIG: dict[str, tuple[EntityAttrReportConfig, ...]] = {}
+    ZCL_INIT_ATTRS: dict[str, dict[str, bool]] = {}
     _unique_id_suffix: str | None = None
 
     _migrate_platform_unique_ids: tuple[tuple[UniqueIdMigration, str]] | None = None
@@ -474,6 +504,17 @@ class PlatformEntity(BaseEntity):
         self.in_clusters: dict[str, Cluster] = {}
         self.out_clusters: dict[str, Cluster] = {}
         self.clusters: dict[str, Cluster] = {}
+        self.entity_report_config: dict[str, tuple[EntityAttrReportConfig, ...]] = {
+            cluster_name: tuple(
+                _clone_entity_attr_report_config(entry) for entry in report_config
+            )
+            for cluster_name, report_config in self.REPORT_CONFIG.items()
+        }
+        self.entity_init_attrs: dict[str, dict[str, bool]] = {
+            cluster_name: dict(init_attrs)
+            for cluster_name, init_attrs in self.ZCL_INIT_ATTRS.items()
+        }
+        self.quirks_v2_direct_report_attrs: dict[str, set[str]] = {}
 
         for cluster_handler in cluster_handlers:
             self.cluster_handlers[cluster_handler.name] = cluster_handler
@@ -486,6 +527,52 @@ class PlatformEntity(BaseEntity):
 
         self._device: Device = device
         self._endpoint = endpoint
+
+    def add_entity_report_config(
+        self,
+        cluster_name: str,
+        attr: str,
+        config: tuple[int, int, int | float],
+        *,
+        is_quirks_v2_direct: bool = False,
+    ) -> None:
+        """Add/merge one entity-owned reporting configuration entry."""
+        cluster_entries = {
+            cast(str, entry[REPORT_CONFIG_ATTR]): cast(
+                tuple[int, int, int | float], entry[REPORT_CONFIG_CONFIG]
+            )
+            for entry in self.entity_report_config.get(cluster_name, ())
+        }
+        direct_attrs = self.quirks_v2_direct_report_attrs.setdefault(
+            cluster_name, set()
+        )
+
+        if is_quirks_v2_direct:
+            cluster_entries[attr] = config
+            direct_attrs.add(attr)
+        elif attr not in direct_attrs:
+            if attr in cluster_entries:
+                cluster_entries[attr] = _merge_aggressive_entity_attr_report_config(
+                    cluster_entries[attr], config
+                )
+            else:
+                cluster_entries[attr] = config
+
+        self.entity_report_config[cluster_name] = tuple(
+            {REPORT_CONFIG_ATTR: entry_attr, REPORT_CONFIG_CONFIG: entry_config}
+            for entry_attr, entry_config in sorted(cluster_entries.items())
+        )
+
+    def add_entity_init_attr(
+        self, cluster_name: str, attr: str, use_cache: bool
+    ) -> None:
+        """Add/merge one entity-owned initialization attribute setting."""
+        cluster_attrs = self.entity_init_attrs.setdefault(cluster_name, {})
+        if attr in cluster_attrs:
+            # Cache conflicts resolve to uncached reads.
+            cluster_attrs[attr] = cluster_attrs[attr] and use_cache
+        else:
+            cluster_attrs[attr] = use_cache
 
     def _init_from_quirks_metadata(self, entity_metadata: EntityMetadata) -> None:
         """Init this entity from the quirks metadata."""

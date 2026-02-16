@@ -50,6 +50,11 @@ from zha.zigbee.cluster_handlers.const import (
     CLUSTER_HANDLER_ATTRIBUTE_UPDATED,
     CLUSTER_HANDLER_FAN,
     IKEA_AIR_PURIFIER_CLUSTER,
+    REPORT_CONFIG_ATTR,
+    REPORT_CONFIG_CONFIG,
+    REPORT_CONFIG_DEFAULT,
+    REPORT_CONFIG_IMMEDIATE,
+    REPORT_CONFIG_OP,
 )
 from zha.zigbee.cluster_handlers.hvac import FanClusterHandler
 from zha.zigbee.cluster_handlers.manufacturerspecific import (
@@ -250,6 +255,19 @@ class BaseFan(BaseEntity):
 class Fan(BaseFan, PlatformEntity):
     """Representation of a ZHA fan."""
 
+    REPORT_CONFIG = {
+        hvac.Fan.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: hvac.Fan.AttributeDefs.fan_mode.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        hvac.Fan.ep_attribute: {
+            hvac.Fan.AttributeDefs.fan_mode_sequence.name: True,
+        },
+    }
     _cluster_match = ClusterMatch(
         in_clusters=frozenset({CLUSTER_HANDLER_FAN}),
         # We prefer Thermostat entities if possible
@@ -372,6 +390,47 @@ class FanGroup(BaseFan, GroupEntity):
 class IkeaFan(BaseFan, PlatformEntity):
     """Representation of an Ikea fan."""
 
+    REPORT_CONFIG = {
+        "ikea_airpurifier": (
+            {
+                REPORT_CONFIG_ATTR: "air_quality_25pm",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "child_lock",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "device_run_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "disable_led",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "fan_mode",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "fan_speed",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "filter_life_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "filter_run_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "replace_filter",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attr_supported_features: FanEntityFeature = (
         FanEntityFeature.SET_SPEED
         | FanEntityFeature.PRESET_MODE
@@ -470,6 +529,19 @@ class IkeaFan(BaseFan, PlatformEntity):
 class KofFan(Fan):
     """Representation of a fan made by King Of Fans."""
 
+    REPORT_CONFIG = {
+        hvac.Fan.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: hvac.Fan.AttributeDefs.fan_mode.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        hvac.Fan.ep_attribute: {
+            hvac.Fan.AttributeDefs.fan_mode_sequence.name: True,
+        },
+    }
     _attr_supported_features = (
         FanEntityFeature.SET_SPEED
         | FanEntityFeature.PRESET_MODE

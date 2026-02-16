@@ -42,6 +42,11 @@ from zha.zigbee.cluster_handlers.const import (
     CLUSTER_HANDLER_THERMOSTAT,
     CLUSTER_HANDLER_ZONE,
     IKEA_AIR_PURIFIER_CLUSTER,
+    REPORT_CONFIG_ASAP,
+    REPORT_CONFIG_ATTR,
+    REPORT_CONFIG_CONFIG,
+    REPORT_CONFIG_DEFAULT,
+    REPORT_CONFIG_IMMEDIATE,
     SMARTTHINGS_ACCELERATION_CLUSTER,
     TUYA_MANUFACTURER_CLUSTER,
 )
@@ -163,6 +168,18 @@ class BinarySensor(PlatformEntity):
 class Accelerometer(BinarySensor):
     """ZHA BinarySensor."""
 
+    REPORT_CONFIG = {
+        "accelerometer": (
+            {
+                REPORT_CONFIG_ATTR: "acceleration",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {REPORT_CONFIG_ATTR: "x_axis", REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP},
+            {REPORT_CONFIG_ATTR: "y_axis", REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP},
+            {REPORT_CONFIG_ATTR: "z_axis", REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP},
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "acceleration"
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.MOVING
     _attr_translation_key: str = "accelerometer"
@@ -176,6 +193,15 @@ class Accelerometer(BinarySensor):
 class Occupancy(BinarySensor):
     """ZHA BinarySensor."""
 
+    REPORT_CONFIG = {
+        OccupancySensing.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: OccupancySensing.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "occupancy"
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.OCCUPANCY
     _attr_primary_weight = 2
@@ -187,6 +213,15 @@ class Occupancy(BinarySensor):
 class HueOccupancy(BinarySensor):
     """ZHA Hue occupancy."""
 
+    REPORT_CONFIG = {
+        OccupancySensing.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: OccupancySensing.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "occupancy"
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.OCCUPANCY
     _attr_primary_weight = 3
@@ -234,6 +269,19 @@ class Opening(BinarySensor):
 class BinaryInputWithDescription(BinarySensor):
     """ZHA BinarySensor."""
 
+    REPORT_CONFIG = {
+        BinaryInputCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: BinaryInputCluster.AttributeDefs.present_value.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        BinaryInputCluster.ep_attribute: {
+            BinaryInputCluster.AttributeDefs.description.name: True,
+        },
+    }
     _attribute_name = "present_value"
 
     _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_BINARY_INPUT}))
@@ -254,6 +302,19 @@ class BinaryInputWithDescription(BinarySensor):
 class BinaryInput(BinarySensor):
     """ZHA BinarySensor."""
 
+    REPORT_CONFIG = {
+        BinaryInputCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: BinaryInputCluster.AttributeDefs.present_value.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        BinaryInputCluster.ep_attribute: {
+            BinaryInputCluster.AttributeDefs.description.name: True,
+        },
+    }
     _attribute_name = "present_value"
     _attr_translation_key: str = "binary_input"
 
@@ -303,6 +364,14 @@ class PhilipsMotion(BinarySensor):
 class IASZone(BinarySensor):
     """ZHA IAS BinarySensor."""
 
+    REPORT_CONFIG = {}
+    ZCL_INIT_ATTRS = {
+        IasZone.ep_attribute: {
+            IasZone.AttributeDefs.zone_state.name: True,
+            IasZone.AttributeDefs.zone_status.name: False,
+            IasZone.AttributeDefs.zone_type.name: True,
+        },
+    }
     _attribute_name = "zone_status"
     _attr_primary_weight = 3
 
@@ -340,6 +409,14 @@ class IASZone(BinarySensor):
 class SinopeLeakStatus(BinarySensor):
     """Sinope water leak sensor."""
 
+    REPORT_CONFIG = {}
+    ZCL_INIT_ATTRS = {
+        IasZone.ep_attribute: {
+            IasZone.AttributeDefs.zone_state.name: True,
+            IasZone.AttributeDefs.zone_status.name: False,
+            IasZone.AttributeDefs.zone_type.name: True,
+        },
+    }
     _attribute_name = "leak_status"
     _attr_device_class = BinarySensorDeviceClass.MOISTURE
     _attr_primary_weight = 1
@@ -369,6 +446,47 @@ class FrostLock(BinarySensor):
 class ReplaceFilter(BinarySensor):
     """ZHA BinarySensor."""
 
+    REPORT_CONFIG = {
+        "ikea_airpurifier": (
+            {
+                REPORT_CONFIG_ATTR: "air_quality_25pm",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "child_lock",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "device_run_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "disable_led",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "fan_mode",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "fan_speed",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "filter_life_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "filter_run_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "replace_filter",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "replace_filter"
     _unique_id_suffix = "replace_filter"
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.PROBLEM
@@ -500,6 +618,112 @@ class AqaraE1CurtainMotorOpenedByHandBinarySensor(BinarySensor):
 class DanfossMountingModeActive(BinarySensor):
     """Danfoss TRV proprietary attribute exposing whether in mounting mode."""
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "mounting_mode_active"
     _attribute_name = "mounting_mode_active"
     _attr_translation_key: str = "mounting_mode_active"
@@ -516,6 +740,112 @@ class DanfossMountingModeActive(BinarySensor):
 class DanfossHeatRequired(BinarySensor):
     """Danfoss TRV proprietary attribute exposing whether heat is required."""
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "heat_required"
     _attribute_name = "heat_required"
     _attr_translation_key: str = "heat_required"
@@ -530,6 +860,112 @@ class DanfossHeatRequired(BinarySensor):
 class DanfossPreheatStatus(BinarySensor):
     """Danfoss TRV proprietary attribute exposing whether in pre-heating mode."""
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "preheat_status"
     _attribute_name = "preheat_status"
     _attr_translation_key: str = "preheat_status"

@@ -75,6 +75,11 @@ from zha.zigbee.cluster_handlers.const import (
     CLUSTER_HANDLER_LEVEL,
     CLUSTER_HANDLER_LEVEL_CHANGED,
     CLUSTER_HANDLER_ON_OFF,
+    REPORT_CONFIG_ASAP,
+    REPORT_CONFIG_ATTR,
+    REPORT_CONFIG_CONFIG,
+    REPORT_CONFIG_DEFAULT,
+    REPORT_CONFIG_IMMEDIATE,
 )
 from zha.zigbee.cluster_handlers.general import (
     IdentifyClusterHandler,
@@ -748,6 +753,56 @@ class BaseClusterHandlerLight(BaseLight):
 class Light(BaseClusterHandlerLight, PlatformEntity):
     """Representation of a ZHA or ZLL light."""
 
+    REPORT_CONFIG = {
+        LevelControl.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: LevelControl.AttributeDefs.current_level.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+        Color.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.color_temperature.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.current_x.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.current_y.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+        OnOff.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: OnOff.AttributeDefs.on_off.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        LevelControl.ep_attribute: {
+            LevelControl.AttributeDefs.default_move_rate.name: True,
+            LevelControl.AttributeDefs.off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_level.name: True,
+            LevelControl.AttributeDefs.on_off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_transition_time.name: True,
+            LevelControl.AttributeDefs.start_up_current_level.name: True,
+        },
+        Color.ep_attribute: {
+            Color.AttributeDefs.color_capabilities.name: True,
+            Color.AttributeDefs.color_loop_active.name: False,
+            Color.AttributeDefs.color_mode.name: False,
+            Color.AttributeDefs.color_temp_physical_max.name: True,
+            Color.AttributeDefs.color_temp_physical_min.name: True,
+            Color.AttributeDefs.options.name: True,
+            Color.AttributeDefs.start_up_color_temperature.name: True,
+        },
+        OnOff.ep_attribute: {
+            OnOff.AttributeDefs.start_up_on_off.name: True,
+        },
+    }
     _attr_translation_key: str = "light"
     _REFRESH_INTERVAL = (2700, 4500)
     __polling_interval: int
@@ -1038,6 +1093,56 @@ class Light(BaseClusterHandlerLight, PlatformEntity):
 class HueLight(Light):
     """Representation of a HUE light which does not report attributes."""
 
+    REPORT_CONFIG = {
+        LevelControl.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: LevelControl.AttributeDefs.current_level.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+        Color.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.color_temperature.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.current_x.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.current_y.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+        OnOff.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: OnOff.AttributeDefs.on_off.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        LevelControl.ep_attribute: {
+            LevelControl.AttributeDefs.default_move_rate.name: True,
+            LevelControl.AttributeDefs.off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_level.name: True,
+            LevelControl.AttributeDefs.on_off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_transition_time.name: True,
+            LevelControl.AttributeDefs.start_up_current_level.name: True,
+        },
+        Color.ep_attribute: {
+            Color.AttributeDefs.color_capabilities.name: True,
+            Color.AttributeDefs.color_loop_active.name: False,
+            Color.AttributeDefs.color_mode.name: False,
+            Color.AttributeDefs.color_temp_physical_max.name: True,
+            Color.AttributeDefs.color_temp_physical_min.name: True,
+            Color.AttributeDefs.options.name: True,
+            Color.AttributeDefs.start_up_color_temperature.name: True,
+        },
+        OnOff.ep_attribute: {
+            OnOff.AttributeDefs.start_up_on_off.name: True,
+        },
+    }
     _REFRESH_INTERVAL = (180, 300)
 
     _cluster_match = ClusterMatch(
@@ -1054,6 +1159,56 @@ class HueLight(Light):
 class ForceOnLight(Light):
     """Representation of a light which does not respect on/off for move_to_level_with_on_off commands."""
 
+    REPORT_CONFIG = {
+        LevelControl.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: LevelControl.AttributeDefs.current_level.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+        Color.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.color_temperature.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.current_x.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.current_y.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+        OnOff.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: OnOff.AttributeDefs.on_off.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        LevelControl.ep_attribute: {
+            LevelControl.AttributeDefs.default_move_rate.name: True,
+            LevelControl.AttributeDefs.off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_level.name: True,
+            LevelControl.AttributeDefs.on_off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_transition_time.name: True,
+            LevelControl.AttributeDefs.start_up_current_level.name: True,
+        },
+        Color.ep_attribute: {
+            Color.AttributeDefs.color_capabilities.name: True,
+            Color.AttributeDefs.color_loop_active.name: False,
+            Color.AttributeDefs.color_mode.name: False,
+            Color.AttributeDefs.color_temp_physical_max.name: True,
+            Color.AttributeDefs.color_temp_physical_min.name: True,
+            Color.AttributeDefs.options.name: True,
+            Color.AttributeDefs.start_up_color_temperature.name: True,
+        },
+        OnOff.ep_attribute: {
+            OnOff.AttributeDefs.start_up_on_off.name: True,
+        },
+    }
     _FORCE_ON = True
 
     _cluster_match = ClusterMatch(
@@ -1079,6 +1234,56 @@ class MinTransitionLight(Light):
     """Representation of a light which does not react to any "move to" calls with 0 as a transition."""
 
     # Transitions are counted in 1/10th of a second increments, so this is the smallest
+    REPORT_CONFIG = {
+        LevelControl.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: LevelControl.AttributeDefs.current_level.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+        Color.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.color_temperature.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.current_x.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Color.AttributeDefs.current_y.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+        OnOff.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: OnOff.AttributeDefs.on_off.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        LevelControl.ep_attribute: {
+            LevelControl.AttributeDefs.default_move_rate.name: True,
+            LevelControl.AttributeDefs.off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_level.name: True,
+            LevelControl.AttributeDefs.on_off_transition_time.name: True,
+            LevelControl.AttributeDefs.on_transition_time.name: True,
+            LevelControl.AttributeDefs.start_up_current_level.name: True,
+        },
+        Color.ep_attribute: {
+            Color.AttributeDefs.color_capabilities.name: True,
+            Color.AttributeDefs.color_loop_active.name: False,
+            Color.AttributeDefs.color_mode.name: False,
+            Color.AttributeDefs.color_temp_physical_max.name: True,
+            Color.AttributeDefs.color_temp_physical_min.name: True,
+            Color.AttributeDefs.options.name: True,
+            Color.AttributeDefs.start_up_color_temperature.name: True,
+        },
+        OnOff.ep_attribute: {
+            OnOff.AttributeDefs.start_up_on_off.name: True,
+        },
+    }
     _DEFAULT_MIN_TRANSITION_TIME = 0.1
 
     _cluster_match = ClusterMatch(

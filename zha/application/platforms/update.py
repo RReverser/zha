@@ -281,6 +281,12 @@ class BaseFirmwareUpdateEntity(PlatformEntity):
 class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
     """Representation of a ZHA firmware update entity."""
 
+    REPORT_CONFIG = {}
+    ZCL_INIT_ATTRS = {
+        Ota.ep_attribute: {
+            Ota.AttributeDefs.current_file_version.name: True,
+        },
+    }
     _unique_id_suffix = "firmware_update"
 
     _cluster_match = ClusterMatch(out_clusters=frozenset({CLUSTER_HANDLER_OTA}))
@@ -330,6 +336,12 @@ class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
 class FirmwareUpdateServerEntity(BaseFirmwareUpdateEntity):
     """Representation of a ZHA firmware update entity."""
 
+    REPORT_CONFIG = {}
+    ZCL_INIT_ATTRS = {
+        Ota.ep_attribute: {
+            Ota.AttributeDefs.current_file_version.name: True,
+        },
+    }
     _unique_id_suffix = "firmware_update"
     _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HANDLER_OTA}))
 

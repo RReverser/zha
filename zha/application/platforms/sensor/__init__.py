@@ -122,6 +122,13 @@ from zha.zigbee.cluster_handlers.const import (
     CLUSTER_HANDLER_WIND_SPEED,
     IKEA_AIR_PURIFIER_CLUSTER,
     INOVELLI_CLUSTER,
+    REPORT_CONFIG_ASAP,
+    REPORT_CONFIG_ATTR,
+    REPORT_CONFIG_BATTERY_SAVE,
+    REPORT_CONFIG_CONFIG,
+    REPORT_CONFIG_DEFAULT,
+    REPORT_CONFIG_IMMEDIATE,
+    REPORT_CONFIG_OP,
     SMARTTHINGS_HUMIDITY_CLUSTER,
     SONOFF_CLUSTER,
     TUYA_MANUFACTURER_CLUSTER,
@@ -593,6 +600,27 @@ class EnumSensor(Sensor):
 class DigiAnalogInput(Sensor):
     """Sensor that displays analog input values."""
 
+    REPORT_CONFIG = {
+        AnalogInput.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: AnalogInput.AttributeDefs.present_value.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        AnalogInput.ep_attribute: {
+            AnalogInput.AttributeDefs.application_type.name: True,
+            AnalogInput.AttributeDefs.description.name: True,
+            AnalogInput.AttributeDefs.engineering_units.name: True,
+            AnalogInput.AttributeDefs.max_present_value.name: True,
+            AnalogInput.AttributeDefs.min_present_value.name: True,
+            AnalogInput.AttributeDefs.out_of_service.name: True,
+            AnalogInput.AttributeDefs.reliability.name: True,
+            AnalogInput.AttributeDefs.resolution.name: True,
+            AnalogInput.AttributeDefs.status_flags.name: True,
+        },
+    }
     _attribute_name = "present_value"
     _attr_translation_key: str = "analog_input"
 
@@ -606,6 +634,27 @@ class DigiAnalogInput(Sensor):
 class AnalogInputSensor(Sensor):
     """Sensor that displays analog input values."""
 
+    REPORT_CONFIG = {
+        AnalogInput.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: AnalogInput.AttributeDefs.present_value.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        AnalogInput.ep_attribute: {
+            AnalogInput.AttributeDefs.application_type.name: True,
+            AnalogInput.AttributeDefs.description.name: True,
+            AnalogInput.AttributeDefs.engineering_units.name: True,
+            AnalogInput.AttributeDefs.max_present_value.name: True,
+            AnalogInput.AttributeDefs.min_present_value.name: True,
+            AnalogInput.AttributeDefs.out_of_service.name: True,
+            AnalogInput.AttributeDefs.reliability.name: True,
+            AnalogInput.AttributeDefs.resolution.name: True,
+            AnalogInput.AttributeDefs.status_flags.name: True,
+        },
+    }
     _attribute_name = "present_value"
     _unique_id_suffix = "analog_input"
     _attr_state_class = SensorStateClass.MEASUREMENT
@@ -660,6 +709,19 @@ class AnalogInputSensor(Sensor):
 class Battery(Sensor):
     """Battery sensor of power configuration cluster."""
 
+    REPORT_CONFIG = {
+        PowerConfiguration.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: PowerConfiguration.AttributeDefs.battery_percentage_remaining.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_BATTERY_SAVE,
+            },
+            {
+                REPORT_CONFIG_ATTR: PowerConfiguration.AttributeDefs.battery_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_BATTERY_SAVE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "battery_percentage_remaining"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.BATTERY
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -783,6 +845,152 @@ class ElectricalMeasurementActivePower(BaseElectricalMeasurement):
 class ReportingElectricalMeasurement(ElectricalMeasurementActivePower):
     """Unpolled active power measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _cluster_match = ClusterMatch(
         in_clusters=frozenset({CLUSTER_HANDLER_ELECTRICAL_MEASUREMENT}),
         models=frozenset({"VZM31-SN", "SP 234", "outletv4", "INSPELNING Smart plug"}),
@@ -793,6 +1001,152 @@ class ReportingElectricalMeasurement(ElectricalMeasurementActivePower):
 class PolledElectricalMeasurement(ElectricalMeasurementActivePower):
     """Polled active power measurement that polls all relevant EM attributes."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _use_custom_polling: bool = True
 
     _cluster_match = ClusterMatch(
@@ -804,6 +1158,152 @@ class PolledElectricalMeasurement(ElectricalMeasurementActivePower):
 class ElectricalMeasurementActivePowerPhB(ElectricalMeasurementActivePower):
     """Active power phase B measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "active_power_ph_b"
     _unique_id_suffix = "active_power_ph_b"
     _attr_translation_key: str = "active_power_ph_b"
@@ -819,6 +1319,152 @@ class ElectricalMeasurementActivePowerPhB(ElectricalMeasurementActivePower):
 class ElectricalMeasurementActivePowerPhC(ElectricalMeasurementActivePower):
     """Active power phase C measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "active_power_ph_c"
     _unique_id_suffix = "active_power_ph_c"
     _attr_translation_key: str = "active_power_ph_c"
@@ -834,6 +1480,152 @@ class ElectricalMeasurementActivePowerPhC(ElectricalMeasurementActivePower):
 class ElectricalMeasurementTotalActivePower(ElectricalMeasurementActivePower):
     """Total active power measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "total_active_power"
     _unique_id_suffix = "total_active_power"
     _attr_translation_key: str = "total_active_power"
@@ -848,6 +1640,152 @@ class ElectricalMeasurementTotalActivePower(ElectricalMeasurementActivePower):
 class ElectricalMeasurementApparentPower(BaseElectricalMeasurement):
     """Apparent power measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "apparent_power"
     _unique_id_suffix = "apparent_power"
     _divisor_attribute_name = "ac_power_divisor"
@@ -864,6 +1802,152 @@ class ElectricalMeasurementApparentPower(BaseElectricalMeasurement):
 class ElectricalMeasurementRMSCurrent(BaseElectricalMeasurement):
     """RMS current measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "rms_current"
     _unique_id_suffix = "rms_current"
     _attr_max_attribute_name = "rms_current_max"
@@ -881,6 +1965,152 @@ class ElectricalMeasurementRMSCurrent(BaseElectricalMeasurement):
 class ElectricalMeasurementRMSCurrentPhB(ElectricalMeasurementRMSCurrent):
     """RMS current phase B measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "rms_current_ph_b"
     _unique_id_suffix = "rms_current_ph_b"
     _attr_translation_key: str = "rms_current_ph_b"
@@ -896,6 +2126,152 @@ class ElectricalMeasurementRMSCurrentPhB(ElectricalMeasurementRMSCurrent):
 class ElectricalMeasurementRMSCurrentPhC(ElectricalMeasurementRMSCurrent):
     """RMS current phase C measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name: str = "rms_current_ph_c"
     _unique_id_suffix: str = "rms_current_ph_c"
     _attr_translation_key: str = "rms_current_ph_c"
@@ -911,6 +2287,152 @@ class ElectricalMeasurementRMSCurrentPhC(ElectricalMeasurementRMSCurrent):
 class ElectricalMeasurementRMSVoltage(BaseElectricalMeasurement):
     """RMS Voltage measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "rms_voltage"
     _unique_id_suffix = "rms_voltage"
     _attr_max_attribute_name = "rms_voltage_max"
@@ -928,6 +2450,152 @@ class ElectricalMeasurementRMSVoltage(BaseElectricalMeasurement):
 class ElectricalMeasurementRMSVoltagePhB(ElectricalMeasurementRMSVoltage):
     """RMS voltage phase B measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "rms_voltage_ph_b"
     _unique_id_suffix = "rms_voltage_ph_b"
     _attr_translation_key: str = "rms_voltage_ph_b"
@@ -943,6 +2611,152 @@ class ElectricalMeasurementRMSVoltagePhB(ElectricalMeasurementRMSVoltage):
 class ElectricalMeasurementRMSVoltagePhC(ElectricalMeasurementRMSVoltage):
     """RMS voltage phase C measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "rms_voltage_ph_c"
     _unique_id_suffix = "rms_voltage_ph_c"
     _attr_translation_key: str = "rms_voltage_ph_c"
@@ -958,6 +2772,152 @@ class ElectricalMeasurementRMSVoltagePhC(ElectricalMeasurementRMSVoltage):
 class ElectricalMeasurementFrequency(BaseElectricalMeasurement):
     """Frequency measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "ac_frequency"
     _unique_id_suffix = "ac_frequency"
     _attr_translation_key: str = "ac_frequency"
@@ -976,6 +2936,152 @@ class ElectricalMeasurementFrequency(BaseElectricalMeasurement):
 class ElectricalMeasurementPowerFactor(BaseElectricalMeasurement):
     """Power Factor measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "power_factor"
     _unique_id_suffix = "power_factor"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.POWER_FACTOR
@@ -990,6 +3096,152 @@ class ElectricalMeasurementPowerFactor(BaseElectricalMeasurement):
 class ElectricalMeasurementPowerFactorPhB(ElectricalMeasurementPowerFactor):
     """Power factor phase B measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "power_factor_ph_b"
     _unique_id_suffix = "power_factor_ph_b"
     _attr_translation_key: str = "power_factor_ph_b"
@@ -1004,6 +3256,152 @@ class ElectricalMeasurementPowerFactorPhB(ElectricalMeasurementPowerFactor):
 class ElectricalMeasurementPowerFactorPhC(ElectricalMeasurementPowerFactor):
     """Power factor phase C measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "power_factor_ph_c"
     _unique_id_suffix = "power_factor_ph_c"
     _attr_translation_key: str = "power_factor_ph_c"
@@ -1018,6 +3416,152 @@ class ElectricalMeasurementPowerFactorPhC(ElectricalMeasurementPowerFactor):
 class ElectricalMeasurementDCVoltage(BaseElectricalMeasurement):
     """DC Voltage measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "dc_voltage"
     _unique_id_suffix = "dc_voltage"
     _attr_translation_key: str = "dc_voltage"
@@ -1036,6 +3580,152 @@ class ElectricalMeasurementDCVoltage(BaseElectricalMeasurement):
 class ElectricalMeasurementDCCurrent(BaseElectricalMeasurement):
     """DC Current measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "dc_current"
     _unique_id_suffix = "dc_current"
     _attr_translation_key: str = "dc_current"
@@ -1054,6 +3744,152 @@ class ElectricalMeasurementDCCurrent(BaseElectricalMeasurement):
 class ElectricalMeasurementDCPower(BaseElectricalMeasurement):
     """DC Power measurement."""
 
+    REPORT_CONFIG = {
+        ElectricalMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_frequency.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.ac_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.active_power_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.apparent_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_divisor.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.power_multiplier.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_current_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_b.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.rms_voltage_ph_c.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: ElectricalMeasurement.AttributeDefs.total_active_power.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        ElectricalMeasurement.ep_attribute: {
+            ElectricalMeasurement.AttributeDefs.ac_frequency_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_max.name: True,
+            ElectricalMeasurement.AttributeDefs.ac_frequency_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.active_power_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_current_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_power_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_divisor.name: True,
+            ElectricalMeasurement.AttributeDefs.dc_voltage_multiplier.name: True,
+            ElectricalMeasurement.AttributeDefs.measurement_type.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.power_factor_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_current_max_ph_c.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_b.name: True,
+            ElectricalMeasurement.AttributeDefs.rms_voltage_max_ph_c.name: True,
+        },
+    }
     _attribute_name = "dc_power"
     _unique_id_suffix = "dc_power"
     _attr_translation_key: str = "dc_power"
@@ -1072,6 +3908,15 @@ class ElectricalMeasurementDCPower(BaseElectricalMeasurement):
 class Humidity(Sensor):
     """Humidity sensor."""
 
+    REPORT_CONFIG = {
+        RelativeHumidity.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: RelativeHumidity.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 100),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.HUMIDITY
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1088,6 +3933,12 @@ class Humidity(Sensor):
 class SmartThingsHumidity(Sensor):
     """Humidity sensor."""
 
+    REPORT_CONFIG = {
+        "cluster_0xfc45": (
+            {REPORT_CONFIG_ATTR: "measured_value", REPORT_CONFIG_CONFIG: (30, 900, 50)},
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.HUMIDITY
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1104,6 +3955,15 @@ class SmartThingsHumidity(Sensor):
 class SoilMoisture(Sensor):
     """Soil Moisture sensor."""
 
+    REPORT_CONFIG = {
+        SoilMoistureCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: SoilMoistureCluster.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 100),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.HUMIDITY
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1121,6 +3981,15 @@ class SoilMoisture(Sensor):
 class LeafWetness(Sensor):
     """Leaf Wetness sensor."""
 
+    REPORT_CONFIG = {
+        LeafWetnessCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: LeafWetnessCluster.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 100),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.HUMIDITY
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1138,6 +4007,15 @@ class LeafWetness(Sensor):
 class Illuminance(Sensor):
     """Illuminance Sensor."""
 
+    REPORT_CONFIG = {
+        IlluminanceMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: IlluminanceMeasurement.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.ILLUMINANCE
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1173,6 +4051,60 @@ class SmartEnergyMetering(PollableSensor):
     """Metering sensor."""
 
     entity_description: SmartEnergyMeteringEntityDescription
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling: bool = False
     _attribute_name = "instantaneous_demand"
     _attr_translation_key: str = "instantaneous_demand"
@@ -1330,6 +4262,60 @@ class SmartEnergySummation(SmartEnergyMetering):
     """Smart Energy Metering summation sensor."""
 
     entity_description: SmartEnergySummationEntityDescription
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _attribute_name = "current_summ_delivered"
     _unique_id_suffix = "summation_delivered"
     _attr_translation_key: str = "summation_delivered"
@@ -1420,6 +4406,60 @@ class SmartEnergySummation(SmartEnergyMetering):
 class PolledSmartEnergySummation(SmartEnergySummation):
     """Polled Smart Energy Metering summation sensor."""
 
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling: bool = True
 
     _cluster_match = ClusterMatch(
@@ -1433,6 +4473,60 @@ class PolledSmartEnergySummation(SmartEnergySummation):
 class Tier1SmartEnergySummation(PolledSmartEnergySummation):
     """Tier 1 Smart Energy Metering summation sensor."""
 
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling = False  # Poll indirectly by PolledSmartEnergySummation
     _attribute_name = "current_tier1_summ_delivered"
     _unique_id_suffix = "tier1_summation_delivered"
@@ -1449,6 +4543,60 @@ class Tier1SmartEnergySummation(PolledSmartEnergySummation):
 class Tier2SmartEnergySummation(PolledSmartEnergySummation):
     """Tier 2 Smart Energy Metering summation sensor."""
 
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling = False  # Poll indirectly by PolledSmartEnergySummation
     _attribute_name = "current_tier2_summ_delivered"
     _unique_id_suffix = "tier2_summation_delivered"
@@ -1465,6 +4613,60 @@ class Tier2SmartEnergySummation(PolledSmartEnergySummation):
 class Tier3SmartEnergySummation(PolledSmartEnergySummation):
     """Tier 3 Smart Energy Metering summation sensor."""
 
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling = False  # Poll indirectly by PolledSmartEnergySummation
     _attribute_name = "current_tier3_summ_delivered"
     _unique_id_suffix = "tier3_summation_delivered"
@@ -1481,6 +4683,60 @@ class Tier3SmartEnergySummation(PolledSmartEnergySummation):
 class Tier4SmartEnergySummation(PolledSmartEnergySummation):
     """Tier 4 Smart Energy Metering summation sensor."""
 
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling = False  # Poll indirectly by PolledSmartEnergySummation
     _attribute_name = "current_tier4_summ_delivered"
     _unique_id_suffix = "tier4_summation_delivered"
@@ -1497,6 +4753,60 @@ class Tier4SmartEnergySummation(PolledSmartEnergySummation):
 class Tier5SmartEnergySummation(PolledSmartEnergySummation):
     """Tier 5 Smart Energy Metering summation sensor."""
 
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling = False  # Poll indirectly by PolledSmartEnergySummation
     _attribute_name = "current_tier5_summ_delivered"
     _unique_id_suffix = "tier5_summation_delivered"
@@ -1513,6 +4823,60 @@ class Tier5SmartEnergySummation(PolledSmartEnergySummation):
 class Tier6SmartEnergySummation(PolledSmartEnergySummation):
     """Tier 6 Smart Energy Metering summation sensor."""
 
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling = False  # Poll indirectly by PolledSmartEnergySummation
     _attribute_name = "current_tier6_summ_delivered"
     _unique_id_suffix = "tier6_summation_delivered"
@@ -1529,10 +4893,65 @@ class Tier6SmartEnergySummation(PolledSmartEnergySummation):
 class SmartEnergySummationReceived(PolledSmartEnergySummation):
     """Smart Energy Metering summation received sensor."""
 
+    REPORT_CONFIG = {
+        Metering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_summ_received.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier1_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier2_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier3_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier4_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier5_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.current_tier6_summ_delivered.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.instantaneous_demand.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_OP,
+            },
+            {
+                REPORT_CONFIG_ATTR: Metering.AttributeDefs.status.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Metering.ep_attribute: {
+            Metering.AttributeDefs.demand_formatting.name: True,
+            Metering.AttributeDefs.divisor.name: True,
+            Metering.AttributeDefs.metering_device_type.name: True,
+            Metering.AttributeDefs.multiplier.name: True,
+            Metering.AttributeDefs.summation_formatting.name: True,
+            Metering.AttributeDefs.unit_of_measure.name: True,
+        },
+    }
     _use_custom_polling = False  # Poll indirectly by PolledSmartEnergySummation
     _attribute_name = "current_summ_received"
     _unique_id_suffix = "summation_received"
     _attr_translation_key: str = "summation_received"
+
     """
     This attribute only started to be initialized in HA 2024.2.0,
     so the entity would be created on the first HA start after the
@@ -1552,6 +4971,15 @@ class SmartEnergySummationReceived(PolledSmartEnergySummation):
 class Pressure(Sensor):
     """Pressure sensor."""
 
+    REPORT_CONFIG = {
+        PressureMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: PressureMeasurement.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.PRESSURE
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1568,6 +4996,15 @@ class Pressure(Sensor):
 class Flow(Sensor):
     """Flow Measurement sensor."""
 
+    REPORT_CONFIG = {
+        FlowMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: FlowMeasurement.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.VOLUME_FLOW_RATE
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1584,6 +5021,15 @@ class Flow(Sensor):
 class Temperature(Sensor):
     """Temperature Sensor."""
 
+    REPORT_CONFIG = {
+        TemperatureMeasurement.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: TemperatureMeasurement.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 50),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.TEMPERATURE
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1600,6 +5046,15 @@ class Temperature(Sensor):
 class DeviceTemperature(Sensor):
     """Device Temperature Sensor."""
 
+    REPORT_CONFIG = {
+        DeviceTemperatureCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: DeviceTemperatureCluster.AttributeDefs.current_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 50),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "current_temperature"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.TEMPERATURE
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1656,6 +5111,15 @@ class InovelliOverheated(EnumSensor):
 class CarbonDioxideConcentration(Sensor):
     """Carbon Dioxide Concentration sensor."""
 
+    REPORT_CONFIG = {
+        CarbonDioxideConcentrationCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: CarbonDioxideConcentrationCluster.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 1e-06),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.CO2
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1673,6 +5137,15 @@ class CarbonDioxideConcentration(Sensor):
 class CarbonMonoxideConcentration(Sensor):
     """Carbon Monoxide Concentration sensor."""
 
+    REPORT_CONFIG = {
+        CarbonMonoxideConcentrationCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: CarbonMonoxideConcentrationCluster.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 1e-06),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.CO
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1746,6 +5219,15 @@ class PPBVOCLevel(Sensor):
 class PM25(Sensor):
     """Particulate Matter 2.5 microns or less sensor."""
 
+    REPORT_CONFIG = {
+        PM25Cluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: PM25Cluster.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 0.1),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.PM25
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1762,6 +5244,15 @@ class PM25(Sensor):
 class ElectricalConductivity(Sensor):
     """Electrical Conductivity sensor."""
 
+    REPORT_CONFIG = {
+        ElectricalConductivityCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: ElectricalConductivityCluster.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.CONDUCTIVITY
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
@@ -1776,6 +5267,15 @@ class ElectricalConductivity(Sensor):
 class FormaldehydeConcentration(Sensor):
     """Formaldehyde Concentration sensor."""
 
+    REPORT_CONFIG = {
+        FormaldehydeConcentrationCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: FormaldehydeConcentrationCluster.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 1e-06),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
     _attr_translation_key: str = "formaldehyde"
@@ -1793,6 +5293,112 @@ class FormaldehydeConcentration(Sensor):
 class ThermostatHVACAction(Sensor):
     """Thermostat HVAC action sensor."""
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "hvac_action"
     _attr_translation_key: str = "hvac_action"
 
@@ -1884,6 +5490,112 @@ class ThermostatHVACAction(Sensor):
 class SinopeHVACAction(ThermostatHVACAction):
     """Sinope Thermostat HVAC action sensor."""
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _cluster_match = ClusterMatch(
         in_clusters=frozenset({CLUSTER_HANDLER_THERMOSTAT}),
         manufacturers=frozenset({"Sinope Technologies"}),
@@ -2044,6 +5756,47 @@ class TimeLeft(Sensor):
 class IkeaDeviceRunTime(Sensor):
     """Sensor that displays device run time (in minutes)."""
 
+    REPORT_CONFIG = {
+        "ikea_airpurifier": (
+            {
+                REPORT_CONFIG_ATTR: "air_quality_25pm",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "child_lock",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "device_run_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "disable_led",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "fan_mode",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "fan_speed",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "filter_life_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "filter_run_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "replace_filter",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "device_run_time"
     _unique_id_suffix = "device_run_time"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.DURATION
@@ -2060,6 +5813,47 @@ class IkeaDeviceRunTime(Sensor):
 class IkeaFilterRunTime(Sensor):
     """Sensor that displays run time of the current filter (in minutes)."""
 
+    REPORT_CONFIG = {
+        "ikea_airpurifier": (
+            {
+                REPORT_CONFIG_ATTR: "air_quality_25pm",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "child_lock",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "device_run_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "disable_led",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "fan_mode",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "fan_speed",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: "filter_life_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "filter_run_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "replace_filter",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "filter_run_time"
     _unique_id_suffix = "filter_run_time"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.DURATION
@@ -2185,6 +5979,112 @@ class PiHeatingDemand(Sensor):
     Optional thermostat attribute.
     """
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "pi_heating_demand"
     _attribute_name = "pi_heating_demand"
     _attr_translation_key: str = "pi_heating_demand"
@@ -2214,6 +6114,112 @@ class SetpointChangeSource(EnumSensor):
     Optional thermostat attribute.
     """
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "setpoint_change_source"
     _attribute_name = "setpoint_change_source"
     _attr_translation_key: str = "setpoint_change_source"
@@ -2232,6 +6238,112 @@ class SetpointChangeSourceTimestamp(TimestampSensor):
     Optional thermostat attribute.
     """
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "setpoint_change_source_timestamp"
     _attribute_name = "setpoint_change_source_timestamp"
     _attr_translation_key: str = "setpoint_change_source_timestamp"
@@ -2251,6 +6363,29 @@ class SetpointChangeSourceTimestamp(TimestampSensor):
 class WindowCoveringTypeSensor(EnumSensor):
     """Sensor that displays the type of a cover device."""
 
+    REPORT_CONFIG = {
+        WindowCovering.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: WindowCovering.AttributeDefs.current_position_lift_percentage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+            {
+                REPORT_CONFIG_ATTR: WindowCovering.AttributeDefs.current_position_tilt_percentage.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_IMMEDIATE,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        WindowCovering.ep_attribute: {
+            WindowCovering.AttributeDefs.config_status.name: True,
+            WindowCovering.AttributeDefs.installed_closed_limit_lift.name: True,
+            WindowCovering.AttributeDefs.installed_closed_limit_tilt.name: True,
+            WindowCovering.AttributeDefs.installed_open_limit_lift.name: True,
+            WindowCovering.AttributeDefs.installed_open_limit_tilt.name: True,
+            WindowCovering.AttributeDefs.window_covering_mode.name: True,
+            WindowCovering.AttributeDefs.window_covering_type.name: True,
+        },
+    }
     _attribute_name: str = WindowCovering.AttributeDefs.window_covering_type.name
     _enum = WindowCovering.WindowCoveringType
     _unique_id_suffix: str = "window_covering_type"
@@ -2361,6 +6496,112 @@ class DanfossOpenWindowDetection(EnumSensor):
     Sensor that displays whether the TRV detects an open window using the temperature sensor.
     """
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "open_window_detection"
     _attribute_name = "open_window_detection"
     _attr_translation_key: str = "open_window_detected"
@@ -2376,6 +6617,112 @@ class DanfossOpenWindowDetection(EnumSensor):
 class DanfossLoadEstimate(Sensor):
     """Danfoss proprietary attribute for communicating its estimate of the radiator load."""
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "load_estimate"
     _attribute_name = "load_estimate"
     _attr_translation_key: str = "load_estimate"
@@ -2391,6 +6738,112 @@ class DanfossLoadEstimate(Sensor):
 class DanfossAdaptationRunStatus(BitMapSensor):
     """Danfoss proprietary attribute for showing the status of the adaptation run."""
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "adaptation_run_status"
     _attribute_name = "adaptation_run_status"
     _attr_translation_key: str = "adaptation_run_status"
@@ -2407,6 +6860,112 @@ class DanfossAdaptationRunStatus(BitMapSensor):
 class DanfossPreheatTime(Sensor):
     """Danfoss proprietary attribute for communicating the time when it starts pre-heating."""
 
+    REPORT_CONFIG = {
+        Thermostat.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "adaptation_run_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "heat_required",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_ASAP,
+            },
+            {
+                REPORT_CONFIG_ATTR: "load_estimate",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.local_temperature.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "mounting_mode_active",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupancy.name,
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.occupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: "open_window_detection",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_cooling_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.pi_heating_demand.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_status",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "preheat_time",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.running_state.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 5),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.system_mode.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_cooling_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+            {
+                REPORT_CONFIG_ATTR: Thermostat.AttributeDefs.unoccupied_heating_setpoint.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 25),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {
+        Thermostat.ep_attribute: {
+            Thermostat.AttributeDefs.abs_max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.abs_min_heat_setpoint_limit.name: True,
+            "adaptation_run_control": True,
+            "adaptation_run_settings": True,
+            "control_algorithm_scale_factor": True,
+            Thermostat.AttributeDefs.ctrl_sequence_of_oper.name: False,
+            "exercise_day_of_week": True,
+            "exercise_trigger_time": True,
+            "external_measured_room_sensor": False,
+            "external_open_window_detected": True,
+            "heat_available": True,
+            "load_balancing_enable": True,
+            "load_room_mean": False,
+            Thermostat.AttributeDefs.local_temperature_calibration.name: True,
+            Thermostat.AttributeDefs.max_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.max_heat_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_cool_setpoint_limit.name: True,
+            Thermostat.AttributeDefs.min_heat_setpoint_limit.name: True,
+            "mounting_mode_control": False,
+            "orientation": True,
+            "radiator_covered": True,
+            "regulation_setpoint_offset": True,
+            Thermostat.AttributeDefs.setpoint_change_source.name: True,
+            "window_open_feature": True,
+        },
+    }
     _unique_id_suffix = "preheat_time"
     _attribute_name = "preheat_time"
     _attr_translation_key: str = "preheat_time"
@@ -2423,6 +6982,19 @@ class DanfossPreheatTime(Sensor):
 class DanfossSoftwareErrorCode(BitMapSensor):
     """Danfoss proprietary attribute for communicating the error code."""
 
+    REPORT_CONFIG = {
+        Diagnostic.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "motor_step_counter",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "sw_error_code",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _unique_id_suffix = "sw_error_code"
     _attribute_name = "sw_error_code"
     _attr_translation_key: str = "software_error"
@@ -2439,6 +7011,19 @@ class DanfossSoftwareErrorCode(BitMapSensor):
 class DanfossMotorStepCounter(Sensor):
     """Danfoss proprietary attribute for communicating the motor step counter."""
 
+    REPORT_CONFIG = {
+        Diagnostic.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: "motor_step_counter",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+            {
+                REPORT_CONFIG_ATTR: "sw_error_code",
+                REPORT_CONFIG_CONFIG: REPORT_CONFIG_DEFAULT,
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _unique_id_suffix = "motor_step_counter"
     _attribute_name = "motor_step_counter"
     _attr_translation_key: str = "motor_stepcount"
@@ -2454,6 +7039,15 @@ class DanfossMotorStepCounter(Sensor):
 class WindSpeed(Sensor):
     """Wind Speed sensor."""
 
+    REPORT_CONFIG = {
+        WindSpeedCluster.ep_attribute: (
+            {
+                REPORT_CONFIG_ATTR: WindSpeedCluster.AttributeDefs.measured_value.name,
+                REPORT_CONFIG_CONFIG: (30, 900, 0.01),
+            },
+        ),
+    }
+    ZCL_INIT_ATTRS = {}
     _attribute_name = "measured_value"
     _attr_device_class: SensorDeviceClass = SensorDeviceClass.WIND_SPEED
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT

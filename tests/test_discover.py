@@ -106,6 +106,16 @@ def test_endpoint_cluster_name_fallback_uses_cluster_prefix() -> None:
     assert Endpoint.resolve_cluster_name(_Cluster()) == "cluster_0xfc45"
 
 
+def test_entity_attribute_config_is_declared_on_entity_classes() -> None:
+    """Ensure entity-owned report/init requirements are declared on classes."""
+    assert "accelerometer" in binary_sensor.Accelerometer.REPORT_CONFIG
+    assert {
+        "attr": "acceleration",
+        "config": (1, 900, 1),
+    } in binary_sensor.Accelerometer.REPORT_CONFIG["accelerometer"]
+    assert binary_sensor.BinaryInput.ZCL_INIT_ATTRS["binary_input"]["description"]
+
+
 @pytest.mark.parametrize("override_platform", [Platform.SWITCH, Platform.LIGHT])
 async def test_device_override(
     zha_gateway: Gateway, override_platform: Platform
