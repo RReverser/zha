@@ -10,7 +10,7 @@ from zigpy.const import SIG_EP_INPUT, SIG_EP_OUTPUT, SIG_EP_PROFILE, SIG_EP_TYPE
 import zigpy.exceptions
 import zigpy.profiles.zha
 from zigpy.typing import UNDEFINED
-from zigpy.zcl.clusters.general import LevelControl, OnOff
+from zigpy.zcl.clusters.general import LevelControl, OnOff, Ota
 
 from tests.common import create_mock_zigpy_device
 from zha.application.const import ZHA_CLUSTER_MSG_BIND, ZHA_CLUSTER_MSG_CFG_RPT
@@ -45,6 +45,7 @@ def _make_endpoint(
     zha_device.nwk = 0xBEEF
     zha_device.skip_configuration = False
     zha_device.emit = MagicMock()
+    zha_device.emit_zha_event = MagicMock()
 
     endpoint = Endpoint.new(zigpy_dev.endpoints[1], zha_device)
     return endpoint, zigpy_dev.endpoints[1]
@@ -252,3 +253,69 @@ async def test_endpoint_initialize_reads_cached_then_uncached_in_legacy_order(
             manufacturer=UNDEFINED,
         ),
     ]
+
+
+def test_endpoint_cluster_command_owner_ref_count_blocks_fallback(
+    zha_gateway: Gateway,
+) -> None:
+    """Cluster command owners block endpoint fallback until owner count reaches zero."""
+    endpoint, zigpy_ep = _make_endpoint(
+        zha_gateway, in_clusters=[], out_clusters=[OnOff.cluster_id]
+    )
+    cluster = zigpy_ep.out_clusters[OnOff.cluster_id]
+    cluster.update_attribute = MagicMock(wraps=cluster.update_attribute)
+
+    endpoint.register_cluster_command_owner(cluster)
+    endpoint.register_cluster_command_owner(cluster)
+    cluster_key = endpoint._cluster_key(cluster)
+    assert endpoint._cluster_command_owners[cluster_key] == 2
+
+    endpoint.handle_cluster_command(cluster, 1, OnOff.ServerCommandDefs.on.id, [])
+    assert cluster.update_attribute.call_count == 0
+    assert endpoint.device.emit_zha_event.call_count == 0
+
+    endpoint.unregister_cluster_command_owner(cluster)
+    endpoint.handle_cluster_command(cluster, 1, OnOff.ServerCommandDefs.on.id, [])
+    assert cluster.update_attribute.call_count == 0
+    assert endpoint.device.emit_zha_event.call_count == 0
+
+    endpoint.unregister_cluster_command_owner(cluster)
+    endpoint.handle_cluster_command(cluster, 1, OnOff.ServerCommandDefs.on.id, [])
+    assert cluster.update_attribute.call_count == 1
+    commands = [
+        call_args.args[0]["command"]
+        for call_args in endpoint.device.emit_zha_event.call_args_list
+    ]
+    assert commands.count(OnOff.ServerCommandDefs.on.name) == 1
+    assert cluster_key not in endpoint._cluster_command_owners
+
+
+def test_endpoint_suppresses_ota_client_attribute_events(zha_gateway: Gateway) -> None:
+    """OTA client attribute updates should not emit zha_events from endpoint."""
+    endpoint, zigpy_ep = _make_endpoint(
+        zha_gateway,
+        in_clusters=[],
+        out_clusters=[OnOff.cluster_id, Ota.cluster_id],
+    )
+    ota_cluster = zigpy_ep.out_clusters[Ota.cluster_id]
+    on_off_cluster = zigpy_ep.out_clusters[OnOff.cluster_id]
+
+    endpoint._handle_client_attribute_event(
+        ota_cluster,
+        SimpleNamespace(
+            attribute_id=Ota.AttributeDefs.current_file_version.id,
+            attribute_name=Ota.AttributeDefs.current_file_version.name,
+            value=0x12345678,
+        ),
+    )
+    assert endpoint.device.emit_zha_event.call_count == 0
+
+    endpoint._handle_client_attribute_event(
+        on_off_cluster,
+        SimpleNamespace(
+            attribute_id=OnOff.AttributeDefs.on_off.id,
+            attribute_name=OnOff.AttributeDefs.on_off.name,
+            value=True,
+        ),
+    )
+    assert endpoint.device.emit_zha_event.call_count == 1

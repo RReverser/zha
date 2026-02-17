@@ -320,17 +320,21 @@ class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
         super().on_add()
 
         self.device.device.add_listener(self)
-        for event_type in (
-            AttributeReadEvent,
-            AttributeReportedEvent,
-            AttributeUpdatedEvent,
-            AttributeWrittenEvent,
-        ):
-            self._on_remove_callbacks.append(
-                self._ota_cluster.on_event(
-                    event_type.event_type, self.handle_cluster_attribute_updated
-                )
-            )
+        self.register_cluster_event_listeners(
+            self._ota_cluster,
+            (
+                AttributeReadEvent.event_type,
+                AttributeReportedEvent.event_type,
+                AttributeUpdatedEvent.event_type,
+                AttributeWrittenEvent.event_type,
+            ),
+            self.handle_cluster_attribute_updated,
+        )
+        self.register_cluster_context_listener(self._ota_cluster)
+        self.endpoint.register_cluster_command_owner(self._ota_cluster)
+        self._on_remove_callbacks.append(
+            lambda: self.endpoint.unregister_cluster_command_owner(self._ota_cluster)
+        )
         self._on_remove_callbacks.append(
             lambda: self.device.device.remove_listener(self)
         )
@@ -342,6 +346,23 @@ class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
             return f"0x{version:08x}"
 
         return None
+
+    def cluster_command(
+        self,
+        cluster: Cluster,
+        tsn: int,  # pylint: disable=unused-argument
+        command_id: int,
+        args: list[Any],
+    ) -> None:
+        """Handle OTA client commands."""
+        if cluster is not self._ota_cluster:
+            return
+
+        if command_id == Ota.ServerCommandDefs.query_next_image.id and args:
+            cluster.update_attribute(
+                Ota.AttributeDefs.current_file_version.id,
+                args[3],
+            )
 
 
 @register_entity(Ota.cluster_id)

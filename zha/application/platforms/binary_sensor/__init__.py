@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 import functools
@@ -40,6 +41,9 @@ from zha.application.platforms.binary_sensor.const import (
 from zha.application.platforms.helpers import validate_device_class
 from zha.zigbee.const import (
     AQARA_OPPLE_CLUSTER,
+    ATTRIBUTE_ID,
+    ATTRIBUTE_NAME,
+    ATTRIBUTE_VALUE,
     CLUSTER_ACCELEROMETER,
     CLUSTER_BINARY_INPUT,
     CLUSTER_HUE_OCCUPANCY,
@@ -53,8 +57,10 @@ from zha.zigbee.const import (
     REPORT_CONFIG_CONFIG,
     REPORT_CONFIG_DEFAULT,
     REPORT_CONFIG_IMMEDIATE,
+    SIGNAL_ATTR_UPDATED,
     SMARTTHINGS_ACCELERATION_CLUSTER,
     TUYA_MANUFACTURER_CLUSTER,
+    UNKNOWN,
 )
 
 if TYPE_CHECKING:
@@ -62,6 +68,19 @@ if TYPE_CHECKING:
     from zha.zigbee.endpoint import Endpoint
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _resolve_cluster_command_name(cluster: Cluster, command_id: int) -> str:
+    """Resolve a command name from server/client command dictionaries."""
+    server_commands = cluster.server_commands or {}
+    if command_id in server_commands:
+        return server_commands[command_id].name
+
+    client_commands = cluster.client_commands or {}
+    if command_id in client_commands:
+        return client_commands[command_id].name
+
+    return f"0x{command_id:02X}"
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -203,7 +222,29 @@ class Accelerometer(BinarySensor):
     _attr_device_class: BinarySensorDeviceClass = BinarySensorDeviceClass.MOVING
     _attr_translation_key: str = "accelerometer"
 
-    _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_ACCELEROMETER}))
+    _cluster_match = ClusterMatch(
+        in_clusters=frozenset({CLUSTER_ACCELEROMETER}),
+        manufacturers=frozenset({"CentraLite", "Samjin", "SmartThings"}),
+    )
+
+    def handle_cluster_attribute_updated(
+        self,
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
+    ) -> None:
+        """Handle attribute updates and emit SmartThings-compatible zha_event payload."""
+        super().handle_cluster_attribute_updated(event)
+        self.endpoint.emit_cluster_zha_event(
+            self._cluster,
+            SIGNAL_ATTR_UPDATED,
+            {
+                ATTRIBUTE_ID: event.attribute_id,
+                ATTRIBUTE_NAME: event.attribute_name or UNKNOWN,
+                ATTRIBUTE_VALUE: event.value,
+            },
+        )
 
 
 @register_entity(OccupancySensing.cluster_id)
@@ -246,8 +287,89 @@ class HueOccupancy(BinarySensor):
     _cluster_match = ClusterMatch(in_clusters=frozenset({CLUSTER_HUE_OCCUPANCY}))
 
 
+class OnOffClientBinarySensor(BinarySensor):
+    """Base class for OnOff client-cluster binary sensors."""
+
+    def __init__(
+        self,
+        clusters: list[Cluster],
+        endpoint: Endpoint,
+        device: Device,
+        **kwargs,
+    ) -> None:
+        """Initialize the OnOff client binary sensor."""
+        super().__init__(clusters, endpoint, device, **kwargs)
+        self._off_listener: asyncio.TimerHandle | None = None
+
+    def on_add(self) -> None:
+        """Run when entity is added."""
+        super().on_add()
+        self.register_cluster_context_listener(self._cluster)
+        self.endpoint.register_cluster_command_owner(self._cluster)
+        self._on_remove_callbacks.append(
+            lambda: self.endpoint.unregister_cluster_command_owner(self._cluster)
+        )
+        self._on_remove_callbacks.append(self._cancel_off_listener)
+
+    def _cancel_off_listener(self) -> None:
+        """Cancel any pending timed-off callback."""
+        if self._off_listener is None:
+            return
+        self._off_listener.cancel()
+        self._off_listener = None
+
+    def _set_to_off(self) -> None:
+        """Set the state to off after a timed command expires."""
+        self._off_listener = None
+        self._cluster.update_attribute(OnOff.AttributeDefs.on_off.id, False)
+
+    def cluster_command(
+        self,
+        cluster: Cluster,
+        tsn: int,  # pylint: disable=unused-argument
+        command_id: int,
+        args: list[Any],
+    ) -> None:
+        """Handle commands received on OnOff client clusters."""
+        if cluster is not self._cluster:
+            return
+
+        command_name = _resolve_cluster_command_name(cluster, command_id)
+
+        if command_id in (
+            OnOff.ServerCommandDefs.off.id,
+            OnOff.ServerCommandDefs.off_with_effect.id,
+        ):
+            cluster.update_attribute(OnOff.AttributeDefs.on_off.id, False)
+        elif command_id in (
+            OnOff.ServerCommandDefs.on.id,
+            OnOff.ServerCommandDefs.on_with_recall_global_scene.id,
+        ):
+            cluster.update_attribute(OnOff.AttributeDefs.on_off.id, True)
+        elif command_id == OnOff.ServerCommandDefs.on_with_timed_off.id:
+            should_accept = args[0]
+            on_time = args[1]
+            on_off = bool(cluster.get(OnOff.AttributeDefs.on_off.name))
+            # 0 = always accept, 1 = accept only if already on.
+            if should_accept == 0 or (should_accept == 1 and on_off):
+                self._cancel_off_listener()
+                cluster.update_attribute(OnOff.AttributeDefs.on_off.id, True)
+                if on_time > 0:
+                    self._off_listener = asyncio.get_running_loop().call_later(
+                        on_time / 10,
+                        self._set_to_off,
+                    )
+        elif command_id == OnOff.ServerCommandDefs.toggle.id:
+            cluster.update_attribute(
+                OnOff.AttributeDefs.on_off.id,
+                not bool(cluster.get(OnOff.AttributeDefs.on_off.name)),
+            )
+
+        self.endpoint.emit_cluster_zha_event(cluster, command_name, args or [])
+
+
 @register_entity(OnOff.cluster_id)
-class Opening(BinarySensor):
+class Opening(OnOffClientBinarySensor):
     """ZHA OnOff BinarySensor."""
 
     _attribute_name = "on_off"
@@ -349,7 +471,7 @@ class BinaryInput(BinarySensor):
 
 
 @register_entity(OnOff.cluster_id)
-class IkeaMotion(BinarySensor):
+class IkeaMotion(OnOffClientBinarySensor):
     """ZHA OnOff BinarySensor with motion device class for IKEA devices."""
 
     _attribute_name = "on_off"
@@ -365,7 +487,7 @@ class IkeaMotion(BinarySensor):
 
 
 @register_entity(OnOff.cluster_id)
-class PhilipsMotion(BinarySensor):
+class PhilipsMotion(OnOffClientBinarySensor):
     """ZHA OnOff BinarySensor with motion device class for Philips devices."""
 
     _attribute_name = "on_off"
@@ -380,8 +502,46 @@ class PhilipsMotion(BinarySensor):
     )
 
 
+class IASZoneCommandBinarySensor(BinarySensor):
+    """Base class for IAS Zone command handling."""
+
+    def on_add(self) -> None:
+        """Run when entity is added."""
+        super().on_add()
+        self.register_cluster_context_listener(self._cluster)
+        self.endpoint.register_cluster_command_owner(self._cluster)
+        self._on_remove_callbacks.append(
+            lambda: self.endpoint.unregister_cluster_command_owner(self._cluster)
+        )
+
+    def cluster_command(
+        self,
+        cluster: Cluster,
+        tsn: int,  # pylint: disable=unused-argument
+        command_id: int,
+        args: list[Any],
+    ) -> None:
+        """Handle IAS Zone commands and preserve legacy side effects/events."""
+        if cluster is not self._cluster:
+            return
+
+        if command_id == IasZone.ClientCommandDefs.status_change_notification.id:
+            zone_status = args[0]
+            cluster.update_attribute(IasZone.AttributeDefs.zone_status.id, zone_status)
+        elif command_id == IasZone.ClientCommandDefs.enroll.id:
+            cluster.create_catching_task(
+                cluster.enroll_response(
+                    enroll_response_code=IasZone.EnrollResponse.Success,
+                    zone_id=0,
+                )
+            )
+
+        command_name = _resolve_cluster_command_name(cluster, command_id)
+        self.endpoint.emit_cluster_zha_event(cluster, command_name, args or [])
+
+
 @register_entity(IasZone.cluster_id)
-class IASZone(BinarySensor):
+class IASZone(IASZoneCommandBinarySensor):
     """ZHA IAS BinarySensor."""
 
     REPORT_CONFIG = {}
@@ -438,7 +598,7 @@ class IASZone(BinarySensor):
 
 
 @register_entity(IasZone.cluster_id)
-class SinopeLeakStatus(BinarySensor):
+class SinopeLeakStatus(IASZoneCommandBinarySensor):
     """Sinope water leak sensor."""
 
     REPORT_CONFIG = {}

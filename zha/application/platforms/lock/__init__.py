@@ -34,6 +34,19 @@ if TYPE_CHECKING:
     from zha.zigbee.endpoint import Endpoint
 
 
+def _resolve_cluster_command_name(cluster: Cluster, command_id: int) -> str:
+    """Resolve command name for a received cluster command id."""
+    server_commands = cluster.server_commands or {}
+    if command_id in server_commands:
+        return server_commands[command_id].name
+
+    client_commands = cluster.client_commands or {}
+    if command_id in client_commands:
+        return client_commands[command_id].name
+
+    return f"0x{command_id:02X}"
+
+
 @register_entity(DoorLockCluster.cluster_id)
 class DoorLock(PlatformEntity):
     """Representation of a ZHA lock."""
@@ -71,18 +84,53 @@ class DoorLock(PlatformEntity):
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        for event_type in (
-            AttributeReadEvent,
-            AttributeReportedEvent,
-            AttributeUpdatedEvent,
-            AttributeWrittenEvent,
-        ):
-            self._on_remove_callbacks.append(
-                self._doorlock_cluster.on_event(
-                    event_type.event_type,
-                    self.handle_cluster_attribute_updated,
-                )
+        self.register_cluster_event_listeners(
+            self._doorlock_cluster,
+            (
+                AttributeReadEvent.event_type,
+                AttributeReportedEvent.event_type,
+                AttributeUpdatedEvent.event_type,
+                AttributeWrittenEvent.event_type,
+            ),
+            self.handle_cluster_attribute_updated,
+        )
+        self.register_cluster_context_listener(self._doorlock_cluster)
+        self.endpoint.register_cluster_command_owner(self._doorlock_cluster)
+        self._on_remove_callbacks.append(
+            lambda: self.endpoint.unregister_cluster_command_owner(
+                self._doorlock_cluster
             )
+        )
+
+    def cluster_command(
+        self,
+        cluster: Cluster,
+        tsn: int,  # pylint: disable=unused-argument
+        command_id: int,
+        args: list[Any],
+    ) -> None:
+        """Handle cluster commands and preserve lock event payload semantics."""
+        if cluster is not self._doorlock_cluster:
+            return
+
+        command_name = _resolve_cluster_command_name(cluster, command_id)
+
+        if (
+            command_name
+            == DoorLockCluster.ClientCommandDefs.operation_event_notification.name
+        ):
+            self.endpoint.emit_cluster_zha_event(
+                cluster,
+                command_name,
+                {
+                    "source": args[0].name,
+                    "operation": args[1].name,
+                    "code_slot": args[2] + 1,
+                },
+            )
+            return
+
+        self.endpoint.emit_cluster_zha_event(cluster, command_name, args or [])
 
     @property
     def state(self) -> dict[str, Any]:

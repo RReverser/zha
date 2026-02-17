@@ -46,7 +46,6 @@ from zha.zigbee.const import (
     PARAMS,
     REPORT_CONFIG_ATTR_PER_REQ,
     SIGNAL_ATTR_UPDATED,
-    SMARTTHINGS_ACCELERATION_CLUSTER,
     UNIQUE_ID,
     UNKNOWN,
     VALUE,
@@ -80,6 +79,11 @@ CLIENT_BIND_FALSE_CLUSTER_IDS: Final[frozenset[int]] = frozenset(
 CLIENT_COMMAND_SUPPRESSED_CLUSTER_IDS: Final[frozenset[int]] = frozenset(
     {
         0xFC31,  # InovelliNotification client
+    }
+)
+CLIENT_ATTRIBUTE_EVENT_SUPPRESSED_CLUSTER_IDS: Final[frozenset[int]] = frozenset(
+    {
+        Ota.cluster_id,
     }
 )
 
@@ -160,6 +164,7 @@ class Endpoint:
         ] = {}
         self._cluster_direct_report_attrs: dict[str, set[str]] = {}
         self._cluster_init_attrs: dict[str, dict[str, bool]] = {}
+        self._cluster_command_owners: dict[str, int] = {}
         self._cluster_event_unsubs: list[Callable[[], None]] = []
         self._cluster_listeners: list[tuple[Cluster, _ClusterListener]] = []
         self._on_off_client_off_listeners: dict[str, asyncio.Handle] = {}
@@ -213,17 +218,6 @@ class Endpoint:
                         )
                     )
 
-            if cluster.cluster_id == SMARTTHINGS_ACCELERATION_CLUSTER:
-                for event_type in attr_events:
-                    self._cluster_event_unsubs.append(
-                        cluster.on_event(
-                            event_type.event_type,
-                            functools.partial(
-                                self._handle_smartthings_attribute_event, cluster
-                            ),
-                        )
-                    )
-
     def on_remove(self) -> None:
         """Run when endpoint is removed."""
         for cluster, listener in self._cluster_listeners:
@@ -237,6 +231,7 @@ class Endpoint:
         for handle in self._on_off_client_off_listeners.values():
             handle.cancel()
         self._on_off_client_off_listeners.clear()
+        self._cluster_command_owners.clear()
 
     @functools.cached_property
     def device(self) -> Device:
@@ -341,6 +336,24 @@ class Endpoint:
             cluster_key = self._cluster_key(cluster)
             self._claimed_clusters[cluster_key] = cluster
             self._cluster_bind.setdefault(cluster_key, self._default_bind(cluster))
+
+    def register_cluster_command_owner(self, cluster: Cluster) -> None:
+        """Register an entity command owner for the given cluster."""
+        cluster_key = self._cluster_key(cluster)
+        self._cluster_command_owners[cluster_key] = (
+            self._cluster_command_owners.get(cluster_key, 0) + 1
+        )
+
+    def unregister_cluster_command_owner(self, cluster: Cluster) -> None:
+        """Unregister one entity command owner for the given cluster."""
+        cluster_key = self._cluster_key(cluster)
+        owners = self._cluster_command_owners.get(cluster_key)
+        if owners is None:
+            return
+        if owners <= 1:
+            self._cluster_command_owners.pop(cluster_key, None)
+            return
+        self._cluster_command_owners[cluster_key] = owners - 1
 
     def set_cluster_bind(self, cluster: Cluster, bind: bool) -> None:
         """Set/merge bind policy for one cluster."""
@@ -637,7 +650,7 @@ class Endpoint:
             chunk = rest[:CLUSTER_READS_PER_REQ]
             rest = rest[CLUSTER_READS_PER_REQ:]
 
-    def _emit_cluster_zha_event(
+    def emit_cluster_zha_event(
         self, cluster: Cluster, command: str, arg: list | dict | CommandSchema
     ) -> None:
         """Emit a zha_event payload with legacy key/value semantics."""
@@ -670,7 +683,10 @@ class Endpoint:
         | AttributeWrittenEvent,
     ) -> None:
         """Handle client cluster attribute updates with legacy zha_event payload."""
-        self._emit_cluster_zha_event(
+        if cluster.cluster_id in CLIENT_ATTRIBUTE_EVENT_SUPPRESSED_CLUSTER_IDS:
+            return
+
+        self.emit_cluster_zha_event(
             cluster,
             SIGNAL_ATTR_UPDATED,
             {
@@ -678,25 +694,6 @@ class Endpoint:
                 ATTRIBUTE_NAME: event.attribute_name or UNKNOWN,
                 ATTRIBUTE_VALUE: event.value,
                 VALUE: event.value,
-            },
-        )
-
-    def _handle_smartthings_attribute_event(
-        self,
-        cluster: Cluster,
-        event: AttributeReadEvent
-        | AttributeReportedEvent
-        | AttributeUpdatedEvent
-        | AttributeWrittenEvent,
-    ) -> None:
-        """Handle SmartThings acceleration attribute updates."""
-        self._emit_cluster_zha_event(
-            cluster,
-            SIGNAL_ATTR_UPDATED,
-            {
-                ATTRIBUTE_ID: event.attribute_id,
-                ATTRIBUTE_NAME: event.attribute_name or UNKNOWN,
-                ATTRIBUTE_VALUE: event.value,
             },
         )
 
@@ -726,6 +723,9 @@ class Endpoint:
             args,
             tsn,
         )
+
+        if self._cluster_command_owners.get(cluster_key, 0) > 0:
+            return
 
         if cluster.is_client and cluster.cluster_id == OnOff.cluster_id:
             if command_name in (
@@ -794,7 +794,7 @@ class Endpoint:
             and cluster.is_server
             and command_name == Identify.ServerCommandDefs.trigger_effect.name
         ):
-            self._emit_cluster_zha_event(
+            self.emit_cluster_zha_event(
                 cluster,
                 f"{self._cluster_unique_id(cluster)}_{command_name}",
                 args[0] if args else [],
@@ -807,7 +807,7 @@ class Endpoint:
             and command_name
             == DoorLock.ClientCommandDefs.operation_event_notification.name
         ):
-            self._emit_cluster_zha_event(
+            self.emit_cluster_zha_event(
                 cluster,
                 command_name,
                 {
@@ -824,7 +824,7 @@ class Endpoint:
         ):
             return
 
-        self._emit_cluster_zha_event(cluster, command_name, args or [])
+        self.emit_cluster_zha_event(cluster, command_name, args or [])
 
     def emit_zha_event(self, event_data: dict[str, Any]) -> None:
         """Broadcast an event from this endpoint."""

@@ -444,6 +444,11 @@ class BaseEntity(LogMixin, EventBase):
             cluster.on_event(event_type, callback) for event_type in event_types
         )
 
+    def register_cluster_context_listener(self, cluster: Cluster) -> None:
+        """Register this entity as a cluster command listener with cleanup."""
+        cluster.add_context_listener(self)
+        self._on_remove_callbacks.append(lambda: cluster.remove_listener(self))
+
     async def on_remove(self) -> None:
         """Cancel tasks and timers this entity owns."""
         while self._on_remove_callbacks:
