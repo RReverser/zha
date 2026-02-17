@@ -193,6 +193,45 @@ async def test_binary_sensor(
     await on_off_test(zha_gateway, cluster, entity, plugs)
 
 
+async def test_ias_zone_command_names_follow_cluster_direction(
+    zha_gateway: Gateway,
+) -> None:
+    """IAS Zone command events should use client command names for server clusters."""
+    zigpy_device = create_mock_zigpy_device(zha_gateway, DEVICE_IAS)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    cluster = zigpy_device.endpoints[1].ias_zone
+    listener = MagicMock()
+    zha_device.on_all_events(listener)
+
+    cluster.listener_event(
+        "cluster_command",
+        1,
+        security.IasZone.ClientCommandDefs.status_change_notification.id,
+        [1],
+    )
+    cluster.listener_event(
+        "cluster_command",
+        1,
+        security.IasZone.ClientCommandDefs.enroll.id,
+        [0, 0],
+    )
+    await zha_gateway.async_block_till_done()
+
+    commands = [
+        event_call.args[0].data["command"]
+        for event_call in listener.mock_calls
+        if event_call.args
+        and getattr(event_call.args[0], "event_type", None) == "zha_event"
+    ]
+    assert (
+        commands.count(
+            security.IasZone.ClientCommandDefs.status_change_notification.name
+        )
+        == 1
+    )
+    assert commands.count(security.IasZone.ClientCommandDefs.enroll.name) == 1
+
+
 async def test_binary_sensor_general(
     zha_gateway: Gateway,
 ) -> None:

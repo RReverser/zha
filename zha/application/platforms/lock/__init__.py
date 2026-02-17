@@ -15,7 +15,11 @@ from zigpy.zcl.clusters.closures import DoorLock as DoorLockCluster
 from zigpy.zcl.foundation import Status
 
 from zha.application import Platform
-from zha.application.helpers import safe_cluster_command, safe_read
+from zha.application.helpers import (
+    resolve_incoming_cluster_command_name,
+    safe_cluster_command,
+    safe_read,
+)
 from zha.application.platforms import ClusterMatch, PlatformEntity, register_entity
 from zha.application.platforms.lock.const import (
     STATE_LOCKED,
@@ -32,19 +36,6 @@ from zha.zigbee.const import (
 if TYPE_CHECKING:
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
-
-
-def _resolve_cluster_command_name(cluster: Cluster, command_id: int) -> str:
-    """Resolve command name for a received cluster command id."""
-    server_commands = cluster.server_commands or {}
-    if command_id in server_commands:
-        return server_commands[command_id].name
-
-    client_commands = cluster.client_commands or {}
-    if command_id in client_commands:
-        return client_commands[command_id].name
-
-    return f"0x{command_id:02X}"
 
 
 @register_entity(DoorLockCluster.cluster_id)
@@ -113,7 +104,7 @@ class DoorLock(PlatformEntity):
         if cluster is not self._doorlock_cluster:
             return
 
-        command_name = _resolve_cluster_command_name(cluster, command_id)
+        command_name = resolve_incoming_cluster_command_name(cluster, command_id)
 
         if (
             command_name

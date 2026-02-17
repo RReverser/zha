@@ -11,6 +11,7 @@ import zigpy.exceptions
 import zigpy.profiles.zha
 from zigpy.typing import UNDEFINED
 from zigpy.zcl.clusters.general import LevelControl, OnOff, Ota
+from zigpy.zcl.clusters.security import IasZone
 
 from tests.common import create_mock_zigpy_device
 from zha.application.const import ZHA_CLUSTER_MSG_BIND, ZHA_CLUSTER_MSG_CFG_RPT
@@ -288,6 +289,29 @@ def test_endpoint_cluster_command_owner_ref_count_blocks_fallback(
     ]
     assert commands.count(OnOff.ServerCommandDefs.on.name) == 1
     assert cluster_key not in endpoint._cluster_command_owners
+
+
+def test_endpoint_fallback_ias_zone_command_name_is_directional(
+    zha_gateway: Gateway,
+) -> None:
+    """Endpoint fallback should use IAS Zone client command names for server clusters."""
+    endpoint, zigpy_ep = _make_endpoint(zha_gateway, in_clusters=[IasZone.cluster_id])
+    cluster = zigpy_ep.ias_zone
+
+    endpoint.handle_cluster_command(
+        cluster,
+        1,
+        IasZone.ClientCommandDefs.status_change_notification.id,
+        [1],
+    )
+
+    commands = [
+        call_args.args[0]["command"]
+        for call_args in endpoint.device.emit_zha_event.call_args_list
+    ]
+    assert (
+        commands.count(IasZone.ClientCommandDefs.status_change_notification.name) == 1
+    )
 
 
 def test_endpoint_suppresses_ota_client_attribute_events(zha_gateway: Gateway) -> None:

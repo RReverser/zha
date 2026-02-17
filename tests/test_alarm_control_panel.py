@@ -1,7 +1,7 @@
 """Test zha alarm control panel."""
 
 import logging
-from unittest.mock import AsyncMock, call, patch, sentinel
+from unittest.mock import AsyncMock, Mock, call, patch, sentinel
 
 import pytest
 from zigpy.device import Device as ZigpyDevice
@@ -220,6 +220,50 @@ async def test_alarm_control_panel(
     await zha_gateway.async_block_till_done()
     assert alarm_entity.state["state"] == AlarmState.DISARMED
     assert "Invalid code supplied to IAS ACE" in caplog.text
+
+
+@patch(
+    "zigpy.zcl.clusters.security.IasAce.client_command",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+async def test_alarm_control_panel_arm_event_emitted_once(
+    zha_gateway: Gateway,
+) -> None:
+    """IAS ACE arm command should emit one arm zha_event from the entity path."""
+    zigpy_device: ZigpyDevice = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/frient-a-s-kepzb-110.json",
+    )
+    zha_device: Device = await join_zigpy_device(zha_gateway, zigpy_device)
+    cluster: security.IasAce = zigpy_device.endpoints[44].out_clusters[
+        security.IasAce.cluster_id
+    ]
+    listener = Mock()
+    zha_device.on_all_events(listener)
+
+    cluster.listener_event(
+        "cluster_command",
+        1,
+        security.IasAce.ServerCommandDefs.arm.id,
+        [security.IasAce.ArmMode.Arm_All_Zones, "4321", 0],
+    )
+    await zha_gateway.async_block_till_done()
+
+    arm_events = [
+        event_call.args[0]
+        for event_call in listener.mock_calls
+        if event_call.args
+        and getattr(event_call.args[0], "event_type", None) == "zha_event"
+        and event_call.args[0].data.get("command")
+        == security.IasAce.ServerCommandDefs.arm.name
+    ]
+    assert len(arm_events) == 1
+    assert arm_events[0].data["args"] == {
+        "arm_mode": security.IasAce.ArmMode.Arm_All_Zones.value,
+        "arm_mode_description": security.IasAce.ArmMode.Arm_All_Zones.name,
+        "code": "4321",
+        "zone_id": 0,
+    }
 
 
 async def reset_alarm_panel(

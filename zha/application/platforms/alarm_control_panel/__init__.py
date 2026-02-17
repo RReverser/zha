@@ -127,12 +127,13 @@ class AlarmControlPanel(PlatformEntity):
     def on_add(self) -> None:
         """Run when entity is added."""
         super().on_add()
-        self._ias_ace_cluster.add_context_listener(self)
-        self._on_remove_callbacks.append(self._remove_cluster_listener)
-
-    def _remove_cluster_listener(self) -> None:
-        """Remove this entity as cluster listener."""
-        self._ias_ace_cluster.remove_listener(self)
+        self.register_cluster_context_listener(self._ias_ace_cluster)
+        self.endpoint.register_cluster_command_owner(self._ias_ace_cluster)
+        self._on_remove_callbacks.append(
+            lambda: self.endpoint.unregister_cluster_command_owner(
+                self._ias_ace_cluster
+            )
+        )
 
     def cluster_command(
         self,

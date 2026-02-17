@@ -125,6 +125,31 @@ async def safe_cluster_command(
     return await retry_request(command)(*args, **kwargs)
 
 
+def resolve_incoming_cluster_command_name(
+    cluster: zigpy.zcl.Cluster, command_id: int
+) -> str:
+    """Resolve a command name for an incoming cluster command.
+
+    Direction is inferred from the local cluster role:
+    - local client cluster receives server->client commands
+    - local server cluster receives client->server commands
+    """
+    if cluster.is_client:
+        primary_commands = cluster.server_commands or {}
+        secondary_commands = cluster.client_commands or {}
+    else:
+        primary_commands = cluster.client_commands or {}
+        secondary_commands = cluster.server_commands or {}
+
+    if command_id in primary_commands:
+        return primary_commands[command_id].name
+
+    if command_id in secondary_commands:
+        return secondary_commands[command_id].name
+
+    return f"0x{command_id:02X}"
+
+
 async def safe_write_attributes(
     cluster: zigpy.zcl.Cluster,
     attributes: dict[str, Any],

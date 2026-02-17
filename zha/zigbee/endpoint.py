@@ -33,7 +33,7 @@ from zha.application.const import (
     ZHA_CLUSTER_MSG_BIND,
     ZHA_CLUSTER_MSG_CFG_RPT,
 )
-from zha.application.helpers import retry_request
+from zha.application.helpers import resolve_incoming_cluster_command_name, retry_request
 from zha.exceptions import ZHAException
 from zha.zigbee.const import (
     ARGS,
@@ -698,15 +698,7 @@ class Endpoint:
         )
 
     def _resolve_command_name(self, cluster: Cluster, command_id: int) -> str:
-        server_commands = cluster.server_commands or {}
-        if command_id in server_commands:
-            return server_commands[command_id].name
-
-        client_commands = cluster.client_commands or {}
-        if command_id in client_commands:
-            return client_commands[command_id].name
-
-        return f"0x{command_id:02X}"
+        return resolve_incoming_cluster_command_name(cluster, command_id)
 
     def handle_cluster_command(
         self, cluster: Cluster, tsn: int, command_id: int, args: list[Any]

@@ -25,7 +25,7 @@ from zigpy.zcl.clusters.measurement import OccupancySensing
 from zigpy.zcl.clusters.security import IasZone
 
 from zha.application import Platform
-from zha.application.helpers import safe_read
+from zha.application.helpers import resolve_incoming_cluster_command_name, safe_read
 from zha.application.platforms import (
     BaseEntityInfo,
     ClusterMatch,
@@ -68,19 +68,6 @@ if TYPE_CHECKING:
     from zha.zigbee.endpoint import Endpoint
 
 _LOGGER = logging.getLogger(__name__)
-
-
-def _resolve_cluster_command_name(cluster: Cluster, command_id: int) -> str:
-    """Resolve a command name from server/client command dictionaries."""
-    server_commands = cluster.server_commands or {}
-    if command_id in server_commands:
-        return server_commands[command_id].name
-
-    client_commands = cluster.client_commands or {}
-    if command_id in client_commands:
-        return client_commands[command_id].name
-
-    return f"0x{command_id:02X}"
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -334,7 +321,7 @@ class OnOffClientBinarySensor(BinarySensor):
         if cluster is not self._cluster:
             return
 
-        command_name = _resolve_cluster_command_name(cluster, command_id)
+        command_name = resolve_incoming_cluster_command_name(cluster, command_id)
 
         if command_id in (
             OnOff.ServerCommandDefs.off.id,
@@ -536,7 +523,7 @@ class IASZoneCommandBinarySensor(BinarySensor):
                 )
             )
 
-        command_name = _resolve_cluster_command_name(cluster, command_id)
+        command_name = resolve_incoming_cluster_command_name(cluster, command_id)
         self.endpoint.emit_cluster_zha_event(cluster, command_name, args or [])
 
 
