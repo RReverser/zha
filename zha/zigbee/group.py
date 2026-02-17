@@ -6,13 +6,13 @@ import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cached_property
-import importlib
 import logging
 from typing import TYPE_CHECKING, Any
 
 import zigpy.exceptions
 from zigpy.types.named import EUI64
 
+from zha.application import discovery
 from zha.application.platforms import (
     BaseEntityInfo,
     EntityStateChangedEvent,
@@ -273,9 +273,6 @@ class Group(LogMixin):
 
     async def async_reconcile_discovered_entities(self) -> None:
         """Reconcile currently registered group entities with discovery output."""
-        # Late-load discovery to avoid circular import with zha.application.discovery.
-        discovery: Any = importlib.import_module("zha.application.discovery")
-
         async with self._reconcile_lock:
             # Skip reconciliation for stale group objects that have already been removed
             # from the gateway mapping.

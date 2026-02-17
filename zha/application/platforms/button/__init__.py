@@ -61,7 +61,7 @@ class Button(PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -138,7 +138,7 @@ class WriteAttributeButton(PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,

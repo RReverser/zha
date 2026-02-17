@@ -281,7 +281,7 @@ class Fan(BaseFan, PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs,
@@ -461,7 +461,7 @@ class IkeaFan(BaseFan, PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs,

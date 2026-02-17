@@ -217,7 +217,7 @@ class Sensor(PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -442,7 +442,7 @@ class PollableSensor(Sensor):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -626,7 +626,7 @@ class EnumSensor(Sensor):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -911,7 +911,7 @@ class BaseElectricalMeasurement(PollableSensor):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -5976,7 +5976,7 @@ class RSSISensor(Sensor):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -6778,7 +6778,7 @@ class BitMapSensor(Sensor):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,

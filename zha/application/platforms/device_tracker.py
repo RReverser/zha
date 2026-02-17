@@ -27,6 +27,8 @@ from zha.zigbee.const import (
 )
 
 if TYPE_CHECKING:
+    from zigpy.zcl import Cluster
+
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
 
@@ -77,7 +79,7 @@ class DeviceScannerEntity(PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs,

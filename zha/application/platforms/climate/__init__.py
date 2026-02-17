@@ -235,7 +235,7 @@ class Thermostat(PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs,
@@ -293,18 +293,18 @@ class Thermostat(PlatformEntity):
                 )
             )
 
-    def _thermostat_get(self, attr: str, default: Any | None = None) -> Any | None:
+    def _get_thermostat_attr(self, attr: str, default: Any | None = None) -> Any | None:
         """Get thermostat attribute value from cache."""
         return self._thermostat_cluster.get(attr, default)
 
     def _max_cool_setpoint_limit(self) -> int:
         """Get thermostat max cooling setpoint with absolute fallback."""
-        sp_limit = self._thermostat_get(
+        sp_limit = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.max_cool_setpoint_limit.name
         )
         if sp_limit is None:
             return int(
-                self._thermostat_get(
+                self._get_thermostat_attr(
                     ThermostatCluster.AttributeDefs.abs_max_cool_setpoint_limit.name,
                     3200,
                 )
@@ -313,12 +313,12 @@ class Thermostat(PlatformEntity):
 
     def _min_cool_setpoint_limit(self) -> int:
         """Get thermostat min cooling setpoint with absolute fallback."""
-        sp_limit = self._thermostat_get(
+        sp_limit = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.min_cool_setpoint_limit.name
         )
         if sp_limit is None:
             return int(
-                self._thermostat_get(
+                self._get_thermostat_attr(
                     ThermostatCluster.AttributeDefs.abs_min_cool_setpoint_limit.name,
                     1600,
                 )
@@ -327,12 +327,12 @@ class Thermostat(PlatformEntity):
 
     def _max_heat_setpoint_limit(self) -> int:
         """Get thermostat max heating setpoint with absolute fallback."""
-        sp_limit = self._thermostat_get(
+        sp_limit = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.max_heat_setpoint_limit.name
         )
         if sp_limit is None:
             return int(
-                self._thermostat_get(
+                self._get_thermostat_attr(
                     ThermostatCluster.AttributeDefs.abs_max_heat_setpoint_limit.name,
                     3000,
                 )
@@ -341,12 +341,12 @@ class Thermostat(PlatformEntity):
 
     def _min_heat_setpoint_limit(self) -> int:
         """Get thermostat min heating setpoint with absolute fallback."""
-        sp_limit = self._thermostat_get(
+        sp_limit = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.min_heat_setpoint_limit.name
         )
         if sp_limit is None:
             return int(
-                self._thermostat_get(
+                self._get_thermostat_attr(
                     ThermostatCluster.AttributeDefs.abs_min_heat_setpoint_limit.name,
                     700,
                 )
@@ -396,7 +396,7 @@ class Thermostat(PlatformEntity):
         if ThermostatCluster.AttributeDefs.occupancy.name not in results:
             return None
         return bool(
-            self._thermostat_get(ThermostatCluster.AttributeDefs.occupancy.name)
+            self._get_thermostat_attr(ThermostatCluster.AttributeDefs.occupancy.name)
         )
 
     @functools.cached_property
@@ -415,7 +415,7 @@ class Thermostat(PlatformEntity):
     @property
     def state(self) -> dict[str, Any]:
         """Get the state of the thermostat."""
-        thermostat_system_mode = self._thermostat_get(
+        thermostat_system_mode = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.system_mode.name
         )
         system_mode = SYSTEM_MODE_2_HVAC.get(thermostat_system_mode, "unknown")
@@ -436,25 +436,25 @@ class Thermostat(PlatformEntity):
             if self.hvac_mode is not None
             else None
         )
-        response[ATTR_OCCUPANCY] = self._thermostat_get(
+        response[ATTR_OCCUPANCY] = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.occupancy.name
         )
-        response[ATTR_OCCP_COOL_SETPT] = self._thermostat_get(
+        response[ATTR_OCCP_COOL_SETPT] = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.occupied_cooling_setpoint.name
         )
-        response[ATTR_OCCP_HEAT_SETPT] = self._thermostat_get(
+        response[ATTR_OCCP_HEAT_SETPT] = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.occupied_heating_setpoint.name
         )
-        response[ATTR_PI_HEATING_DEMAND] = self._thermostat_get(
+        response[ATTR_PI_HEATING_DEMAND] = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.pi_heating_demand.name
         )
-        response[ATTR_PI_COOLING_DEMAND] = self._thermostat_get(
+        response[ATTR_PI_COOLING_DEMAND] = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.pi_cooling_demand.name
         )
-        response[ATTR_UNOCCP_COOL_SETPT] = self._thermostat_get(
+        response[ATTR_UNOCCP_COOL_SETPT] = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.unoccupied_cooling_setpoint.name
         )
-        response[ATTR_UNOCCP_HEAT_SETPT] = self._thermostat_get(
+        response[ATTR_UNOCCP_HEAT_SETPT] = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.unoccupied_heating_setpoint.name
         )
         return response
@@ -463,7 +463,7 @@ class Thermostat(PlatformEntity):
     def current_temperature(self):
         """Return the current temperature."""
         if (
-            local_temperature := self._thermostat_get(
+            local_temperature := self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.local_temperature.name
             )
         ) is None:
@@ -474,7 +474,7 @@ class Thermostat(PlatformEntity):
     def outdoor_temperature(self):
         """Return the outdoor temperature."""
         if (
-            outdoor_temperature := self._thermostat_get(
+            outdoor_temperature := self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.outdoor_temperature.name
             )
         ) is None:
@@ -484,7 +484,7 @@ class Thermostat(PlatformEntity):
     @property
     def fan_mode(self) -> str | None:
         """Return current FAN mode."""
-        running_state = self._thermostat_get(
+        running_state = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.running_state.name
         )
         if running_state is None:
@@ -509,9 +509,11 @@ class Thermostat(PlatformEntity):
     def hvac_action(self) -> HVACAction | None:
         """Return the current HVAC action."""
         if (
-            self._thermostat_get(ThermostatCluster.AttributeDefs.pi_heating_demand.name)
+            self._get_thermostat_attr(
+                ThermostatCluster.AttributeDefs.pi_heating_demand.name
+            )
             is None
-            and self._thermostat_get(
+            and self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.pi_cooling_demand.name
             )
             is None
@@ -524,7 +526,7 @@ class Thermostat(PlatformEntity):
         """Return the current HVAC action based on running mode and running state."""
 
         if (
-            running_state := self._thermostat_get(
+            running_state := self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.running_state.name
             )
         ) is None:
@@ -553,12 +555,12 @@ class Thermostat(PlatformEntity):
     def _pi_demand_action(self) -> HVACAction | None:
         """Return the current HVAC action based on pi_demands."""
 
-        heating_demand = self._thermostat_get(
+        heating_demand = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.pi_heating_demand.name
         )
         if heating_demand is not None and heating_demand > 0:
             return HVACAction.HEATING
-        cooling_demand = self._thermostat_get(
+        cooling_demand = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.pi_cooling_demand.name
         )
         if cooling_demand is not None and cooling_demand > 0:
@@ -572,14 +574,14 @@ class Thermostat(PlatformEntity):
     def hvac_mode(self) -> HVACMode | None:
         """Return HVAC operation mode."""
         return SYSTEM_MODE_2_HVAC.get(
-            self._thermostat_get(ThermostatCluster.AttributeDefs.system_mode.name)
+            self._get_thermostat_attr(ThermostatCluster.AttributeDefs.system_mode.name)
         )
 
     @property
     def hvac_modes(self) -> list[HVACMode]:
         """Return the list of available HVAC operation modes."""
         return SEQ_OF_OPERATION.get(
-            self._thermostat_get(
+            self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.ctrl_sequence_of_oper.name, 0xFF
             ),
             [HVACMode.OFF],
@@ -606,20 +608,20 @@ class Thermostat(PlatformEntity):
         temp = None
         if self.hvac_mode == HVACMode.COOL:
             if self.preset_mode == Preset.AWAY:
-                temp = self._thermostat_get(
+                temp = self._get_thermostat_attr(
                     ThermostatCluster.AttributeDefs.unoccupied_cooling_setpoint.name
                 )
             else:
-                temp = self._thermostat_get(
+                temp = self._get_thermostat_attr(
                     ThermostatCluster.AttributeDefs.occupied_cooling_setpoint.name
                 )
         elif self.hvac_mode == HVACMode.HEAT:
             if self.preset_mode == Preset.AWAY:
-                temp = self._thermostat_get(
+                temp = self._get_thermostat_attr(
                     ThermostatCluster.AttributeDefs.unoccupied_heating_setpoint.name
                 )
             else:
-                temp = self._thermostat_get(
+                temp = self._get_thermostat_attr(
                     ThermostatCluster.AttributeDefs.occupied_heating_setpoint.name
                 )
         if temp is None:
@@ -632,11 +634,11 @@ class Thermostat(PlatformEntity):
         if self.hvac_mode != HVACMode.HEAT_COOL:
             return None
         if self.preset_mode == Preset.AWAY:
-            temp = self._thermostat_get(
+            temp = self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.unoccupied_cooling_setpoint.name
             )
         else:
-            temp = self._thermostat_get(
+            temp = self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.occupied_cooling_setpoint.name
             )
 
@@ -651,11 +653,11 @@ class Thermostat(PlatformEntity):
         if self.hvac_mode != HVACMode.HEAT_COOL:
             return None
         if self.preset_mode == Preset.AWAY:
-            temp = self._thermostat_get(
+            temp = self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.unoccupied_heating_setpoint.name
             )
         else:
-            temp = self._thermostat_get(
+            temp = self._get_thermostat_attr(
                 ThermostatCluster.AttributeDefs.occupied_heating_setpoint.name
             )
 
@@ -943,7 +945,7 @@ class SinopeTechnologiesThermostat(Thermostat):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs,
@@ -999,7 +1001,7 @@ class SinopeTechnologiesThermostat(Thermostat):
     def _rm_rs_action(self) -> HVACAction:
         """Return the current HVAC action based on running mode and running state."""
 
-        running_mode = self._thermostat_get(
+        running_mode = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.running_mode.name
         )
         if running_mode == SystemMode.Heat:
@@ -1007,7 +1009,7 @@ class SinopeTechnologiesThermostat(Thermostat):
         if running_mode == SystemMode.Cool:
             return HVACAction.COOLING
 
-        running_state = self._thermostat_get(
+        running_state = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.running_state.name
         )
         if running_state and running_state & (
@@ -1325,7 +1327,7 @@ class ZehnderThermostat(Thermostat):
     @property
     def state(self) -> dict[str, Any]:
         """Get the state of the lock."""
-        thermostat_system_mode = self._thermostat_get(
+        thermostat_system_mode = self._get_thermostat_attr(
             ThermostatCluster.AttributeDefs.system_mode.name
         )
         system_mode = ZehnderThermostat.ZEHNDER_SYSTEM_MODE_2_HVAC.get(
@@ -1346,7 +1348,7 @@ class ZehnderThermostat(Thermostat):
     def hvac_mode(self) -> HVACMode | None:
         """Return HVAC operation mode."""
         return ZehnderThermostat.ZEHNDER_SYSTEM_MODE_2_HVAC.get(
-            self._thermostat_get(ThermostatCluster.AttributeDefs.system_mode.name)
+            self._get_thermostat_attr(ThermostatCluster.AttributeDefs.system_mode.name)
         )
 
 

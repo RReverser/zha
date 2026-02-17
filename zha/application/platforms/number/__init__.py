@@ -190,7 +190,7 @@ class AnalogOutputNumber(BaseNumber):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -292,7 +292,7 @@ class NumberConfigurationEntity(BaseNumber):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,

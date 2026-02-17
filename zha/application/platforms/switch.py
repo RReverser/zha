@@ -157,7 +157,7 @@ class Switch(PlatformEntity, BaseSwitch):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -266,7 +266,7 @@ class BinaryOutputSwitch(PlatformEntity, BaseSwitch):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -425,7 +425,7 @@ class ConfigurableAttributeSwitch(PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         *,

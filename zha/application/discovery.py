@@ -50,12 +50,12 @@ from zha.application.platforms import (  # noqa: F401 pylint: disable=unused-imp
     update,
 )
 from zha.zigbee.cluster_policies import ENTITYLESS_CONFIGURE_REQUIRED_CLUSTER_IDS
-from zha.zigbee.group import Group
 
 if TYPE_CHECKING:
     from zha.application.platforms import GroupEntity
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
+    from zha.zigbee.group import Group
 
 _LOGGER = logging.getLogger(__name__)
 

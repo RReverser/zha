@@ -84,7 +84,7 @@ class EnumSelectEntity(PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -199,7 +199,7 @@ class ZCLEnumSelectEntity(PlatformEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,

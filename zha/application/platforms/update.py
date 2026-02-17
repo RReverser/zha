@@ -301,7 +301,7 @@ class FirmwareUpdateEntity(BaseFirmwareUpdateEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
@@ -359,7 +359,7 @@ class FirmwareUpdateServerEntity(BaseFirmwareUpdateEntity):
 
     def __init__(
         self,
-        clusters: list[Any],
+        clusters: list[Cluster],
         endpoint: Endpoint,
         device: Device,
         **kwargs: Any,
