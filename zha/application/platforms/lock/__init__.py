@@ -119,9 +119,6 @@ class DoorLock(PlatformEntity):
                     "code_slot": args[2] + 1,
                 },
             )
-            return
-
-        self.endpoint.emit_cluster_zha_event(cluster, command_name, args or [])
 
     @property
     def state(self) -> dict[str, Any]:

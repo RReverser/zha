@@ -20,6 +20,7 @@ from zigpy.zcl.clusters.general import AnalogOutput, Basic, LevelControl
 from zigpy.zcl.clusters.hvac import Thermostat
 from zigpy.zcl.clusters.lighting import Color
 from zigpy.zcl.clusters.measurement import OccupancySensing
+from zigpy.zcl.clusters.security import IasZone
 
 from zha.application import Platform
 from zha.application.helpers import safe_read, safe_write_attributes
@@ -300,6 +301,11 @@ class NumberConfigurationEntity(BaseNumber):
         """Init this number configuration entity."""
         super().__init__(clusters, endpoint, device, **kwargs)
         self._cluster = clusters[0]
+        self.add_entity_init_attr(
+            cluster_name=endpoint.resolve_cluster_name(self._cluster),
+            attr=self._attribute_name,
+            use_cache=True,
+        )
 
     def _is_supported(self) -> bool:
         """Return if the entity is supported for the device, internal."""
@@ -421,6 +427,35 @@ class AqaraMotionDetectionInterval(NumberConfigurationEntity):
         in_clusters=frozenset({"opple_cluster"}),
         models=frozenset({"lumi.motion.ac02", "lumi.motion.agl04"}),
     )
+
+    def _sync_ias_zone_reset_s(self, value: Any | None) -> None:
+        """Keep IAS Zone reset delay in sync with detection interval."""
+        if value is None:
+            return
+
+        ias_zone = self.endpoint.in_clusters_by_name.get(IasZone.ep_attribute)
+        if ias_zone is None or not hasattr(ias_zone, "reset_s"):
+            return
+
+        ias_zone.reset_s = int(value)
+
+    def on_add(self) -> None:
+        """Initialize entity."""
+        super().on_add()
+        if self._attribute_name in self._cluster.attributes_by_name:
+            self._sync_ias_zone_reset_s(self._cluster.get(self._attribute_name))
+
+    def handle_cluster_attribute_updated(
+        self,
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
+    ) -> None:
+        """Handle value update from cluster."""
+        super().handle_cluster_attribute_updated(event)
+        if event.attribute_name == self._attribute_name:
+            self._sync_ias_zone_reset_s(event.value)
 
 
 @register_entity(LevelControl.cluster_id)

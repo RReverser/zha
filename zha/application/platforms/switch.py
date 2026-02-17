@@ -60,11 +60,11 @@ from zha.zigbee.const import (
     SINOPE_MANUFACTURER_CLUSTER,
     TUYA_MANUFACTURER_CLUSTER,
 )
-from zha.zigbee.group import Group
 
 if TYPE_CHECKING:
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
+    from zha.zigbee.group import Group
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -458,6 +458,18 @@ class ConfigurableAttributeSwitch(PlatformEntity):
             **kwargs,
             legacy_discovery_unique_id=legacy_discovery_unique_id,
         )
+        cluster_name = endpoint.resolve_cluster_name(self._cluster)
+        self.add_entity_init_attr(
+            cluster_name=cluster_name,
+            attr=self._attribute_name,
+            use_cache=True,
+        )
+        if self._inverter_attribute_name:
+            self.add_entity_init_attr(
+                cluster_name=cluster_name,
+                attr=self._inverter_attribute_name,
+                use_cache=True,
+            )
         for event_type in (
             AttributeReadEvent,
             AttributeReportedEvent,

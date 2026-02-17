@@ -14,6 +14,7 @@ from zigpy.zcl.clusters.general import LevelControl, OnOff, Ota
 from zigpy.zcl.clusters.security import IasZone
 
 from tests.common import create_mock_zigpy_device
+from zha.application import discovery
 from zha.application.const import ZHA_CLUSTER_MSG_BIND, ZHA_CLUSTER_MSG_CFG_RPT
 from zha.application.gateway import Gateway
 from zha.zigbee.endpoint import Endpoint
@@ -24,6 +25,7 @@ def _make_endpoint(
     *,
     in_clusters: list[int],
     out_clusters: list[int] | None = None,
+    profile_id: int | None = zigpy.profiles.zha.PROFILE_ID,
 ) -> tuple[Endpoint, Any]:
     """Create an endpoint backed by patched test clusters."""
     zigpy_dev = create_mock_zigpy_device(
@@ -33,7 +35,7 @@ def _make_endpoint(
                 SIG_EP_INPUT: in_clusters,
                 SIG_EP_OUTPUT: out_clusters or [],
                 SIG_EP_TYPE: zigpy.profiles.zha.DeviceType.ON_OFF_SWITCH,
-                SIG_EP_PROFILE: zigpy.profiles.zha.PROFILE_ID,
+                SIG_EP_PROFILE: profile_id,
             }
         },
         ieee="00:11:22:33:44:55:66:77",
@@ -343,3 +345,72 @@ def test_endpoint_suppresses_ota_client_attribute_events(zha_gateway: Gateway) -
         ),
     )
     assert endpoint.device.emit_zha_event.call_count == 1
+
+
+def test_endpoint_suppresses_fc31_client_attribute_events(zha_gateway: Gateway) -> None:
+    """FC31 client attribute updates should not emit zha_events from endpoint."""
+    endpoint, zigpy_ep = _make_endpoint(
+        zha_gateway,
+        in_clusters=[],
+        out_clusters=[OnOff.cluster_id, 0xFC31],
+    )
+    fc31_cluster = zigpy_ep.out_clusters[0xFC31]
+    on_off_cluster = zigpy_ep.out_clusters[OnOff.cluster_id]
+
+    endpoint._handle_client_attribute_event(
+        fc31_cluster,
+        SimpleNamespace(
+            attribute_id=0x0001,
+            attribute_name="notification_type",
+            value=5,
+        ),
+    )
+    assert endpoint.device.emit_zha_event.call_count == 0
+
+    endpoint._handle_client_attribute_event(
+        on_off_cluster,
+        SimpleNamespace(
+            attribute_id=OnOff.AttributeDefs.on_off.id,
+            attribute_name=OnOff.AttributeDefs.on_off.name,
+            value=False,
+        ),
+    )
+    assert endpoint.device.emit_zha_event.call_count == 1
+
+
+def test_unsupported_profile_endpoint_does_not_attach_listeners(
+    zha_gateway: Gateway,
+) -> None:
+    """Unsupported profile endpoints should not attach command or attr listeners."""
+    endpoint, zigpy_ep = _make_endpoint(
+        zha_gateway,
+        in_clusters=[OnOff.cluster_id],
+        out_clusters=[OnOff.cluster_id],
+        profile_id=0xC105,
+    )
+    in_cluster = zigpy_ep.in_clusters[OnOff.cluster_id]
+    out_cluster = zigpy_ep.out_clusters[OnOff.cluster_id]
+
+    assert endpoint._cluster_listeners == []
+    assert endpoint._cluster_event_unsubs == []
+
+    out_cluster.listener_event("cluster_command", 1, OnOff.ServerCommandDefs.on.id, [])
+    in_cluster.listener_event("cluster_command", 1, 0, [])
+
+    assert endpoint.device.emit_zha_event.call_count == 0
+
+
+def test_output_only_entityless_policy_cluster_is_not_claimed(
+    zha_gateway: Gateway,
+) -> None:
+    """Entityless configure-required policy should apply to input clusters only."""
+    endpoint, zigpy_ep = _make_endpoint(
+        zha_gateway,
+        in_clusters=[],
+        out_clusters=[0xEF00],
+    )
+    cluster = zigpy_ep.out_clusters[0xEF00]
+
+    assert not endpoint.is_cluster_claimed(cluster)
+    assert list(discovery.discover_entities_for_endpoint(endpoint)) == []
+    assert not endpoint.is_cluster_claimed(cluster)

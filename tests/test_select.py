@@ -108,6 +108,30 @@ class MotionSensitivityQuirk(CustomDevice):
     }
 
 
+class MotionSensitivityNoCacheQuirk(CustomDevice):
+    """Quirk with motion sensitivity attribute and no cached value."""
+
+    class OppleCluster(CustomCluster, ManufacturerSpecificCluster):
+        """Aqara manufacturer specific cluster."""
+
+        cluster_id = 0xFCC0
+        ep_attribute = "opple_cluster"
+        attributes = {
+            0x010C: ("motion_sensitivity", t.uint8_t, True),
+        }
+
+    replacement = {
+        ENDPOINTS: {
+            1: {
+                PROFILE_ID: zha.PROFILE_ID,
+                DEVICE_TYPE: zha.DeviceType.OCCUPANCY_SENSOR,
+                INPUT_CLUSTERS: [general.Basic.cluster_id, OppleCluster],
+                OUTPUT_CLUSTERS: [],
+            },
+        }
+    }
+
+
 async def test_on_off_select_attribute_report(zha_gateway: Gateway) -> None:
     """Test ZHA attribute report parsing for select platform."""
 
@@ -137,6 +161,48 @@ async def test_on_off_select_attribute_report(zha_gateway: Gateway) -> None:
         zha_gateway, cluster, {"motion_sensitivity": AqaraMotionSensitivities.Low}
     )
     assert entity.state["state"] == AqaraMotionSensitivities.Low.name
+
+
+async def test_select_config_entity_bootstraps_support_attr_on_cold_start(
+    zha_gateway: Gateway,
+) -> None:
+    """Select config entities should be discovered from init reads on cold start."""
+    zigpy_device = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_INPUT: [general.Basic.cluster_id],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zha.DeviceType.OCCUPANCY_SENSOR,
+                SIG_EP_PROFILE: zha.PROFILE_ID,
+            }
+        },
+        manufacturer="LUMI",
+        model="lumi.motion.ac02",
+        quirk=MotionSensitivityNoCacheQuirk,
+    )
+    cluster = zigpy_device.endpoints[1].opple_cluster
+    cluster.PLUGGED_ATTR_READS = {
+        "motion_sensitivity": AqaraMotionSensitivities.High,
+    }
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    entity = get_entity(
+        zha_device,
+        platform=Platform.SELECT,
+        qualifier="motion_sensitivity",
+    )
+
+    assert entity.state["state"] == AqaraMotionSensitivities.High.name
+    assert (
+        call(
+            ["motion_sensitivity"],
+            allow_cache=True,
+            only_cache=False,
+            manufacturer=UNDEFINED,
+        )
+        in cluster.read_attributes.call_args_list
+    )
 
 
 (

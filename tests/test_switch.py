@@ -366,6 +366,32 @@ class WindowDetectionFunctionQuirk(CustomDevice):
     }
 
 
+class WindowDetectionFunctionNoCacheQuirk(CustomDevice):
+    """Quirk with window detection attributes and no cached values."""
+
+    class TuyaManufCluster(CustomCluster, ManufacturerSpecificCluster):
+        """Tuya manufacturer specific cluster."""
+
+        cluster_id = 0xEF00
+        ep_attribute = "tuya_manufacturer"
+
+        attributes = {
+            0xEF01: ("window_detection_function", t.Bool),
+            0xEF02: ("window_detection_function_inverter", t.Bool),
+        }
+
+    replacement = {
+        ENDPOINTS: {
+            1: {
+                PROFILE_ID: zha.PROFILE_ID,
+                DEVICE_TYPE: zha.DeviceType.ON_OFF_SWITCH,
+                INPUT_CLUSTERS: [general.Basic.cluster_id, TuyaManufCluster],
+                OUTPUT_CLUSTERS: [],
+            },
+        }
+    }
+
+
 async def test_switch_configurable(
     zha_gateway: Gateway,
 ) -> None:
@@ -478,6 +504,44 @@ async def test_switch_configurable(
     assert cluster.write_attributes.mock_calls == [
         call({"window_detection_function": False}, manufacturer=UNDEFINED)
     ]
+
+
+async def test_switch_config_entity_bootstraps_support_attrs_on_cold_start(
+    zha_gateway: Gateway,
+) -> None:
+    """Switch config entities should be discovered from init reads on cold start."""
+    zigpy_dev = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_INPUT: [general.Basic.cluster_id],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zha.DeviceType.ON_OFF_SWITCH,
+                SIG_EP_PROFILE: zha.PROFILE_ID,
+            }
+        },
+        manufacturer="_TZE200_b6wax7g0",
+        quirk=WindowDetectionFunctionNoCacheQuirk,
+    )
+    cluster = zigpy_dev.endpoints[1].tuya_manufacturer
+    cluster.PLUGGED_ATTR_READS = {
+        "window_detection_function": False,
+        "window_detection_function_inverter": t.Bool(True),
+    }
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    entity = get_entity(zha_device, platform=Platform.SWITCH)
+
+    assert bool(entity.state["state"]) is True
+    assert (
+        call(
+            ["window_detection_function", "window_detection_function_inverter"],
+            allow_cache=True,
+            only_cache=False,
+            manufacturer=UNDEFINED,
+        )
+        in cluster.read_attributes.call_args_list
+    )
 
 
 async def test_switch_configurable_custom_on_off_values(zha_gateway: Gateway) -> None:

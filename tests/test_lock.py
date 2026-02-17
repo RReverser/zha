@@ -128,6 +128,33 @@ async def test_lock_operation_event_notification_emits_zha_event(
     }
 
 
+async def test_lock_non_operation_event_notification_does_not_emit_zha_event(
+    zha_gateway: Gateway,
+) -> None:
+    """Non-operation door lock commands should not emit zha_events."""
+    zigpy_device = create_mock_zigpy_device(zha_gateway, ZIGPY_LOCK)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    cluster = zigpy_device.endpoints[1].door_lock
+    listener = Mock()
+    zha_device.on_all_events(listener)
+
+    cluster.listener_event(
+        "cluster_command",
+        1,
+        closures.DoorLock.ClientCommandDefs.programming_event_notification.id,
+        [],
+    )
+    await zha_gateway.async_block_till_done()
+
+    zha_events = [
+        event_call.args[0]
+        for event_call in listener.mock_calls
+        if event_call.args
+        and getattr(event_call.args[0], "event_type", None) == "zha_event"
+    ]
+    assert zha_events == []
+
+
 async def async_lock(
     zha_gateway: Gateway,
     cluster: closures.DoorLock,

@@ -84,6 +84,7 @@ CLIENT_COMMAND_SUPPRESSED_CLUSTER_IDS: Final[frozenset[int]] = frozenset(
 CLIENT_ATTRIBUTE_EVENT_SUPPRESSED_CLUSTER_IDS: Final[frozenset[int]] = frozenset(
     {
         Ota.cluster_id,
+        0xFC31,  # InovelliNotification client
     }
 )
 
@@ -172,11 +173,13 @@ class Endpoint:
         profile_id = self._zigpy_endpoint.profile_id
         if profile_id is None:
             _LOGGER.debug("Skipping endpoint, profile is None")
+            return
         elif profile_id not in (ZLL_PROFILE_ID, ZHA_PROFILE_ID):
             _LOGGER.debug(
                 "Skipping endpoint, profile is not ZLL or ZHA: 0x%04X",
                 profile_id,
             )
+            return
 
         self._attach_cluster_listeners()
         self._set_device_core_clusters()

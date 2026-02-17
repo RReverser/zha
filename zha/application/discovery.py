@@ -531,9 +531,7 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
 
     # Claim remaining clusters that don't produce entities but still require
     # lifecycle configuration for bare events and setup.
-    for cluster in itertools.chain(
-        endpoint.in_clusters_by_name.values(), endpoint.out_clusters_by_name.values()
-    ):
+    for cluster in endpoint.in_clusters_by_name.values():
         if (
             not endpoint.is_cluster_claimed(cluster)
             and cluster.cluster_id in ENTITYLESS_CONFIGURE_REQUIRED_CLUSTER_IDS

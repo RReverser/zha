@@ -63,11 +63,11 @@ from zha.zigbee.const import (
     REPORT_CONFIG_IMMEDIATE,
     REPORT_CONFIG_OP,
 )
-from zha.zigbee.group import Group
 
 if TYPE_CHECKING:
     from zha.zigbee.device import Device
     from zha.zigbee.endpoint import Endpoint
+    from zha.zigbee.group import Group
 
 
 @dataclass(frozen=True, kw_only=True)

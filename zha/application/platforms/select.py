@@ -207,6 +207,11 @@ class ZCLEnumSelectEntity(PlatformEntity):
         """Init this select entity."""
         super().__init__(clusters, endpoint, device, **kwargs)
         self._cluster = cast(Cluster, clusters[0])
+        self.add_entity_init_attr(
+            cluster_name=endpoint.resolve_cluster_name(self._cluster),
+            attr=self._attribute_name,
+            use_cache=True,
+        )
         self._attr_options = [entry.name.replace("_", " ") for entry in self._enum]
 
     def on_add(self) -> None:

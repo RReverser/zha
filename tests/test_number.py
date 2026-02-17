@@ -3,12 +3,22 @@
 from unittest.mock import call
 
 import pytest
+from zhaquirks import (
+    DEVICE_TYPE,
+    ENDPOINTS,
+    INPUT_CLUSTERS,
+    OUTPUT_CLUSTERS,
+    PROFILE_ID,
+)
 from zigpy.device import Device as ZigpyDevice
 from zigpy.exceptions import ZigbeeException
 from zigpy.profiles import zha
+from zigpy.quirks import CustomCluster, CustomDevice
 import zigpy.types
+import zigpy.types as t
 from zigpy.typing import UNDEFINED
-from zigpy.zcl.clusters import general, lighting
+from zigpy.zcl.clusters import general, lighting, security
+from zigpy.zcl.clusters.manufacturer_specific import ManufacturerSpecificCluster
 import zigpy.zdo.types as zdo_t
 
 from tests.common import (
@@ -21,6 +31,7 @@ from tests.common import (
     join_zigpy_device,
     send_attributes_report,
     update_attribute_cache,
+    zigpy_device_from_json,
 )
 from zha.application import Platform
 from zha.application.gateway import Gateway
@@ -36,6 +47,34 @@ ZIGPY_ANALOG_OUTPUT_DEVICE = {
         SIG_EP_PROFILE: zha.PROFILE_ID,
     }
 }
+
+
+class AqaraDetectionIntervalNoCacheQuirk(CustomDevice):
+    """Quirk with no pre-populated detection interval cache."""
+
+    class OppleCluster(CustomCluster, ManufacturerSpecificCluster):
+        """Aqara manufacturer specific cluster."""
+
+        cluster_id = 0xFCC0
+        ep_attribute = "opple_cluster"
+        attributes = {
+            0x0102: ("detection_interval", t.uint8_t, True),
+        }
+
+    replacement = {
+        ENDPOINTS: {
+            1: {
+                PROFILE_ID: zha.PROFILE_ID,
+                DEVICE_TYPE: zha.DeviceType.OCCUPANCY_SENSOR,
+                INPUT_CLUSTERS: [
+                    general.Basic.cluster_id,
+                    security.IasZone.cluster_id,
+                    OppleCluster,
+                ],
+                OUTPUT_CLUSTERS: [],
+            },
+        }
+    }
 
 
 async def light_mock(zha_gateway: Gateway) -> ZigpyDevice:
@@ -443,3 +482,89 @@ async def test_color_number(
     )
     await zha_gateway.async_block_till_done()
     assert entity.state["state"] == initial_value
+
+
+async def test_number_config_entity_bootstraps_support_attr_on_cold_start(
+    zha_gateway: Gateway,
+) -> None:
+    """Number config entities should be discovered from init reads on cold start."""
+    zigpy_dev = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_INPUT: [general.Basic.cluster_id, security.IasZone.cluster_id],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zha.DeviceType.OCCUPANCY_SENSOR,
+                SIG_EP_PROFILE: zha.PROFILE_ID,
+            }
+        },
+        manufacturer="LUMI",
+        model="lumi.motion.ac02",
+        quirk=AqaraDetectionIntervalNoCacheQuirk,
+    )
+    cluster = zigpy_dev.endpoints[1].opple_cluster
+    cluster.PLUGGED_ATTR_READS = {"detection_interval": 11}
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    entity = get_entity(
+        zha_device,
+        platform=Platform.NUMBER,
+        qualifier="detection_interval",
+    )
+
+    assert entity.state["state"] == 11
+    assert (
+        call(
+            ["detection_interval"],
+            allow_cache=True,
+            only_cache=False,
+            manufacturer=UNDEFINED,
+        )
+        in cluster.read_attributes.call_args_list
+    )
+
+
+async def test_aqara_detection_interval_initializes_ias_zone_reset_s(
+    zha_gateway: Gateway,
+) -> None:
+    """Detection interval should initialize IAS Zone reset_s on join."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/lumi-lumi-motion-agl04.json",
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    detection_interval = zigpy_dev.endpoints[1].opple_cluster.get("detection_interval")
+    ias_zone = zigpy_dev.endpoints[1].ias_zone
+    entity = get_entity(
+        zha_device,
+        platform=Platform.NUMBER,
+        qualifier="detection_interval",
+    )
+
+    assert detection_interval is not None
+    assert entity.state["state"] == detection_interval
+    assert ias_zone.reset_s == detection_interval
+
+
+async def test_aqara_detection_interval_updates_ias_zone_reset_s(
+    zha_gateway: Gateway,
+) -> None:
+    """Detection interval updates should keep IAS Zone reset_s in sync."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/lumi-lumi-motion-agl04.json",
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    cluster = zigpy_dev.endpoints[1].opple_cluster
+    ias_zone = zigpy_dev.endpoints[1].ias_zone
+    entity = get_entity(
+        zha_device,
+        platform=Platform.NUMBER,
+        qualifier="detection_interval",
+    )
+
+    await send_attributes_report(zha_gateway, cluster, {"detection_interval": 22})
+    await zha_gateway.async_block_till_done()
+
+    assert entity.state["state"] == 22
+    assert ias_zone.reset_s == 22
