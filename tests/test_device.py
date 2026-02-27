@@ -637,6 +637,37 @@ async def test_issue_cluster_command(
         assert cluster.request.await_args.kwargs["manufacturer"] == 0x1234
 
 
+async def test_issue_cluster_command_args_path_forwards_manufacturer(
+    zha_gateway: Gateway,
+) -> None:
+    """Test issue_cluster_command forwards manufacturer when using args."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster_handler=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    cluster = zigpy_dev.endpoints[3].on_off
+
+    with patch("zigpy.zcl.Cluster.request", return_value=[0x5, Status.SUCCESS]):
+        # Issue being validated:
+        # The deprecated `args` code path in issue_cluster_command() can bypass
+        # manufacturer forwarding even when a manufacturer code is provided.
+        #
+        # Why this is a problem:
+        # Integrations that still use the args path for compatibility may emit
+        # manufacturer-specific commands without manufacturer framing, causing
+        # hard-to-diagnose command failures on affected devices.
+        await zha_device.issue_cluster_command(
+            3,
+            general.OnOff.cluster_id,
+            general.OnOff.ServerCommandDefs.on.id,
+            CLUSTER_COMMAND_SERVER,
+            [],
+            None,
+            manufacturer=0x1234,
+        )
+
+        assert cluster.request.await_count == 1
+        assert cluster.request.await_args.kwargs["manufacturer"] == 0x1234
+
+
 async def test_async_add_to_group_remove_from_group(
     zha_gateway: Gateway,
     caplog: pytest.LogCaptureFixture,
@@ -1431,6 +1462,35 @@ async def test_async_initialize_does_not_mark_initialized_if_endpoint_init_fails
         assert zha_device.status is DeviceStatus.CREATED
     finally:
         await zha_device.on_remove()
+
+
+async def test_async_initialize_logs_stale_pending_entity_cleanup_failure(
+    zha_gateway: Gateway,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test stale pending-entity cleanup failures are logged and tolerated."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster_handler=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    stale_pending_entity = mock.Mock()
+    stale_pending_entity.on_remove = mock.AsyncMock(
+        side_effect=RuntimeError("stale pending cleanup failed")
+    )
+    zha_device._pending_entities.append(stale_pending_entity)
+
+    # Issue being validated:
+    # async_initialize() first drains stale pending entities from a previous pass.
+    # If stale entity cleanup raises, the failure must be logged instead of
+    # aborting initialization.
+    #
+    # Why this is a problem:
+    # A single stale entity teardown error can otherwise prevent all future
+    # initialization work for the device, leaving discovery and entity lifecycle
+    # in a partially initialized state.
+    await zha_device.async_initialize(from_cache=False)
+
+    assert "Failed to remove stale pending entity" in caplog.text
+    assert "stale pending cleanup failed" in caplog.text
 
 
 async def test_platform_entity_on_remove_callback_failure_does_not_abort_cleanup(
