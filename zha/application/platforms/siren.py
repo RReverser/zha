@@ -184,7 +184,10 @@ class Siren(BaseSiren):
     ) -> None:
         """Turn on siren."""
         if self._off_listener:
-            self._off_listener.cancel()
+            off_listener = self._off_listener
+            off_listener.cancel()
+            with contextlib.suppress(ValueError):
+                self._tracked_handles.remove(off_listener)
             self._off_listener = None
         tone_cache = self._cluster_handler.data_cache.get(
             IasWd.Warning.WarningMode.__name__
