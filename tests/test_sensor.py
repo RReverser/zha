@@ -2190,3 +2190,65 @@ async def test_ubisys_polled_em_keeps_polling_when_disabled(
     # Polling task must still be running (no duplicate created)
     assert entity._polling_task is not None
     assert not entity._polling_task.done()
+
+
+async def test_pollable_sensor_enable_non_idempotent_disable_leaves_orphan_poll_task(
+    zha_gateway: Gateway,
+) -> None:
+    """Test PollableSensor enable/disable lifecycle is idempotent."""
+    zigpy_device = elec_measurement_zigpy_device_mock(zha_gateway)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    entity = get_entity(
+        zha_device,
+        platform=Platform.SENSOR,
+        exact_entity_type=sensor.PolledElectricalMeasurement,
+    )
+
+    assert entity._polling_task is not None
+
+    first_task: asyncio.Task | None = None
+    second_task: asyncio.Task | None = None
+
+    # Issue being validated:
+    # PollableSensor.enable() always calls maybe_start_polling() and does not guard
+    # against an existing polling task, so repeated enable() calls create extra tasks.
+    # PollableSensor.disable() then only cancels/removes self._polling_task (latest).
+    #
+    # Why this is a problem:
+    # A stale poll task can outlive disable(), continue background work, and leak task
+    # ownership because only the newest handle is tracked for cancellation.
+    try:
+        # Reset baseline from on_add() auto-started polling.
+        entity.disable()
+        await asyncio.sleep(0)
+
+        entity.enable()
+        first_task = entity._polling_task
+        assert first_task is not None
+        assert not first_task.done()
+
+        entity.enable()
+        second_task = entity._polling_task
+        assert second_task is not None
+        assert second_task is first_task
+        assert not second_task.done()
+
+        entity.disable()
+        await asyncio.sleep(0)
+
+        assert first_task.cancelled()
+        assert second_task.cancelled()
+        assert first_task not in entity._tracked_tasks
+        assert second_task not in entity._tracked_tasks
+    finally:
+        for task in (first_task, second_task):
+            if task is None:
+                continue
+            if task in entity._tracked_tasks:
+                entity._tracked_tasks.remove(task)
+            if not task.done():
+                task.cancel()
+        await asyncio.gather(
+            *(task for task in (first_task, second_task) if task is not None),
+            return_exceptions=True,
+        )

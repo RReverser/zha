@@ -418,18 +418,27 @@ class PollableSensor(Sensor):
 
     def maybe_start_polling(self) -> None:
         """Start polling if necessary."""
-        if self.should_poll:
-            self._polling_task = self.device.gateway.async_create_background_task(
-                self._refresh(),
-                name=f"sensor_state_poller_{self.unique_id}_{self.__class__.__name__}",
-                eager_start=True,
-                untracked=True,
-            )
-            self._tracked_tasks.append(self._polling_task)
-            self.debug(
-                "started polling with refresh interval of %s",
-                getattr(self, "__polling_interval"),
-            )
+        if not self.should_poll:
+            return
+
+        if self._polling_task and not self._polling_task.done():
+            return
+
+        if self._polling_task and self._polling_task.done():
+            with contextlib.suppress(ValueError):
+                self._tracked_tasks.remove(self._polling_task)
+
+        self._polling_task = self.device.gateway.async_create_background_task(
+            self._refresh(),
+            name=f"sensor_state_poller_{self.unique_id}_{self.__class__.__name__}",
+            eager_start=True,
+            untracked=True,
+        )
+        self._tracked_tasks.append(self._polling_task)
+        self.debug(
+            "started polling with refresh interval of %s",
+            getattr(self, "__polling_interval"),
+        )
 
     def enable(self) -> None:
         """Enable the entity."""
@@ -440,7 +449,8 @@ class PollableSensor(Sensor):
         """Disable the entity."""
         super().disable()
         if self._polling_task:
-            self._tracked_tasks.remove(self._polling_task)
+            with contextlib.suppress(ValueError):
+                self._tracked_tasks.remove(self._polling_task)
             self._polling_task.cancel()
             self._polling_task = None
 
