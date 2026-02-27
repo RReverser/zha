@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from asyncio import Task
+import contextlib
 from dataclasses import dataclass
 import datetime as dt
 import functools
@@ -591,23 +592,23 @@ class Thermostat(BaseThermostat):
         if self.hvac_mode == HVACMode.HEAT_COOL:
             if target_temp_low is not None:
                 await self._thermostat_cluster_handler.async_set_heating_setpoint(
-                    temperature=int(target_temp_low * ZCL_TEMP),
+                    temperature=round(target_temp_low * ZCL_TEMP),
                     is_away=is_away,
                 )
             if target_temp_high is not None:
                 await self._thermostat_cluster_handler.async_set_cooling_setpoint(
-                    temperature=int(target_temp_high * ZCL_TEMP),
+                    temperature=round(target_temp_high * ZCL_TEMP),
                     is_away=is_away,
                 )
         elif temperature is not None:
             if self.hvac_mode == HVACMode.COOL:
                 await self._thermostat_cluster_handler.async_set_cooling_setpoint(
-                    temperature=int(temperature * ZCL_TEMP),
+                    temperature=round(temperature * ZCL_TEMP),
                     is_away=is_away,
                 )
             elif self.hvac_mode == HVACMode.HEAT:
                 await self._thermostat_cluster_handler.async_set_heating_setpoint(
-                    temperature=int(temperature * ZCL_TEMP),
+                    temperature=round(temperature * ZCL_TEMP),
                     is_away=is_away,
                 )
             else:
@@ -665,6 +666,11 @@ class SinopeTechnologiesThermostat(Thermostat):
 
     def start_polling(self) -> None:
         """Start polling."""
+        if self._time_update_task and not (
+            self._time_update_task.done() or self._time_update_task.cancelled()
+        ):
+            return
+
         self._time_update_task = self.device.gateway.async_create_background_task(
             self._update_time(),
             name=f"sinope_time_updater_{self.unique_id}",
@@ -686,7 +692,8 @@ class SinopeTechnologiesThermostat(Thermostat):
         """Disable the entity."""
         super().disable()
         if self._time_update_task:
-            self._tracked_tasks.remove(self._time_update_task)
+            with contextlib.suppress(ValueError):
+                self._tracked_tasks.remove(self._time_update_task)
             self._time_update_task.cancel()
             self._time_update_task = None
 
