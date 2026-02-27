@@ -2241,6 +2241,45 @@ async def test_light_enable_second_pass_is_idempotent_for_polling_tasks(
             )
 
 
+async def test_light_start_polling_replaces_completed_refresh_task(
+    zha_gateway: Gateway,
+) -> None:
+    """Test completed refresh task handles are replaced cleanly."""
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+
+    # Reset baseline from entity setup.
+    entity.disable()
+    await asyncio.sleep(0)
+
+    completed_task = asyncio.create_task(asyncio.sleep(0))
+    await completed_task
+    entity._refresh_task = completed_task
+    entity._tracked_tasks.append(completed_task)
+
+    # Issue being validated:
+    # start_polling() must clean up an already-finished refresh task before creating
+    # the replacement polling task.
+    #
+    # Why this is a problem:
+    # Leaving finished task handles in tracking state causes stale bookkeeping to
+    # accumulate and can desynchronize later disable/remove cleanup behavior.
+    replacement_task = None
+    try:
+        entity.start_polling()
+        replacement_task = entity._refresh_task
+
+        assert replacement_task is not None
+        assert replacement_task is not completed_task
+        assert completed_task not in entity._tracked_tasks
+        assert replacement_task in entity._tracked_tasks
+    finally:
+        entity.disable()
+        await asyncio.sleep(0)
+        if replacement_task and replacement_task in entity._tracked_tasks:
+            entity._tracked_tasks.remove(replacement_task)
+
+
 async def test_async_unsub_transition_listener_second_pass_removes_old_handle(
     zha_gateway: Gateway,
 ) -> None:
