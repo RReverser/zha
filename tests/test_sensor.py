@@ -2252,3 +2252,47 @@ async def test_pollable_sensor_enable_non_idempotent_disable_leaves_orphan_poll_
             *(task for task in (first_task, second_task) if task is not None),
             return_exceptions=True,
         )
+
+
+async def test_pollable_sensor_replaces_completed_polling_task(
+    zha_gateway: Gateway,
+) -> None:
+    """Test completed poll task handles are replaced cleanly."""
+    zigpy_device = elec_measurement_zigpy_device_mock(zha_gateway)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    entity = get_entity(
+        zha_device,
+        platform=Platform.SENSOR,
+        exact_entity_type=sensor.PolledElectricalMeasurement,
+    )
+
+    # Reset baseline from on_add() auto-started polling.
+    entity.disable()
+    await asyncio.sleep(0)
+
+    completed_task = asyncio.create_task(asyncio.sleep(0))
+    await completed_task
+    entity._polling_task = completed_task
+    entity._tracked_tasks.append(completed_task)
+
+    # Issue being validated:
+    # maybe_start_polling() must remove a completed poll task from tracking before
+    # creating the next task handle.
+    #
+    # Why this is a problem:
+    # Completed task handles left in _tracked_tasks can accumulate stale lifecycle
+    # state and interfere with deterministic cleanup in disable/remove paths.
+    replacement_task: asyncio.Task | None = None
+    try:
+        entity.maybe_start_polling()
+        replacement_task = entity._polling_task
+
+        assert replacement_task is not None
+        assert replacement_task is not completed_task
+        assert completed_task not in entity._tracked_tasks
+        assert replacement_task in entity._tracked_tasks
+    finally:
+        entity.disable()
+        await asyncio.sleep(0)
+        if replacement_task and replacement_task in entity._tracked_tasks:
+            entity._tracked_tasks.remove(replacement_task)
