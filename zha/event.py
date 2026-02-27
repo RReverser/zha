@@ -64,22 +64,14 @@ class EventBase:
         self, event_name: str, callback: Callable, with_context: bool = False
     ) -> Callable:
         """Listen for an event exactly once."""
-        if inspect.iscoroutinefunction(callback):
-
-            async def async_event_listener(*args, **kwargs) -> None:
-                unsub()
-                task = asyncio.create_task(callback(*args, **kwargs))
-                self._event_tasks.append(task)
-                task.add_done_callback(self._event_tasks.remove)
-
-            unsub = self.on_event(
-                event_name, async_event_listener, with_context=with_context
-            )
-            return unsub
 
         def event_listener(*args, **kwargs) -> None:
             unsub()
-            callback(*args, **kwargs)
+            call = callback(*args, **kwargs)
+            if inspect.isawaitable(call):
+                task: asyncio.Task[Any] = asyncio.create_task(call)
+                self._event_tasks.append(task)
+                task.add_done_callback(self._event_tasks.remove)
 
         unsub = self.on_event(event_name, event_listener, with_context=with_context)
         return unsub
@@ -100,8 +92,8 @@ class EventBase:
             else:
                 call = listener.callback(data)
 
-            if inspect.iscoroutinefunction(listener.callback):
-                task = asyncio.create_task(call)
+            if inspect.isawaitable(call):
+                task: asyncio.Task[Any] = asyncio.create_task(call)
                 self._event_tasks.append(task)
                 task.add_done_callback(self._event_tasks.remove)
 

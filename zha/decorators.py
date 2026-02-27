@@ -87,7 +87,7 @@ def periodic(refresh_interval: tuple, run_immediately=False) -> Callable:
                         asyncio.current_task(),
                         method_info,
                     )
-                    break
+                    raise
                 except Exception as ex:  # pylint: disable=broad-except
                     _LOGGER.warning(
                         "[%s] Failed to poll using method %s",

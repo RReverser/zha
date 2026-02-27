@@ -57,6 +57,9 @@ async def gather_with_limited_concurrency(
 
     From: https://stackoverflow.com/a/61478547/9127614
     """
+    if limit <= 0:
+        raise ValueError("limit must be > 0")
+
     semaphore = Semaphore(limit)
 
     async def sem_task(task: Awaitable[Any]) -> Any:
