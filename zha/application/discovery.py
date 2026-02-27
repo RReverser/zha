@@ -151,7 +151,14 @@ def discover_device_entities(device: Device) -> Iterator[BaseEntity]:
             endpoint.id,
         )
 
-        yield from discover_entities_for_endpoint(endpoint)
+        try:
+            yield from discover_entities_for_endpoint(endpoint)
+        except Exception:  # pylint: disable=broad-exception-caught
+            _LOGGER.exception(
+                "Failed to discover entities for endpoint %s on device %s",
+                endpoint.id,
+                str(device.ieee),
+            )
 
     yield from discover_quirks_v2_entities(device)
 
@@ -194,6 +201,15 @@ def discover_coordinator_device_entities(
 @ignore_exceptions_during_iteration
 def discover_group_entities(group: Group) -> Iterator[GroupEntity]:
     """Process a group and create any entities that are needed."""
+
+    def _schedule_group_entity_cleanup(group_entity: GroupEntity) -> None:
+        """Schedule lifecycle cleanup for an existing group entity."""
+        group.gateway.async_create_task(
+            group_entity.on_remove(),
+            name=f"zha.discovery-remove-group-entity-{group_entity.unique_id}",
+            eager_start=True,
+        )
+
     # only create a group entity if there are 2 or more members in a group
     if len(group.members) < 2:
         _LOGGER.debug(
@@ -201,7 +217,8 @@ def discover_group_entities(group: Group) -> Iterator[GroupEntity]:
             group.name,
             group.group_id,
         )
-        group.group_entities.clear()
+        for group_entity in tuple(group.group_entities.values()):
+            _schedule_group_entity_cleanup(group_entity)
         return
 
     # We only create groups with two or more devices
@@ -213,6 +230,15 @@ def discover_group_entities(group: Group) -> Iterator[GroupEntity]:
 
         for entity in member.associated_entities:
             platform_counts[entity.PLATFORM] += 1
+
+    eligible_platforms = {
+        platform for platform, count in platform_counts.items() if count >= 2
+    }
+
+    for group_entity in tuple(group.group_entities.values()):
+        if group_entity.PLATFORM in eligible_platforms:
+            continue
+        _schedule_group_entity_cleanup(group_entity)
 
     for platform, count in platform_counts.items():
         if count < 2:
