@@ -57,6 +57,7 @@ from zha.exceptions import ZHAException
 from zha.zigbee.device import (
     ClusterBinding,
     DeviceFirmwareInfoUpdatedEvent,
+    DeviceStatus,
     ZHAEvent,
     get_device_automation_triggers,
 )
@@ -612,6 +613,28 @@ async def test_issue_cluster_command(
         )
 
         assert cluster.request.await_count == 1
+
+        cluster.request.reset_mock()
+
+        # Issue being validated:
+        # issue_cluster_command() accepts a manufacturer argument but does not forward
+        # it to the underlying cluster command invocation.
+        #
+        # Why this is a problem:
+        # manufacturer-specific commands can be encoded incorrectly (or treated as
+        # non-manufacturer-specific), leading to silent command failures on devices
+        # that require manufacturer framing.
+        await zha_device.issue_cluster_command(
+            3,
+            general.OnOff.cluster_id,
+            general.OnOff.ServerCommandDefs.on.id,
+            CLUSTER_COMMAND_SERVER,
+            None,
+            {},
+            manufacturer=0x1234,
+        )
+        assert cluster.request.await_count == 1
+        assert cluster.request.await_args.kwargs["manufacturer"] == 0x1234
 
 
 async def test_async_add_to_group_remove_from_group(
@@ -1358,3 +1381,94 @@ async def test_device_on_remove_pending_entity_failure(
 
     assert "Failed to remove pending entity" in caplog.text
     assert "Pending entity removal failed" in caplog.text
+
+
+async def test_async_initialize_does_not_grow_pending_entities_between_passes(
+    zha_gateway: Gateway,
+) -> None:
+    """Test repeated initialize passes do not accumulate pending entities."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster_handler=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    initial_pending_count = len(zha_device._pending_entities)
+
+    # Issue being validated:
+    # repeated async_initialize() calls append entities into _pending_entities
+    # without clearing completed entries from prior passes.
+    #
+    # Why this is a problem:
+    # pending state should represent only the current discovery pass; growth across
+    # passes leaks lifecycle state and causes unnecessary entity churn over time.
+    await zha_device.async_initialize(from_cache=False)
+
+    assert len(zha_device._pending_entities) == initial_pending_count
+
+
+async def test_async_initialize_does_not_mark_initialized_if_endpoint_init_fails(
+    zha_gateway: Gateway,
+) -> None:
+    """Test endpoint init failure prevents initialized status."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster_handler=True)
+    zha_device = zha_gateway.get_or_create_device(zigpy_dev)
+
+    try:
+        assert zha_device.status is DeviceStatus.CREATED
+
+        endpoint = next(iter(zha_device.endpoints.values()))
+        with patch.object(
+            endpoint,
+            "async_initialize",
+            side_effect=RuntimeError("endpoint init failed"),
+        ):
+            # Issue being validated:
+            # endpoint initialization exceptions are swallowed during async_initialize(),
+            # then status is still moved to INITIALIZED.
+            #
+            # Why this is a problem:
+            # gateway rejoin logic keys off INITIALIZED status; a false-positive status
+            # transition can skip full initialization despite endpoint failure.
+            await zha_device.async_initialize(from_cache=False)
+
+        assert zha_device.status is DeviceStatus.CREATED
+    finally:
+        await zha_device.on_remove()
+
+
+async def test_platform_entity_on_remove_callback_failure_does_not_abort_cleanup(
+    zha_gateway: Gateway,
+) -> None:
+    """Test entity on_remove callback failures do not prevent task cleanup."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster_handler=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    entity = get_entity(zha_device, platform=Platform.SWITCH)
+
+    blocked: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+
+    async def _blocked_task() -> None:
+        await blocked
+
+    tracked_task: asyncio.Task[None] = asyncio.create_task(_blocked_task())
+    entity._tracked_tasks.append(tracked_task)
+
+    def failing_on_remove_callback() -> None:
+        raise RuntimeError("entity callback failure")
+
+    entity._on_remove_callbacks.append(failing_on_remove_callback)
+
+    # Issue being validated:
+    # BaseEntity.on_remove() executes callbacks without per-callback exception handling.
+    # A single callback failure aborts the rest of teardown immediately.
+    #
+    # Why this is a problem:
+    # entity-owned tasks/handles may remain active after partial teardown, leaking
+    # background work and causing unpredictable behavior during remove/shutdown flows.
+    try:
+        await entity.on_remove()
+
+        assert tracked_task.cancelled()
+        assert tracked_task not in entity._tracked_tasks
+    finally:
+        if not tracked_task.done():
+            tracked_task.cancel()
+        if tracked_task in entity._tracked_tasks:
+            entity._tracked_tasks.remove(tracked_task)
+        await asyncio.gather(tracked_task, return_exceptions=True)

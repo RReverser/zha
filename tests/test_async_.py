@@ -10,6 +10,7 @@ import pytest
 from zha import async_ as zha_async
 from zha.application.gateway import Gateway
 from zha.async_ import AsyncUtilMixin, ZHAJob, ZHAJobType, create_eager_task
+from zha.decorators import periodic
 
 
 @pytest.mark.parametrize("eager_start", [True, False])
@@ -450,6 +451,50 @@ async def test_gather_with_limited_concurrency() -> None:
     )
 
     assert results == [2, 2, -1, -1]
+
+
+async def test_gather_with_limited_concurrency_zero_limit_rejected() -> None:
+    """Test gather_with_limited_concurrency rejects a zero concurrency limit."""
+    task = asyncio.create_task(asyncio.sleep(0, result=1))
+
+    # Issue being validated:
+    # a limit of 0 builds Semaphore(0), so no wrapped task can ever acquire it.
+    # The call deadlocks instead of failing fast with an argument error.
+    #
+    # Why this is a problem:
+    # invalid configuration creates indefinite hangs and stuck shutdown paths instead
+    # of a clear ValueError that callers can handle immediately.
+    with pytest.raises(ValueError):
+        await asyncio.wait_for(
+            zha_async.gather_with_limited_concurrency(0, task),
+            timeout=0.05,
+        )
+
+
+async def test_periodic_cancellation_propagates() -> None:
+    """Test periodic-decorated tasks propagate cancellation."""
+    started = asyncio.Event()
+    release = asyncio.Event()
+
+    class Poller:
+        @periodic((1, 1), run_immediately=True)
+        async def poll(self) -> None:
+            started.set()
+            await release.wait()
+
+    # Issue being validated:
+    # periodic() catches CancelledError raised from inside the wrapped function and
+    # breaks the loop instead of re-raising.
+    #
+    # Why this is a problem:
+    # callers cannot observe real cancellation semantics (task is "finished" instead
+    # of "cancelled"), which breaks cancellation-aware orchestration and tests.
+    task = asyncio.create_task(Poller().poll())
+    await started.wait()
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
 
 
 async def test_create_eager_task_312(zha_gateway: Gateway) -> None:  # pylint: disable=unused-argument

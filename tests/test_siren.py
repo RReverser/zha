@@ -151,3 +151,46 @@ async def test_siren_timed_off(zha_gateway: Gateway) -> None:
 
     # test that the state has changed to off from the timer
     assert entity.state["state"] is False
+
+
+async def test_siren_repeated_timed_turn_on_leaks_stale_tracked_handles(
+    zha_gateway: Gateway,
+) -> None:
+    """Test repeated timed turn_on does not retain stale tracked handles."""
+    zha_device, _ = await siren_mock(zha_gateway)
+    entity = get_entity(zha_device, platform=Platform.SIREN)
+
+    try:
+        with patch(
+            "zigpy.zcl.Cluster.request",
+            return_value=mock_coro([0x00, zcl_f.Status.SUCCESS]),
+        ):
+            await entity.async_turn_on(duration=30)
+            await zha_gateway.async_block_till_done()
+            first_listener = entity._off_listener
+            assert first_listener is not None
+            assert len(entity._tracked_handles) == 1
+
+            # Issue being validated:
+            # Siren.async_turn_on() cancels an existing _off_listener before scheduling
+            # a new one, but does not remove the canceled listener from _tracked_handles.
+            #
+            # Why this is a problem:
+            # repeated timed activations accumulate stale canceled handles, causing
+            # unbounded growth in entity-owned handle tracking and noisy cleanup paths.
+            await entity.async_turn_on(duration=30)
+            await zha_gateway.async_block_till_done()
+
+            assert entity._off_listener is not None
+            assert entity._off_listener is not first_listener
+            assert first_listener.cancelled() is True
+            assert first_listener not in entity._tracked_handles
+            assert entity._off_listener in entity._tracked_handles
+            assert len(entity._tracked_handles) == 1
+    finally:
+        if entity._off_listener is not None:
+            entity._off_listener.cancel()
+            entity._off_listener = None
+        for handle in list(entity._tracked_handles):
+            handle.cancel()
+        entity._tracked_handles.clear()

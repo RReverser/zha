@@ -188,6 +188,59 @@ async def test_event_emit_with_context():
     async_callback.assert_awaited_once_with("test", "data")
 
 
+async def test_event_base_once_async_multiple_emits_same_tick() -> None:
+    """Test that async once listeners only run once with back-to-back emits."""
+    event = EventGenerator()
+    callback = AsyncMock()
+
+    # Issue being validated:
+    # async "once" listeners are unsubscribed inside an async task, not synchronously.
+    # When two emits happen back-to-back in the same tick, both see the listener as
+    # still subscribed and both schedule callback execution.
+    #
+    # Why this is a problem:
+    # call sites rely on "once" semantics for idempotency (pairing, lifecycle hooks,
+    # cleanup paths). Running twice can cause duplicate writes, duplicate state
+    # transitions, and hard-to-reproduce race conditions.
+    event.once("test", callback)
+    event.emit("test", "first")
+    event.emit("test", "second")
+
+    await asyncio.gather(*event._event_tasks)
+
+    assert callback.await_count == 1
+    assert callback.await_args_list == [call("first")]
+
+
+async def test_event_base_emit_async_callable_object() -> None:
+    """Test that async callable objects are awaited when emitted."""
+
+    class AsyncCallable:
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+
+        async def __call__(self, data: str) -> None:
+            self.calls.append(data)
+
+    event = EventGenerator()
+    callback = AsyncCallable()
+
+    # Issue being validated:
+    # emit() only checks inspect.iscoroutinefunction(listener.callback), which is False
+    # for callable objects whose __call__ is async. The returned coroutine is never
+    # awaited/scheduled.
+    #
+    # Why this is a problem:
+    # listeners silently do not run, and Python emits "coroutine was never awaited"
+    # warnings. That means missed automations/events plus noisy runtime warnings.
+    event.on_event("test", callback)
+
+    event.emit("test", "payload")
+    await asyncio.sleep(0)
+
+    assert callback.calls == ["payload"]
+
+
 def test_handle_event_protocol():
     """Test event base class."""
 

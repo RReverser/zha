@@ -2186,3 +2186,86 @@ async def test_turn_off_cancellation_cleans_up_transition_flag(
         await task
 
     assert entity.is_transitioning is False
+
+
+async def test_light_enable_second_pass_is_idempotent_for_polling_tasks(
+    zha_gateway: Gateway,
+) -> None:
+    """Test that enabling a light twice does not orphan the first poll task."""
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+
+    # Reset to a known baseline by cancelling the task started during entity setup.
+    entity.disable()
+    await asyncio.sleep(0)
+
+    # Issue being validated:
+    # A second call to Light.enable() should be idempotent for polling lifecycle.
+    # Re-enabling an already enabled light should not leave an earlier refresh task alive.
+    #
+    # Why this is a problem:
+    # If the first refresh task is orphaned, later disable/remove only tracks the newest
+    # task reference and polling may keep running in the background unexpectedly.
+    entity.enable()
+    first_refresh_task = entity._refresh_task
+    assert first_refresh_task is not None
+
+    second_refresh_task = None
+    try:
+        entity.enable()
+        second_refresh_task = entity._refresh_task
+        assert second_refresh_task is not None
+        assert second_refresh_task is first_refresh_task
+
+        entity.disable()
+        await asyncio.sleep(0)
+
+        assert first_refresh_task.cancelled()
+        assert first_refresh_task not in entity._tracked_tasks
+    finally:
+        for task in (first_refresh_task, second_refresh_task):
+            if task is None:
+                continue
+            if not task.done():
+                task.cancel()
+            with contextlib.suppress(ValueError):
+                entity._tracked_tasks.remove(task)
+        with contextlib.suppress(asyncio.CancelledError):
+            await asyncio.gather(
+                *(
+                    t
+                    for t in (first_refresh_task, second_refresh_task)
+                    if t is not None
+                ),
+                return_exceptions=True,
+            )
+
+
+async def test_async_unsub_transition_listener_second_pass_removes_old_handle(
+    zha_gateway: Gateway,
+) -> None:
+    """Test transition unsubscription removes the original tracked handle."""
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+
+    # Issue being validated:
+    # _async_unsub_transition_listener() should remove the original listener handle from
+    # _tracked_handles when unsubscribing.
+    #
+    # Why this is a problem:
+    # Leaving cancelled timer handles in _tracked_handles leaks lifecycle bookkeeping and
+    # accumulates stale handles across repeated transition start/stop passes.
+    entity.async_transition_start_timer(transition_time=30)
+    original_listener = entity._transition_listener
+    assert original_listener is not None
+    assert original_listener in entity._tracked_handles
+
+    try:
+        entity._async_unsub_transition_listener()
+
+        assert entity._transition_listener is None
+        assert original_listener not in entity._tracked_handles
+    finally:
+        original_listener.cancel()
+        with contextlib.suppress(ValueError):
+            entity._tracked_handles.remove(original_listener)

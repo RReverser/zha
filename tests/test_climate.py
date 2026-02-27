@@ -430,6 +430,48 @@ async def test_sinope_time(
     entity._async_update_time.reset_mock()
 
 
+async def test_sinope_enable_is_idempotent_for_time_update_task(
+    zha_gateway: Gateway,
+) -> None:
+    """Test Sinope enable does not duplicate time updater task."""
+    dev_climate_sinope = await device_climate_sinope(zha_gateway)
+    entity: ThermostatEntity = get_entity(
+        dev_climate_sinope, platform=Platform.CLIMATE, entity_type=ThermostatEntity
+    )
+
+    time_updater_task_name = f"sinope_time_updater_{entity.unique_id}"
+
+    def active_time_update_tasks() -> list[asyncio.Task]:
+        return [
+            task
+            for task in entity._tracked_tasks
+            if (
+                task.get_name() == time_updater_task_name
+                and not task.done()
+                and not task.cancelled()
+            )
+        ]
+
+    try:
+        entity.disable()
+        assert not active_time_update_tasks()
+
+        entity.enable()
+        assert len(active_time_update_tasks()) == 1
+
+        # Issue being validated:
+        # enable() always calls start_polling(), so a second-pass enable on an already
+        # enabled Sinope thermostat creates another time-update background task.
+        #
+        # Why this is a problem:
+        # duplicated periodic tasks can trigger duplicate writes and long-lived
+        # background task leakage over repeated enable operations.
+        entity.enable()
+        assert len(active_time_update_tasks()) == 1
+    finally:
+        await dev_climate_sinope.on_remove()
+
+
 async def test_climate_hvac_action_running_state_zen(
     zha_gateway: Gateway,
 ):
@@ -1123,6 +1165,45 @@ async def test_set_temperature_heat(
     assert thrm_cluster.write_attributes.await_count == 1
     assert thrm_cluster.write_attributes.call_args_list[0][0][0] == {
         "unoccupied_heating_setpoint": 2200
+    }
+
+
+async def test_set_temperature_heat_decimal_precision(
+    zha_gateway: Gateway,
+):
+    """Test heating setpoint conversion keeps decimal precision."""
+
+    device_climate = await device_climate_mock(
+        zha_gateway,
+        CLIMATE_SINOPE,
+        {
+            "occupied_cooling_setpoint": 2500,
+            "occupied_heating_setpoint": 2000,
+            "system_mode": Thermostat.SystemMode.Heat,
+            "unoccupied_heating_setpoint": 1600,
+            "unoccupied_cooling_setpoint": 2700,
+        },
+        manuf=MANUF_SINOPE,
+        quirk=zhaquirks.sinope.thermostat.SinopeTechnologiesThermostat,
+    )
+    thrm_cluster = device_climate.device.endpoints[1].thermostat
+    entity: ThermostatEntity = get_entity(
+        device_climate, platform=Platform.CLIMATE, entity_type=ThermostatEntity
+    )
+
+    # Issue being validated:
+    # conversion uses int(temperature * 100). For 19.9, binary floating-point produces
+    # 1989.999..., and int() truncates to 1989 instead of the intended 1990.
+    #
+    # Why this is a problem:
+    # thermostat writes are off by 0.01C for some decimal inputs, causing subtle setpoint
+    # drift and mismatches between requested and actual configured temperature.
+    await entity.async_set_temperature(temperature=19.9)
+    await zha_gateway.async_block_till_done()
+
+    assert thrm_cluster.write_attributes.await_count == 1
+    assert thrm_cluster.write_attributes.call_args_list[0][0][0] == {
+        "occupied_heating_setpoint": 1990
     }
 
 

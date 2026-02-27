@@ -950,3 +950,409 @@ async def test_group_on_remove_entity_failure(
 
     assert "Failed to remove group entity" in caplog.text
     assert "Group entity removal failed" in caplog.text
+
+
+async def test_group_removed_unknown_group_is_noop(zha_gateway: Gateway) -> None:
+    """Test removing an unknown group does not crash."""
+    zigpy_group = MagicMock()
+    zigpy_group.group_id = 0x1234
+
+    # Issue being validated:
+    # group_removed() does an unconditional dict pop() on self._groups.
+    #
+    # Why this is a problem:
+    # late/duplicate remove events (or partial state rebuilds) can raise KeyError and
+    # bubble through event handling, destabilizing group lifecycle handling.
+    zha_gateway.group_removed(zigpy_group)
+
+
+async def test_country_code_passthrough_updates_when_changed(
+    zha_data: ZHAData,
+) -> None:
+    """Test country code updates are reflected on repeated config reads."""
+    zha_data.zigpy_config = {}
+    gateway = Gateway(zha_data)
+
+    # Issue being validated:
+    # get_application_controller_data() mutates and reuses shared config, then only sets
+    # country code if not already present.
+    #
+    # Why this is a problem:
+    # after first use, country code becomes sticky and later updates are ignored, so
+    # runtime config changes cannot be applied correctly.
+    zha_data.country_code = "US"
+    gateway.get_application_controller_data()
+
+    zha_data.country_code = "GB"
+    _, app_config = gateway.get_application_controller_data()
+
+    assert app_config[CONF_NWK][CONF_NWK_COUNTRY_CODE] == "GB"
+
+
+async def _create_group_with_two_members(zha_gateway: Gateway) -> Group:
+    """Create a test group with two light members."""
+    coordinator = await coordinator_mock(zha_gateway)
+    zha_gateway.coordinator_zha_device = coordinator
+    coordinator._zha_gateway = zha_gateway
+
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+    device_light_1._zha_gateway = zha_gateway
+    device_light_2._zha_gateway = zha_gateway
+
+    members = [
+        GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+        GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+    ]
+    group = await zha_gateway.async_create_zigpy_group("Test Group", members)
+    await zha_gateway.async_block_till_done()
+    assert group is not None
+    return group
+
+
+async def test_group_async_add_members_empty_list_noop(
+    zha_gateway: Gateway,
+) -> None:
+    """Test adding an empty member list is a no-op."""
+    zha_group = await _create_group_with_two_members(zha_gateway)
+
+    # Issue being validated:
+    # async_add_members() assumes len(members) >= 1 in the "else" path and indexes
+    # members[0] for an empty input.
+    #
+    # Why this is a problem:
+    # callers that normalize to "always call with a list" can crash on valid empty
+    # operations instead of getting a harmless no-op.
+    await zha_group.async_add_members([])
+    assert len(zha_group.members) == 2
+
+
+async def test_group_async_remove_members_empty_list_noop(
+    zha_gateway: Gateway,
+) -> None:
+    """Test removing an empty member list is a no-op."""
+    zha_group = await _create_group_with_two_members(zha_gateway)
+
+    # Issue being validated:
+    # async_remove_members() has the same empty-list indexing bug as add_members().
+    #
+    # Why this is a problem:
+    # empty removal requests should be idempotent, but currently they can crash
+    # automation flows that compute dynamic member diffs.
+    await zha_group.async_remove_members([])
+    assert len(zha_group.members) == 2
+
+
+async def test_group_unregister_entity_clears_member_subscriptions(
+    zha_gateway: Gateway,
+) -> None:
+    """Test unregistering the final group entity clears related subscriptions."""
+    zha_group = await _create_group_with_two_members(zha_gateway)
+    entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+
+    # Issue being validated:
+    # unregister_group_entity() removes only the group-entity subscription, not
+    # member-entity subscriptions installed via update_entity_subscriptions().
+    #
+    # Why this is a problem:
+    # stale callbacks stay registered and keep reacting to member updates after the
+    # group entity is gone, causing leaks and unexpected background behavior.
+    zha_group.unregister_group_entity(entity)
+
+    assert zha_group._entity_unsubs == {}
+
+
+async def test_shutdown_controller_exception_resets_shutting_down_flag(
+    zha_gateway: Gateway,
+) -> None:
+    """Test shutdown recovers the lifecycle flag when controller shutdown fails."""
+    assert zha_gateway.application_controller is not None
+
+    # Issue being validated:
+    # If the controller shutdown step raises, Gateway.shutdown() should still restore
+    # lifecycle state so later shutdown attempts are not blocked.
+    #
+    # Why this is a problem:
+    # Leaving `shutting_down` stuck at True makes future cleanup a no-op, which can
+    # strand devices, groups, and tasks for the rest of the gateway lifetime.
+    try:
+        with (
+            patch.object(
+                zha_gateway.application_controller,
+                "shutdown",
+                AsyncMock(side_effect=RuntimeError("controller shutdown failed")),
+            ),
+            pytest.raises(RuntimeError, match="controller shutdown failed"),
+        ):
+            await zha_gateway.shutdown()
+
+        assert zha_gateway.shutting_down is False
+    finally:
+        if zha_gateway.shutting_down:
+            zha_gateway.shutting_down = False
+        if zha_gateway.application_controller is not None:
+            await zha_gateway.shutdown()
+            await asyncio.sleep(0)
+
+
+async def test_startup_polling_failure_still_enables_allow_polling(
+    zha_gateway: Gateway,
+) -> None:
+    """Test startup polling failures do not leave polling globally disabled."""
+    zha_gateway.config.config.device_options.enable_mains_startup_polling = True
+    zha_gateway.config.allow_polling = False
+
+    created_background_tasks: list[asyncio.Task] = []
+    original_create_background_task = zha_gateway.async_create_background_task
+
+    def _capture_background_task(*args, **kwargs):
+        task = original_create_background_task(*args, **kwargs)
+        created_background_tasks.append(task)
+        return task
+
+    # Issue being validated:
+    # async_initialize_devices_and_entities() should always restore allow_polling=True
+    # even if startup mains polling fails.
+    #
+    # Why this is a problem:
+    # A transient startup error can permanently disable periodic polling, silently
+    # stopping refresh/availability behavior for the entire gateway session.
+    try:
+        with (
+            patch.object(
+                zha_gateway,
+                "async_fetch_updated_state_mains",
+                AsyncMock(side_effect=RuntimeError("startup polling failed")),
+            ),
+            patch.object(
+                zha_gateway,
+                "async_create_background_task",
+                side_effect=_capture_background_task,
+            ),
+        ):
+            await zha_gateway.async_initialize_devices_and_entities()
+            await asyncio.gather(*created_background_tasks, return_exceptions=True)
+
+        assert created_background_tasks
+
+        assert zha_gateway.config.allow_polling is True
+    finally:
+        for task in created_background_tasks:
+            if not task.done():
+                task.cancel()
+        if created_background_tasks:
+            await asyncio.gather(*created_background_tasks, return_exceptions=True)
+
+
+async def test_device_removed_cancels_pending_device_init_task(
+    zha_gateway: Gateway,
+) -> None:
+    """Test removing a device cancels any pending init task for that device."""
+    zigpy_dev_basic = create_mock_zigpy_device(zha_gateway, ZIGPY_DEVICE_BASIC)
+    zha_gateway.get_or_create_device(zigpy_dev_basic)
+
+    init_blocker: asyncio.Future[None] = asyncio.get_running_loop().create_future()
+
+    async def _blocked_initialize(_device):
+        await init_blocker
+
+    # Issue being validated:
+    # device_removed() should tear down pending `_device_init_tasks` for the removed
+    # device as part of second-pass lifecycle cleanup.
+    #
+    # Why this is a problem:
+    # Leaving stale init tasks running after removal leaks task ownership and can race
+    # with later re-joins for the same IEEE.
+    with patch.object(
+        zha_gateway,
+        "async_device_initialized",
+        AsyncMock(side_effect=_blocked_initialize),
+    ):
+        zha_gateway.device_initialized(zigpy_dev_basic)
+        await asyncio.sleep(0)
+        init_task = zha_gateway._device_init_tasks[zigpy_dev_basic.ieee]
+        assert not init_task.done()
+
+        try:
+            zha_gateway.device_removed(zigpy_dev_basic)
+            await asyncio.sleep(0)
+
+            assert init_task.cancelled()
+            assert zigpy_dev_basic.ieee not in zha_gateway._device_init_tasks
+        finally:
+            if not init_blocker.done():
+                init_blocker.cancel()
+            if not init_task.done():
+                if zigpy_dev_basic.ieee not in zha_gateway._device_init_tasks:
+                    zha_gateway._device_init_tasks[zigpy_dev_basic.ieee] = init_task
+                init_task.cancel()
+            await asyncio.gather(init_task, return_exceptions=True)
+            zha_gateway._device_init_tasks.pop(zigpy_dev_basic.ieee, None)
+            await zha_gateway.async_block_till_done()
+
+
+async def test_global_updater_second_start_stop_cancels_first_task(
+    zha_gateway: Gateway,
+) -> None:
+    """Test second start does not orphan the first global updater task."""
+    updater = zha_gateway.global_updater
+
+    # Reset to a known baseline from fixture startup.
+    updater.stop()
+    await asyncio.sleep(0)
+
+    # Issue being validated:
+    # Calling GlobalUpdater.start() repeatedly should be idempotent and must not leave
+    # previously created updater tasks running.
+    #
+    # Why this is a problem:
+    # If only the latest handle is tracked, stop() cancels one task while an older task
+    # keeps running, creating duplicated periodic work and leaked background tasks.
+    updater.start()
+    first_task = updater._updater_task_handle
+    assert first_task is not None
+
+    second_task = None
+    try:
+        updater.start()
+        second_task = updater._updater_task_handle
+        assert second_task is not None
+        assert second_task is first_task
+
+        updater.stop()
+        await asyncio.sleep(0)
+
+        assert first_task.cancelled()
+        assert second_task.cancelled()
+    finally:
+        for task in (first_task, second_task):
+            if task is None:
+                continue
+            if not task.done():
+                task.cancel()
+        await asyncio.gather(
+            *(t for t in (first_task, second_task) if t is not None),
+            return_exceptions=True,
+        )
+
+
+async def test_gateway_device_initialized_done_callback_race_keeps_newer_task(
+    zha_gateway: Gateway,
+) -> None:
+    """Test cancelled init task callback does not drop a newer init task."""
+    zigpy_dev_basic = create_mock_zigpy_device(zha_gateway, ZIGPY_DEVICE_BASIC)
+
+    first_cancel_release = asyncio.Event()
+    second_task_blocker = asyncio.Event()
+    init_call_count = 0
+    first_task: asyncio.Task | None = None
+    second_task: asyncio.Task | None = None
+
+    async def _controlled_initialize(_device):
+        nonlocal init_call_count
+        init_call_count += 1
+
+        if init_call_count == 1:
+            try:
+                await asyncio.Event().wait()
+            except asyncio.CancelledError:
+                await first_cancel_release.wait()
+                raise
+
+        if init_call_count == 2:
+            await second_task_blocker.wait()
+            return
+
+        raise AssertionError("Unexpected extra async_device_initialized call")
+
+    # Issue being validated:
+    # Gateway.device_initialized() stores tasks by IEEE and each task's done callback
+    # unconditionally pops that IEEE key.
+    #
+    # Why this is a problem:
+    # If task-1 is cancelled and task-2 is created for the same IEEE, task-1 finishing
+    # later can pop task-2 out of `_device_init_tasks`, orphaning task tracking.
+    try:
+        with patch.object(
+            zha_gateway,
+            "async_device_initialized",
+            AsyncMock(side_effect=_controlled_initialize),
+        ):
+            zha_gateway.device_initialized(zigpy_dev_basic)
+            await asyncio.sleep(0)
+            first_task = zha_gateway._device_init_tasks[zigpy_dev_basic.ieee]
+            assert not first_task.done()
+
+            zha_gateway.device_initialized(zigpy_dev_basic)
+            second_task = zha_gateway._device_init_tasks[zigpy_dev_basic.ieee]
+            assert second_task is not None
+            assert second_task is not first_task
+
+            first_cancel_release.set()
+            await asyncio.sleep(0)
+            await asyncio.sleep(0)
+
+            assert zha_gateway._device_init_tasks[zigpy_dev_basic.ieee] is second_task
+    finally:
+        first_cancel_release.set()
+        second_task_blocker.set()
+
+        for task in (first_task, second_task):
+            if task is None or task.done():
+                continue
+            if (
+                task is second_task
+                and zigpy_dev_basic.ieee not in zha_gateway._device_init_tasks
+            ):
+                zha_gateway._device_init_tasks[zigpy_dev_basic.ieee] = task
+            task.cancel()
+
+        await asyncio.gather(
+            *(t for t in (first_task, second_task) if t is not None),
+            return_exceptions=True,
+        )
+        zha_gateway._device_init_tasks.pop(zigpy_dev_basic.ieee, None)
+        await zha_gateway.async_block_till_done()
+
+
+async def test_device_availability_checker_start_twice_stop_once_cancels_all_tasks(
+    zha_gateway: Gateway,
+) -> None:
+    """Test repeated start does not leave an older availability task alive."""
+    checker = zha_gateway._device_availability_checker
+
+    # Reset to a known baseline from fixture startup.
+    checker.stop()
+    await asyncio.sleep(0)
+
+    first_task: asyncio.Task | None = None
+    second_task: asyncio.Task | None = None
+
+    # Issue being validated:
+    # DeviceAvailabilityChecker.start() should be idempotent across repeated calls.
+    #
+    # Why this is a problem:
+    # If start() can create multiple tasks but stop() only cancels the latest handle,
+    # a previous checker task keeps running and leaks periodic background work.
+    try:
+        checker.start()
+        first_task = checker._device_availability_task_handle
+        assert first_task is not None
+
+        checker.start()
+        second_task = checker._device_availability_task_handle
+        assert second_task is not None
+
+        checker.stop()
+        await asyncio.sleep(0)
+
+        assert first_task.cancelled()
+        assert second_task.cancelled()
+    finally:
+        checker.stop()
+        tasks = list({task for task in (first_task, second_task) if task is not None})
+        for task in tasks:
+            if not task.done():
+                task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
