@@ -980,6 +980,19 @@ class Device(LogMixin, EventBase):
         """Initialize cluster handlers."""
         self.debug("started initialization")
 
+        # Clean up entities from any previous unfinished discovery pass before
+        # replacing the pending list for this initialization cycle.
+        while self._pending_entities:
+            pending_entity = self._pending_entities.pop()
+            try:
+                await pending_entity.on_remove()
+            except Exception:  # pylint: disable=broad-exception-caught
+                _LOGGER.warning(
+                    "Failed to remove stale pending entity %s for device %s",
+                    pending_entity,
+                    self,
+                    exc_info=True,
+                )
         self._discover_new_entities()
 
         await self._zdo_handler.async_initialize(from_cache)
@@ -989,10 +1002,12 @@ class Device(LogMixin, EventBase):
         # three `device.async_initialize()`s are spawned, only three concurrent requests
         # will ever be in flight at once. Startup concurrency is managed at the device
         # level.
+        endpoint_init_failed = False
         for endpoint in self._endpoints.values():
             try:
                 await endpoint.async_initialize(from_cache)
             except Exception:  # pylint: disable=broad-exception-caught
+                endpoint_init_failed = True
                 self.debug("Failed to initialize endpoint", exc_info=True)
 
         # Compute the final entities
@@ -1015,11 +1030,22 @@ class Device(LogMixin, EventBase):
                 await entity.on_remove()
                 continue
 
+            # Keep existing entity instances stable across re-initialization
+            # passes. Newly rediscovered duplicates must be cleaned up.
+            if key in self._platform_entities:
+                await entity.on_remove()
+                continue
+
             new_entities[key] = entity
 
         if new_entities:
             _LOGGER.debug("Discovered new entities %r", new_entities)
             self._platform_entities.update(new_entities)
+
+        # Discovery for this initialization pass has been fully reconciled.
+        # Keep _pending_entities transient so the next pass only contains
+        # entities staged by async_configure or a fresh discovery cycle.
+        self._pending_entities.clear()
 
         # At this point we can compute a primary entity
         self._compute_primary_entity()
@@ -1045,6 +1071,12 @@ class Device(LogMixin, EventBase):
             break
 
         self.debug("power source: %s", self.power_source)
+        if endpoint_init_failed:
+            self.debug(
+                "completed initialization with endpoint failures; status unchanged"
+            )
+            return
+
         self.status = DeviceStatus.INITIALIZED
         self.debug("completed initialization")
 
@@ -1217,11 +1249,20 @@ class Device(LogMixin, EventBase):
                 args,
                 [field.name for field in commands[command].schema.fields],
             )
-            response = await getattr(cluster, commands[command].name)(*args)
+            command_kwargs: dict[str, Any] = {}
+            if manufacturer is not None:
+                command_kwargs["manufacturer"] = manufacturer
+            response = await getattr(cluster, commands[command].name)(
+                *args, **command_kwargs
+            )
         else:
             assert params is not None
+            command_kwargs = {}
+            if manufacturer is not None:
+                command_kwargs["manufacturer"] = manufacturer
             response = await getattr(cluster, commands[command].name)(
-                **convert_to_zcl_values(params, commands[command].schema)
+                **convert_to_zcl_values(params, commands[command].schema),
+                **command_kwargs,
             )
         self.debug(
             "Issued cluster command: %s %s %s %s %s %s %s %s",
