@@ -7,8 +7,8 @@
   "friendly_manufacturer": "Schneider Electric",
   "friendly_model": "PUCK/DIMMER/1",
   "name": "Schneider Electric PUCK/DIMMER/1",
-  "quirk_applied": false,
-  "quirk_class": "zigpy.device.Device",
+  "quirk_applied": true,
+  "quirk_class": "zhaquirks.schneiderelectric.dimmers:(Schneider Electric / PUCK/DIMMER/1)",
   "exposes_features": [],
   "manufacturer_code": 4190,
   "power_source": "Mains",
@@ -368,6 +368,196 @@
           "class_name": "StartUpCurrentLevelConfigurationEntity",
           "available": true,
           "state": 0
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Max light level",
+          "unique_id": "ab:cd:ef:12:c9:cb:c2:ea-3-max_level",
+          "migrate_unique_ids": [],
+          "platform": "number",
+          "class_name": "NumberConfigurationEntity",
+          "translation_key": "max_level",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:c9:cb:c2:ea",
+          "endpoint_id": 3,
+          "available": true,
+          "group_id": null,
+          "mode": "auto",
+          "native_max_value": 254,
+          "native_min_value": 1,
+          "native_step": 1,
+          "native_unit_of_measurement": null
+        },
+        "state": {
+          "class_name": "NumberConfigurationEntity",
+          "available": true,
+          "state": null
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Min light level",
+          "unique_id": "ab:cd:ef:12:c9:cb:c2:ea-3-min_level",
+          "migrate_unique_ids": [],
+          "platform": "number",
+          "class_name": "NumberConfigurationEntity",
+          "translation_key": "min_level",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:c9:cb:c2:ea",
+          "endpoint_id": 3,
+          "available": true,
+          "group_id": null,
+          "mode": "auto",
+          "native_max_value": 254,
+          "native_min_value": 1,
+          "native_step": 1,
+          "native_unit_of_measurement": null
+        },
+        "state": {
+          "class_name": "NumberConfigurationEntity",
+          "available": true,
+          "state": null
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "On time reload",
+          "unique_id": "ab:cd:ef:12:c9:cb:c2:ea-3-se_on_time_reload",
+          "migrate_unique_ids": [],
+          "platform": "number",
+          "class_name": "NumberConfigurationEntity",
+          "translation_key": "on_time_reload",
+          "translation_placeholders": null,
+          "device_class": "duration",
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:c9:cb:c2:ea",
+          "endpoint_id": 3,
+          "available": true,
+          "group_id": null,
+          "mode": "auto",
+          "native_max_value": 4294967295,
+          "native_min_value": 0,
+          "native_step": 1,
+          "native_unit_of_measurement": "s"
+        },
+        "state": {
+          "class_name": "NumberConfigurationEntity",
+          "available": true,
+          "state": null
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Pre warning time",
+          "unique_id": "ab:cd:ef:12:c9:cb:c2:ea-3-se_pre_warning_time",
+          "migrate_unique_ids": [],
+          "platform": "number",
+          "class_name": "NumberConfigurationEntity",
+          "translation_key": "pre_warning_time",
+          "translation_placeholders": null,
+          "device_class": "duration",
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:c9:cb:c2:ea",
+          "endpoint_id": 3,
+          "available": true,
+          "group_id": null,
+          "mode": "auto",
+          "native_max_value": 6553,
+          "native_min_value": 0,
+          "native_step": 1,
+          "native_unit_of_measurement": "s"
+        },
+        "state": {
+          "class_name": "NumberConfigurationEntity",
+          "available": true,
+          "state": null
+        }
+      }
+    ],
+    "select": [
+      {
+        "info_object": {
+          "fallback_name": "Control mode",
+          "unique_id": "ab:cd:ef:12:c9:cb:c2:ea-3-se_control_mode",
+          "migrate_unique_ids": [],
+          "platform": "select",
+          "class_name": "ZCLEnumSelectEntity",
+          "translation_key": "control_mode",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:c9:cb:c2:ea",
+          "endpoint_id": 3,
+          "available": true,
+          "group_id": null,
+          "enum": "SEControlMode",
+          "options": [
+            "Auto",
+            "RC",
+            "RL",
+            "RL LED"
+          ]
+        },
+        "state": {
+          "class_name": "ZCLEnumSelectEntity",
+          "available": true,
+          "state": null
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "On time reload options",
+          "unique_id": "ab:cd:ef:12:c9:cb:c2:ea-3-se_on_time_reload_options",
+          "migrate_unique_ids": [],
+          "platform": "select",
+          "class_name": "ZCLEnumSelectEntity",
+          "translation_key": "on_time_reload_options",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:c9:cb:c2:ea",
+          "endpoint_id": 3,
+          "available": true,
+          "group_id": null,
+          "enum": "SEOnTimeReloadOptions",
+          "options": [
+            "OnTimeReloadCanceledByOffCommand",
+            "ImpulseMode"
+          ]
+        },
+        "state": {
+          "class_name": "ZCLEnumSelectEntity",
+          "available": true,
+          "state": null
         }
       }
     ],
