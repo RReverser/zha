@@ -8,7 +8,7 @@
   "friendly_model": "SOCKET/OUTLET/1",
   "name": "Schneider Electric SOCKET/OUTLET/1",
   "quirk_applied": true,
-  "quirk_class": "zhaquirks.schneiderelectric.outlet:SocketOutlet",
+  "quirk_class": "zhaquirks.schneiderelectric.outlet:(Schneider Electric / SOCKET/OUTLET/1)",
   "exposes_features": [],
   "manufacturer_code": 4190,
   "power_source": "Mains",
@@ -440,7 +440,7 @@
         },
         {
           "cluster_id": "0xfc04",
-          "endpoint_attribute": "manufacturer_specific",
+          "endpoint_attribute": "se_outlet_configuration",
           "attributes": []
         }
       ],
@@ -556,6 +556,39 @@
         }
       }
     ],
+    "number": [
+      {
+        "info_object": {
+          "fallback_name": "Indicator luminance level",
+          "unique_id": "ab:cd:ef:12:81:8a:da:20-6-se_indicator_luminance_level",
+          "migrate_unique_ids": [],
+          "platform": "number",
+          "class_name": "NumberConfigurationEntity",
+          "translation_key": "indicator_luminance_level",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:81:8a:da:20",
+          "endpoint_id": 6,
+          "available": true,
+          "group_id": null,
+          "mode": "auto",
+          "native_max_value": 5,
+          "native_min_value": 0,
+          "native_step": 1,
+          "native_unit_of_measurement": null
+        },
+        "state": {
+          "class_name": "NumberConfigurationEntity",
+          "available": true,
+          "state": null
+        }
+      }
+    ],
     "select": [
       {
         "info_object": {
@@ -588,6 +621,70 @@
           "class_name": "StartupOnOffSelectEntity",
           "available": true,
           "state": "PreviousValue"
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Indicator mode",
+          "unique_id": "ab:cd:ef:12:81:8a:da:20-6-se_indicator_mode",
+          "migrate_unique_ids": [],
+          "platform": "select",
+          "class_name": "ZCLEnumSelectEntity",
+          "translation_key": "indicator_mode",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:81:8a:da:20",
+          "endpoint_id": 6,
+          "available": true,
+          "group_id": null,
+          "enum": "SEIndicatorMode",
+          "options": [
+            "InverseOfOutput",
+            "FollowsOutput",
+            "AlwaysOff",
+            "AlwaysOn"
+          ]
+        },
+        "state": {
+          "class_name": "ZCLEnumSelectEntity",
+          "available": true,
+          "state": null
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Local control mode",
+          "unique_id": "ab:cd:ef:12:81:8a:da:20-6-se_local_control_mode",
+          "migrate_unique_ids": [],
+          "platform": "select",
+          "class_name": "ZCLEnumSelectEntity",
+          "translation_key": "local_control_mode",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:81:8a:da:20",
+          "endpoint_id": 6,
+          "available": true,
+          "group_id": null,
+          "enum": "SELocalControlMode",
+          "options": [
+            "Active",
+            "Inactive"
+          ]
+        },
+        "state": {
+          "class_name": "ZCLEnumSelectEntity",
+          "available": true,
+          "state": null
         }
       }
     ],
