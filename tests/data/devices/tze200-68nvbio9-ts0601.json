@@ -7,8 +7,8 @@
   "friendly_manufacturer": "_TZE200_68nvbio9",
   "friendly_model": "TS0601",
   "name": "_TZE200_68nvbio9 TS0601",
-  "quirk_applied": false,
-  "quirk_class": "zigpy.device.Device",
+  "quirk_applied": true,
+  "quirk_class": "zhaquirks.tuya.builder:(_TZE200_eevqq1uv / TS0601)",
   "exposes_features": [],
   "manufacturer_code": 4098,
   "power_source": "Battery or Unknown",
@@ -156,6 +156,30 @@
           ]
         },
         {
+          "cluster_id": "0x0001",
+          "endpoint_attribute": "power",
+          "attributes": [
+            {
+              "id": "0x0033",
+              "name": "battery_quantity",
+              "zcl_type": "uint8",
+              "value": 2
+            },
+            {
+              "id": "0x0034",
+              "name": "battery_rated_voltage",
+              "zcl_type": "uint8",
+              "value": 15
+            },
+            {
+              "id": "0x0031",
+              "name": "battery_size",
+              "zcl_type": "enum8",
+              "value": 3
+            }
+          ]
+        },
+        {
           "cluster_id": "0x0004",
           "endpoint_attribute": "groups",
           "attributes": []
@@ -227,7 +251,7 @@
         },
         {
           "cluster_id": "0xef00",
-          "endpoint_attribute": null,
+          "endpoint_attribute": "tuya_manufacturer",
           "attributes": []
         }
       ],
@@ -289,6 +313,197 @@
     }
   },
   "zha_lib_entities": {
+    "button": [
+      {
+        "info_object": {
+          "fallback_name": "Set lower limit",
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-border_down",
+          "migrate_unique_ids": [],
+          "platform": "button",
+          "class_name": "WriteAttributeButton",
+          "translation_key": "set_lower_limit",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "attribute_name": "border",
+          "attribute_value": 1
+        },
+        "state": {
+          "class_name": "WriteAttributeButton",
+          "available": true
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Delete lower limit",
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-border_down_delete",
+          "migrate_unique_ids": [],
+          "platform": "button",
+          "class_name": "WriteAttributeButton",
+          "translation_key": "delete_lower_limit",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "attribute_name": "border",
+          "attribute_value": 3
+        },
+        "state": {
+          "class_name": "WriteAttributeButton",
+          "available": true
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Delete all limits",
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-border_remove_all",
+          "migrate_unique_ids": [],
+          "platform": "button",
+          "class_name": "WriteAttributeButton",
+          "translation_key": "delete_all_limits",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "attribute_name": "border",
+          "attribute_value": 4
+        },
+        "state": {
+          "class_name": "WriteAttributeButton",
+          "available": true
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Set upper limit",
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-border_up",
+          "migrate_unique_ids": [],
+          "platform": "button",
+          "class_name": "WriteAttributeButton",
+          "translation_key": "set_upper_limit",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "attribute_name": "border",
+          "attribute_value": 0
+        },
+        "state": {
+          "class_name": "WriteAttributeButton",
+          "available": true
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Delete upper limit",
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-border_up_delete",
+          "migrate_unique_ids": [],
+          "platform": "button",
+          "class_name": "WriteAttributeButton",
+          "translation_key": "delete_upper_limit",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "attribute_name": "border",
+          "attribute_value": 2
+        },
+        "state": {
+          "class_name": "WriteAttributeButton",
+          "available": true
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Small step close",
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-small_step_close",
+          "migrate_unique_ids": [],
+          "platform": "button",
+          "class_name": "WriteAttributeButton",
+          "translation_key": "small_step_close",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "attribute_name": "small_step",
+          "attribute_value": 1
+        },
+        "state": {
+          "class_name": "WriteAttributeButton",
+          "available": true
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Small step open",
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-small_step_open",
+          "migrate_unique_ids": [],
+          "platform": "button",
+          "class_name": "WriteAttributeButton",
+          "translation_key": "small_step_open",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "attribute_name": "small_step",
+          "attribute_value": 0
+        },
+        "state": {
+          "class_name": "WriteAttributeButton",
+          "available": true
+        }
+      }
+    ],
     "cover": [
       {
         "info_object": {
@@ -320,6 +535,39 @@
           "is_closing": false,
           "is_closed": true,
           "supported_features": 15
+        }
+      }
+    ],
+    "select": [
+      {
+        "info_object": {
+          "fallback_name": "Motor direction",
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-motor_direction",
+          "migrate_unique_ids": [],
+          "platform": "select",
+          "class_name": "ZCLEnumSelectEntity",
+          "translation_key": "motor_direction",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "enum": "MotorDirection",
+          "options": [
+            "Forward",
+            "Back"
+          ]
+        },
+        "state": {
+          "class_name": "ZCLEnumSelectEntity",
+          "available": true,
+          "state": null
         }
       }
     ],
@@ -379,6 +627,41 @@
           "available": true,
           "state": null
         }
+      },
+      {
+        "info_object": {
+          "fallback_name": null,
+          "unique_id": "ab:cd:ef:12:2e:21:db:80-1-1",
+          "migrate_unique_ids": [],
+          "platform": "sensor",
+          "class_name": "Battery",
+          "translation_key": null,
+          "translation_placeholders": null,
+          "device_class": "battery",
+          "state_class": "measurement",
+          "entity_category": "diagnostic",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "ab:cd:ef:12:2e:21:db:80",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "suggested_display_precision": 0,
+          "unit": "%"
+        },
+        "state": {
+          "class_name": "Battery",
+          "available": true,
+          "state": null,
+          "battery_size": "AA",
+          "battery_quantity": 2
+        },
+        "extra_state_attributes": [
+          "battery_quantity",
+          "battery_size",
+          "battery_voltage"
+        ]
       }
     ],
     "update": [
