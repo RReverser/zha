@@ -430,12 +430,12 @@
       },
       {
         "info_object": {
-          "fallback_name": "Reset summation delivered",
+          "fallback_name": "Reset total energy",
           "unique_id": "28:2c:02:bf:ff:eb:4f:2f-1-reset_summation_delivered",
           "migrate_unique_ids": [],
           "platform": "button",
           "class_name": "WriteAttributeButton",
-          "translation_key": "reset_summation_delivered",
+          "translation_key": "reset_total_energy",
           "translation_placeholders": null,
           "device_class": null,
           "state_class": null,
@@ -447,7 +447,7 @@
           "endpoint_id": 1,
           "available": true,
           "group_id": null,
-          "attribute_name": "reset_summation_delivered",
+          "attribute_name": "reset_total_energy",
           "attribute_value": 1
         },
         "state": {
@@ -459,12 +459,12 @@
     "number": [
       {
         "info_object": {
-          "fallback_name": "Turn on delay",
+          "fallback_name": "Countdown to turn on",
           "unique_id": "28:2c:02:bf:ff:eb:4f:2f-1-off_to_on_delay",
           "migrate_unique_ids": [],
           "platform": "number",
           "class_name": "NumberConfigurationEntity",
-          "translation_key": "turn_on_delay",
+          "translation_key": "countdown_to_turn_on",
           "translation_placeholders": null,
           "device_class": "duration",
           "state_class": null,
@@ -490,12 +490,12 @@
       },
       {
         "info_object": {
-          "fallback_name": "Turn off delay",
+          "fallback_name": "Countdown to turn off",
           "unique_id": "28:2c:02:bf:ff:eb:4f:2f-1-on_to_off_delay",
           "migrate_unique_ids": [],
           "platform": "number",
           "class_name": "NumberConfigurationEntity",
-          "translation_key": "turn_off_delay",
+          "translation_key": "countdown_to_turn_off",
           "translation_placeholders": null,
           "device_class": "duration",
           "state_class": null,
@@ -512,6 +512,37 @@
           "native_min_value": 0,
           "native_step": 1.0,
           "native_unit_of_measurement": "s"
+        },
+        "state": {
+          "class_name": "NumberConfigurationEntity",
+          "available": true,
+          "state": null
+        }
+      },
+      {
+        "info_object": {
+          "fallback_name": "Red LED brightness",
+          "unique_id": "28:2c:02:bf:ff:eb:4f:2f-1-red_led_brightness",
+          "migrate_unique_ids": [],
+          "platform": "number",
+          "class_name": "NumberConfigurationEntity",
+          "translation_key": "red_led_brightness",
+          "translation_placeholders": null,
+          "device_class": null,
+          "state_class": null,
+          "entity_category": "config",
+          "entity_registry_enabled_default": true,
+          "enabled": true,
+          "primary": false,
+          "device_ieee": "28:2c:02:bf:ff:eb:4f:2f",
+          "endpoint_id": 1,
+          "available": true,
+          "group_id": null,
+          "mode": "box",
+          "native_max_value": 100,
+          "native_min_value": 0,
+          "native_step": 1.0,
+          "native_unit_of_measurement": "%"
         },
         "state": {
           "class_name": "NumberConfigurationEntity",
