@@ -561,7 +561,7 @@ class EnumSensor(Sensor):
         return self._enum(value).name
 
 
-@register_entity(AnalogInput.cluster_id)
+@register_entity
 class DigiAnalogInput(Sensor):
     """Sensor that displays analog input values."""
 
@@ -616,7 +616,7 @@ class DigiAnalogInput(Sensor):
     }
 
 
-@register_entity(AnalogInput.cluster_id)
+@register_entity
 class AnalogInputSensor(Sensor):
     """Sensor that displays analog input values."""
 
@@ -722,7 +722,7 @@ class AnalogInputSensor(Sensor):
         return super()._is_supported()
 
 
-@register_entity(PowerConfiguration.cluster_id)
+@register_entity
 class Battery(Sensor):
     """Battery sensor of power configuration cluster."""
 
@@ -943,7 +943,7 @@ class AggregatedClusterPoller(VirtualEntity):
         )
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementPoller(AggregatedClusterPoller):
     """Polls the EM cluster on behalf of sibling entities that need updates."""
 
@@ -955,7 +955,7 @@ class ElectricalMeasurementPoller(AggregatedClusterPoller):
     )
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementReportingDevice(VirtualEntity):
     """Claims the EM polling slot for devices that support reporting.
 
@@ -972,7 +972,7 @@ class ElectricalMeasurementReportingDevice(VirtualEntity):
     )
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementActivePower(BaseElectricalMeasurement):
     """Active power measurement."""
 
@@ -1037,7 +1037,7 @@ class ElectricalMeasurementActivePower(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementActivePowerPhB(BaseElectricalMeasurement):
     """Active power phase B measurement."""
 
@@ -1105,7 +1105,7 @@ class ElectricalMeasurementActivePowerPhB(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementActivePowerPhC(BaseElectricalMeasurement):
     """Active power phase C measurement."""
 
@@ -1173,7 +1173,7 @@ class ElectricalMeasurementActivePowerPhC(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementTotalActivePower(BaseElectricalMeasurement):
     """Total active power measurement."""
 
@@ -1241,7 +1241,7 @@ class ElectricalMeasurementTotalActivePower(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementApparentPower(BaseElectricalMeasurement):
     """Apparent power measurement."""
 
@@ -1304,7 +1304,7 @@ class ElectricalMeasurementApparentPower(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementRMSCurrent(BaseElectricalMeasurement):
     """RMS current measurement."""
 
@@ -1358,7 +1358,7 @@ class ElectricalMeasurementRMSCurrent(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementRMSCurrentPhB(ElectricalMeasurementRMSCurrent):
     """RMS current phase B measurement."""
 
@@ -1405,7 +1405,7 @@ class ElectricalMeasurementRMSCurrentPhB(ElectricalMeasurementRMSCurrent):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementRMSCurrentPhC(ElectricalMeasurementRMSCurrent):
     """RMS current phase C measurement."""
 
@@ -1452,7 +1452,7 @@ class ElectricalMeasurementRMSCurrentPhC(ElectricalMeasurementRMSCurrent):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementRMSVoltage(BaseElectricalMeasurement):
     """RMS Voltage measurement."""
 
@@ -1506,7 +1506,7 @@ class ElectricalMeasurementRMSVoltage(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementRMSVoltagePhB(ElectricalMeasurementRMSVoltage):
     """RMS voltage phase B measurement."""
 
@@ -1553,7 +1553,7 @@ class ElectricalMeasurementRMSVoltagePhB(ElectricalMeasurementRMSVoltage):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementRMSVoltagePhC(ElectricalMeasurementRMSVoltage):
     """RMS voltage phase C measurement."""
 
@@ -1600,7 +1600,7 @@ class ElectricalMeasurementRMSVoltagePhC(ElectricalMeasurementRMSVoltage):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementFrequency(BaseElectricalMeasurement):
     """Frequency measurement."""
 
@@ -1649,7 +1649,7 @@ class ElectricalMeasurementFrequency(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementPowerFactor(BaseElectricalMeasurement):
     """Power Factor measurement."""
 
@@ -1685,7 +1685,7 @@ class ElectricalMeasurementPowerFactor(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementPowerFactorPhB(ElectricalMeasurementPowerFactor):
     """Power factor phase B measurement."""
 
@@ -1713,7 +1713,7 @@ class ElectricalMeasurementPowerFactorPhB(ElectricalMeasurementPowerFactor):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementPowerFactorPhC(ElectricalMeasurementPowerFactor):
     """Power factor phase C measurement."""
 
@@ -1741,7 +1741,7 @@ class ElectricalMeasurementPowerFactorPhC(ElectricalMeasurementPowerFactor):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementDCVoltage(BaseElectricalMeasurement):
     """DC Voltage measurement."""
 
@@ -1794,7 +1794,7 @@ class ElectricalMeasurementDCVoltage(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementDCCurrent(BaseElectricalMeasurement):
     """DC Current measurement."""
 
@@ -1847,7 +1847,7 @@ class ElectricalMeasurementDCCurrent(BaseElectricalMeasurement):
     }
 
 
-@register_entity(ElectricalMeasurement.cluster_id)
+@register_entity
 class ElectricalMeasurementDCPower(BaseElectricalMeasurement):
     """DC Power measurement."""
 
@@ -1912,7 +1912,7 @@ class ElectricalMeasurementDCPower(BaseElectricalMeasurement):
     }
 
 
-@register_entity(RelativeHumidity.cluster_id)
+@register_entity
 class Humidity(Sensor):
     """Humidity sensor."""
 
@@ -1943,7 +1943,7 @@ class Humidity(Sensor):
     }
 
 
-@register_entity(SMARTTHINGS_HUMIDITY_CLUSTER)
+@register_entity
 class SmartThingsHumidity(Sensor):
     """Humidity sensor."""
 
@@ -1974,7 +1974,7 @@ class SmartThingsHumidity(Sensor):
     }
 
 
-@register_entity(SoilMoistureCluster.cluster_id)
+@register_entity
 class SoilMoisture(Sensor):
     """Soil Moisture sensor."""
 
@@ -2006,7 +2006,7 @@ class SoilMoisture(Sensor):
     }
 
 
-@register_entity(LeafWetnessCluster.cluster_id)
+@register_entity
 class LeafWetness(Sensor):
     """Leaf Wetness sensor."""
 
@@ -2038,7 +2038,7 @@ class LeafWetness(Sensor):
     }
 
 
-@register_entity(IlluminanceMeasurement.cluster_id)
+@register_entity
 class Illuminance(Sensor):
     """Illuminance Sensor."""
 
@@ -2087,7 +2087,7 @@ class SmartEnergyMeteringEntityDescription:
     device_class: SensorDeviceClass | None = None
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class MeteringPoller(AggregatedClusterPoller):
     """Polls the Metering cluster for models known to need polling.
 
@@ -2103,7 +2103,7 @@ class MeteringPoller(AggregatedClusterPoller):
     )
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class ExposedFeatureMeteringPoller(MeteringPoller):
     """Polls the Metering cluster for devices whose quirk exposes SE_POLL_SUMMATION."""
 
@@ -2114,7 +2114,7 @@ class ExposedFeatureMeteringPoller(MeteringPoller):
     )
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class SmartEnergyMetering(Sensor):
     """Metering sensor."""
 
@@ -2383,7 +2383,7 @@ class SmartEnergySummationEntityDescription(SmartEnergyMeteringEntityDescription
     state_class: SensorStateClass | None = SensorStateClass.TOTAL_INCREASING
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class SmartEnergySummation(SmartEnergyMetering):
     """Smart Energy Metering summation sensor."""
 
@@ -2473,7 +2473,7 @@ class SmartEnergySummation(SmartEnergyMetering):
         return float(summation_formater.format(scaled_value))
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class Tier1SmartEnergySummation(SmartEnergySummation):
     """Tier 1 Smart Energy Metering summation sensor."""
 
@@ -2487,7 +2487,7 @@ class Tier1SmartEnergySummation(SmartEnergySummation):
     )
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class Tier2SmartEnergySummation(SmartEnergySummation):
     """Tier 2 Smart Energy Metering summation sensor."""
 
@@ -2501,7 +2501,7 @@ class Tier2SmartEnergySummation(SmartEnergySummation):
     )
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class Tier3SmartEnergySummation(SmartEnergySummation):
     """Tier 3 Smart Energy Metering summation sensor."""
 
@@ -2515,7 +2515,7 @@ class Tier3SmartEnergySummation(SmartEnergySummation):
     )
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class Tier4SmartEnergySummation(SmartEnergySummation):
     """Tier 4 Smart Energy Metering summation sensor."""
 
@@ -2529,7 +2529,7 @@ class Tier4SmartEnergySummation(SmartEnergySummation):
     )
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class Tier5SmartEnergySummation(SmartEnergySummation):
     """Tier 5 Smart Energy Metering summation sensor."""
 
@@ -2543,7 +2543,7 @@ class Tier5SmartEnergySummation(SmartEnergySummation):
     )
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class Tier6SmartEnergySummation(SmartEnergySummation):
     """Tier 6 Smart Energy Metering summation sensor."""
 
@@ -2557,7 +2557,7 @@ class Tier6SmartEnergySummation(SmartEnergySummation):
     )
 
 
-@register_entity(Metering.cluster_id)
+@register_entity
 class SmartEnergySummationReceived(SmartEnergySummation):
     """Smart Energy Metering summation received sensor."""
 
@@ -2577,7 +2577,7 @@ class SmartEnergySummationReceived(SmartEnergySummation):
     )
 
 
-@register_entity(PressureMeasurement.cluster_id)
+@register_entity
 class Pressure(Sensor):
     """Pressure sensor."""
 
@@ -2608,7 +2608,7 @@ class Pressure(Sensor):
     }
 
 
-@register_entity(FlowMeasurement.cluster_id)
+@register_entity
 class Flow(Sensor):
     """Flow Measurement sensor."""
 
@@ -2639,7 +2639,7 @@ class Flow(Sensor):
     }
 
 
-@register_entity(TemperatureMeasurement.cluster_id)
+@register_entity
 class Temperature(Sensor):
     """Temperature Sensor."""
 
@@ -2670,7 +2670,7 @@ class Temperature(Sensor):
     }
 
 
-@register_entity(DeviceTemperatureCluster.cluster_id)
+@register_entity
 class DeviceTemperature(Sensor):
     """Device Temperature Sensor."""
 
@@ -2703,7 +2703,7 @@ class DeviceTemperature(Sensor):
     }
 
 
-@register_entity(INOVELLI_CLUSTER)
+@register_entity
 class InovelliInternalTemperature(Sensor):
     """Switch Internal Temperature Sensor."""
 
@@ -2727,7 +2727,7 @@ class InovelliOverheatedState(types.enum8):
     Overheated = 0x01
 
 
-@register_entity(INOVELLI_CLUSTER)
+@register_entity
 class InovelliOverheated(EnumSensor):
     """Sensor that displays the overheat protection state."""
 
@@ -2743,7 +2743,7 @@ class InovelliOverheated(EnumSensor):
     )
 
 
-@register_entity(CarbonDioxideConcentrationCluster.cluster_id)
+@register_entity
 class CarbonDioxideConcentration(Sensor):
     """Carbon Dioxide Concentration sensor."""
 
@@ -2775,7 +2775,7 @@ class CarbonDioxideConcentration(Sensor):
     }
 
 
-@register_entity(CarbonMonoxideConcentrationCluster.cluster_id)
+@register_entity
 class CarbonMonoxideConcentration(Sensor):
     """Carbon Monoxide Concentration sensor."""
 
@@ -2807,7 +2807,7 @@ class CarbonMonoxideConcentration(Sensor):
     }
 
 
-@register_entity(VOC_LEVEL_CLUSTER)
+@register_entity
 class VOCLevel(Sensor):
     """VOC Level sensor."""
 
@@ -2829,7 +2829,7 @@ class VOCLevel(Sensor):
     }
 
 
-@register_entity(VOC_LEVEL_CLUSTER)
+@register_entity
 class PPBVOCLevel(Sensor):
     """VOC Level sensor."""
 
@@ -2854,7 +2854,7 @@ class PPBVOCLevel(Sensor):
     }
 
 
-@register_entity(PM25Cluster.cluster_id)
+@register_entity
 class PM25(Sensor):
     """Particulate Matter 2.5 microns or less sensor."""
 
@@ -2885,7 +2885,7 @@ class PM25(Sensor):
     }
 
 
-@register_entity(ElectricalConductivityCluster.cluster_id)
+@register_entity
 class ElectricalConductivity(Sensor):
     """Electrical Conductivity sensor."""
 
@@ -2914,7 +2914,7 @@ class ElectricalConductivity(Sensor):
     }
 
 
-@register_entity(FormaldehydeConcentrationCluster.cluster_id)
+@register_entity
 class FormaldehydeConcentration(Sensor):
     """Formaldehyde Concentration sensor."""
 
@@ -2946,7 +2946,7 @@ class FormaldehydeConcentration(Sensor):
     }
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class ThermostatHVACAction(Sensor):
     """Thermostat HVAC action sensor."""
 
@@ -3160,7 +3160,7 @@ class ThermostatHVACAction(Sensor):
         return HVACAction.OFF
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class SinopeHVACAction(ThermostatHVACAction):
     """Sinope Thermostat HVAC action sensor."""
 
@@ -3195,7 +3195,7 @@ class SinopeHVACAction(ThermostatHVACAction):
         return HVACAction.OFF
 
 
-@register_entity(Basic.cluster_id)
+@register_entity
 class RSSISensor(Sensor):
     """RSSI sensor for a device."""
 
@@ -3277,7 +3277,7 @@ class RSSISensor(Sensor):
             )
 
 
-@register_entity(Basic.cluster_id)
+@register_entity
 class LQISensor(RSSISensor):
     """LQI sensor for a device."""
 
@@ -3305,7 +3305,7 @@ class LQISensor(RSSISensor):
         return self._device.device.lqi
 
 
-@register_entity(TUYA_MANUFACTURER_CLUSTER)
+@register_entity
 class TimeLeft(Sensor):
     """Sensor that displays time left value."""
 
@@ -3322,7 +3322,7 @@ class TimeLeft(Sensor):
     )
 
 
-@register_entity(IKEA_AIR_PURIFIER_CLUSTER)
+@register_entity
 class IkeaDeviceRunTime(Sensor):
     """Sensor that displays device run time (in minutes)."""
 
@@ -3339,7 +3339,7 @@ class IkeaDeviceRunTime(Sensor):
     )
 
 
-@register_entity(IKEA_AIR_PURIFIER_CLUSTER)
+@register_entity
 class IkeaFilterRunTime(Sensor):
     """Sensor that displays run time of the current filter (in minutes)."""
 
@@ -3363,7 +3363,7 @@ class AqaraFeedingSource(types.enum8):
     HomeAssistant = 0x02
 
 
-@register_entity(AQARA_OPPLE_CLUSTER)
+@register_entity
 class AqaraPetFeederLastFeedingSource(EnumSensor):
     """Sensor that displays the last feeding source of pet feeder."""
 
@@ -3379,7 +3379,7 @@ class AqaraPetFeederLastFeedingSource(EnumSensor):
     )
 
 
-@register_entity(AQARA_OPPLE_CLUSTER)
+@register_entity
 class AqaraPetFeederLastFeedingSize(Sensor):
     """Sensor that displays the last feeding size of the pet feeder."""
 
@@ -3394,7 +3394,7 @@ class AqaraPetFeederLastFeedingSize(Sensor):
     )
 
 
-@register_entity(AQARA_OPPLE_CLUSTER)
+@register_entity
 class AqaraPetFeederPortionsDispensed(Sensor):
     """Sensor that displays the number of portions dispensed by the pet feeder."""
 
@@ -3410,7 +3410,7 @@ class AqaraPetFeederPortionsDispensed(Sensor):
     )
 
 
-@register_entity(AQARA_OPPLE_CLUSTER)
+@register_entity
 class AqaraPetFeederWeightDispensed(Sensor):
     """Sensor that displays the weight dispensed by the pet feeder."""
 
@@ -3427,7 +3427,7 @@ class AqaraPetFeederWeightDispensed(Sensor):
     )
 
 
-@register_entity(AQARA_OPPLE_CLUSTER)
+@register_entity
 class AqaraSmokeDensityDbm(Sensor):
     """Sensor that displays the smoke density of an Aqara smoke sensor in dB/m."""
 
@@ -3452,7 +3452,7 @@ class SonoffIlluminationStates(types.enum8):
     Light = 0x01
 
 
-@register_entity(SONOFF_CLUSTER)
+@register_entity
 class SonoffPresenceSenorIlluminationStatus(EnumSensor):
     """Sensor that displays the illumination status the last time peresence was detected."""
 
@@ -3468,7 +3468,7 @@ class SonoffPresenceSenorIlluminationStatus(EnumSensor):
     )
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class PiHeatingDemand(Sensor):
     """Sensor that displays the percentage of heating power demanded.
 
@@ -3498,7 +3498,7 @@ class SetpointChangeSourceEnum(types.enum8):
     External = 0x02
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class SetpointChangeSource(EnumSensor):
     """Sensor that displays the source of the setpoint change.
 
@@ -3517,7 +3517,7 @@ class SetpointChangeSource(EnumSensor):
     )
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class SetpointChangeSourceTimestamp(TimestampSensor):
     """Sensor that displays the timestamp the setpoint change.
 
@@ -3540,7 +3540,7 @@ class SetpointChangeSourceTimestamp(TimestampSensor):
         return ZCL_EPOCH + timedelta(seconds=value)
 
 
-@register_entity(WindowCovering.cluster_id)
+@register_entity
 class WindowCoveringTypeSensor(EnumSensor):
     """Sensor that displays the type of a cover device."""
 
@@ -3567,7 +3567,7 @@ class WindowCoveringTypeSensor(EnumSensor):
     }
 
 
-@register_entity(Basic.cluster_id)
+@register_entity
 class AqaraCurtainMotorPowerSourceSensor(EnumSensor):
     """Sensor that displays the power source of the Aqara E1 curtain motor device."""
 
@@ -3603,7 +3603,7 @@ class AqaraE1HookState(types.enum8):
     Unlocking = 0x03
 
 
-@register_entity(AQARA_OPPLE_CLUSTER)
+@register_entity
 class AqaraCurtainHookStateSensor(EnumSensor):
     """Representation of a ZHA curtain mode configuration entity."""
 
@@ -3670,7 +3670,7 @@ class BitMapSensor(Sensor):
         return "something" if binary_state_attributes else "nothing"
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class DanfossOpenWindowDetection(EnumSensor):
     """Danfoss proprietary attribute.
 
@@ -3703,7 +3703,7 @@ class DanfossOpenWindowDetection(EnumSensor):
     }
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class DanfossLoadEstimate(Sensor):
     """Danfoss proprietary attribute for communicating its estimate of the radiator load."""
 
@@ -3733,7 +3733,7 @@ class DanfossLoadEstimate(Sensor):
     }
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class DanfossAdaptationRunStatus(BitMapSensor):
     """Danfoss proprietary attribute for showing the status of the adaptation run."""
 
@@ -3764,7 +3764,7 @@ class DanfossAdaptationRunStatus(BitMapSensor):
     }
 
 
-@register_entity(Thermostat.cluster_id)
+@register_entity
 class DanfossPreheatTime(Sensor):
     """Danfoss proprietary attribute for communicating the time when it starts pre-heating."""
 
@@ -3795,7 +3795,7 @@ class DanfossPreheatTime(Sensor):
     }
 
 
-@register_entity(Diagnostic.cluster_id)
+@register_entity
 class DanfossSoftwareErrorCode(BitMapSensor):
     """Danfoss proprietary attribute for communicating the error code."""
 
@@ -3826,7 +3826,7 @@ class DanfossSoftwareErrorCode(BitMapSensor):
     }
 
 
-@register_entity(Diagnostic.cluster_id)
+@register_entity
 class DanfossMotorStepCounter(Sensor):
     """Danfoss proprietary attribute for communicating the motor step counter."""
 
@@ -3856,7 +3856,7 @@ class DanfossMotorStepCounter(Sensor):
     }
 
 
-@register_entity(WindSpeedCluster.cluster_id)
+@register_entity
 class WindSpeed(Sensor):
     """Wind Speed sensor."""
 
