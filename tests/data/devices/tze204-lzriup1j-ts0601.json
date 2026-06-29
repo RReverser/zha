@@ -227,7 +227,7 @@
           "unique_id": "ab:cd:ef:12:e0:67:39:b1-1-513",
           "migrate_unique_ids": [],
           "platform": "climate",
-          "class_name": "Thermostat",
+          "class_name": "AvattoThermostatV02",
           "translation_key": "thermostat",
           "translation_placeholders": null,
           "device_class": null,
@@ -242,16 +242,20 @@
           "group_id": null,
           "max_temp": 30.0,
           "min_temp": 7.0,
-          "supported_features": 385,
+          "supported_features": 401,
           "fan_modes": null,
-          "preset_modes": [],
+          "preset_modes": [
+            "none",
+            "Schedule",
+            "Temporary manual"
+          ],
           "hvac_modes": [
             "off",
             "heat"
           ]
         },
         "state": {
-          "class_name": "Thermostat",
+          "class_name": "AvattoThermostatV02",
           "available": true,
           "current_temperature": null,
           "outdoor_temperature": null,
@@ -393,7 +397,7 @@
           "device_class": null,
           "state_class": null,
           "entity_category": "config",
-          "entity_registry_enabled_default": true,
+          "entity_registry_enabled_default": false,
           "enabled": true,
           "primary": false,
           "device_ieee": "ab:cd:ef:12:e0:67:39:b1",
