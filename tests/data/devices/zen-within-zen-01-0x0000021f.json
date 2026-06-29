@@ -398,7 +398,7 @@
           "unique_id": "ab:cd:ef:12:e9:5a:2c:fd-1",
           "migrate_unique_ids": [],
           "platform": "climate",
-          "class_name": "ZenWithinThermostat",
+          "class_name": "Thermostat",
           "translation_key": "thermostat",
           "translation_placeholders": null,
           "device_class": null,
@@ -427,7 +427,7 @@
           ]
         },
         "state": {
-          "class_name": "ZenWithinThermostat",
+          "class_name": "Thermostat",
           "available": true,
           "current_temperature": 21.7,
           "outdoor_temperature": null,
