@@ -56,11 +56,12 @@ jobs:
           enable-cache: true
 
       - name: Install ZHA and Home Assistant
-        # Home Assistant requires Python 3.14.2+. zha-quirks is needed because
-        # importing the platform device-class modules pulls in `zhaquirks`.
+        # Home Assistant requires Python 3.14.2+. The sync tool reads HA's enums
+        # and parses ZHA's files as text, so it needs neither the full ZHA import
+        # graph nor zha-quirks.
         run: |
           uv venv --python 3.14
-          uv pip install -e . -e ./lib/home-assistant "zha-quirks>=2.0.0"
+          uv pip install -e . -e ./lib/home-assistant
 
       - name: Sync constants
         run: .venv/bin/python -m tools.sync_constants
