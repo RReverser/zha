@@ -354,13 +354,10 @@ class UnitOfRatio(StrEnum):
     PERCENTAGE = "%"
 
 
-# ---------------------------------------------------------------------------
-# Backwards-compatibility constants mirroring homeassistant.const.
-#
-# Home Assistant derives several of these from the unit enums above. They are
-# kept here so existing imports keep working, and are maintained by hand:
-# tools/sync_constants.py syncs the enums above but never rewrites this section.
-# ---------------------------------------------------------------------------
+# --- Backwards-compatibility constants -------------------------------------
+# Hand-maintained mirror of homeassistant.const; some derive from the unit enums
+# above. tools/sync_constants.py inserts new enums above this marker and never
+# rewrites the section below.
 
 # Concentration units
 CONCENTRATION_GRAMS_PER_CUBIC_METER: Final = UnitOfDensity.GRAMS_PER_CUBIC_METER.value

@@ -10,8 +10,10 @@ Assistant's `dev` branch (install it editable) to track upcoming changes.
 What it does, per mirrored file:
 
 * Device-class / mode enums are replaced verbatim with HA's definition.
-* Every ``UnitOf*`` enum HA defines is copied into `zha.units`; enums HA has that
-  ZHA doesn't mirror yet are appended.
+* Every ``UnitOf*`` enum HA defines is copied into `zha.units`: ones ZHA already
+  has are refreshed in place, missing ones are appended (above the backwards-
+  compatibility marker), and ones HA has since removed are deleted. Docstrings
+  and in-class comments come along, since whole classes are copied.
 
 Only enums are synced. The module-level constants ZHA mirrors live in a
 hand-maintained "backwards compatibility" section at the end of `zha.units`
@@ -37,7 +39,9 @@ from typing import Any
 
 import homeassistant.const as ha_const
 
-import zha.units as zha_units
+# zha.units source file, relative to the repo root (parsed as text, never
+# imported, so the tool works even if a bad prior sync left it un-importable).
+UNITS_FILE = "zha/units.py"
 
 # Device-class / mode enums ZHA mirrors, mapped to the ZHA file that holds a copy.
 # Each entry is the fully-qualified HA name of the enum to copy verbatim.
@@ -54,6 +58,11 @@ DEVICE_CLASS_ENUMS: dict[str, list[str]] = {
         "homeassistant.components.number.NumberMode",
     ],
 }
+
+# Substring marking the start of the hand-maintained backwards-compatibility
+# section in zha/units.py. New enums are inserted above this line; the section
+# below it is never rewritten by this tool.
+UNITS_BACKCOMPAT_ANCHOR = "Backwards-compatibility constants"
 
 
 def import_qualified(qualified_name: str) -> Any:
@@ -103,18 +112,43 @@ class SourceFile:
         block = (new_source.rstrip("\n") + "\n").splitlines(keepends=True)
         self._edits.append((node.lineno - 1, node.end_lineno, block))
 
-    def append_classes(self, sources: list[str]) -> None:
-        """Insert new top-level classes after the last existing class."""
-        last_class = max(
-            (n for n in self.tree.body if isinstance(n, ast.ClassDef)),
-            key=lambda n: n.end_lineno,
-        )
-        block: list[str] = []
+    def remove_node(self, node: ast.stmt) -> None:
+        """Remove the source lines of ``node`` and the blank lines that follow it."""
+        end = node.end_lineno
+        while end < len(self.lines) and not self.lines[end].strip():
+            end += 1
+        self._edits.append((node.lineno - 1, end, []))
+
+    def append_classes(self, sources: list[str], anchor: str | None = None) -> None:
+        """Insert new top-level classes.
+
+        If ``anchor`` (a substring) is found on a line, the classes are inserted
+        just before it; otherwise they go after the last existing class.
+        """
+        body: list[str] = []
         for source in sources:
-            block.append("\n")
-            block.append("\n")
-            block.extend((source.rstrip("\n") + "\n").splitlines(keepends=True))
-        insert_at = last_class.end_lineno
+            if body:
+                body.extend(("\n", "\n"))
+            body.extend((source.rstrip("\n") + "\n").splitlines(keepends=True))
+
+        anchor_index = None
+        if anchor is not None:
+            anchor_index = next(
+                (i for i, line in enumerate(self.lines) if anchor in line), None
+            )
+
+        if anchor_index is not None:
+            # Existing blank lines before the anchor separate it from the new
+            # classes; add trailing blanks to separate the classes from it.
+            block = body + ["\n", "\n"]
+            insert_at = anchor_index
+        else:
+            last_class = max(
+                (n for n in self.tree.body if isinstance(n, ast.ClassDef)),
+                key=lambda n: n.end_lineno,
+            )
+            block = ["\n", "\n", *body]
+            insert_at = last_class.end_lineno
         self._edits.append((insert_at, insert_at, block))
 
     def render(self) -> str:
@@ -139,7 +173,13 @@ def build_device_class_edits(path: Path, ha_qualnames: list[str]) -> SourceFile:
     """Return a SourceFile with edits to copy each HA enum verbatim into ``path``."""
     source_file = SourceFile(path)
     for qualname in ha_qualnames:
-        ha_enum = import_qualified(qualname)
+        try:
+            ha_enum = import_qualified(qualname)
+        except (ImportError, AttributeError) as exc:
+            raise LookupError(
+                f"Home Assistant no longer defines {qualname}; "
+                f"update DEVICE_CLASS_ENUMS in {Path(__file__).name}"
+            ) from exc
         node = source_file.class_node(ha_enum.__name__)
         if node is None:
             raise LookupError(f"{ha_enum.__name__} not found in {path}")
@@ -147,9 +187,10 @@ def build_device_class_edits(path: Path, ha_qualnames: list[str]) -> SourceFile:
     return source_file
 
 
-def build_units_edits() -> tuple[SourceFile, list[str]]:
-    """Return a SourceFile with edits to sync zha.units, and the names of added enums."""
-    source_file = SourceFile(Path(zha_units.__file__))
+def build_units_edits() -> tuple[SourceFile, list[str], list[str]]:
+    """Return edits to sync zha.units, plus the names of added and removed enums."""
+    source_file = SourceFile(Path(UNITS_FILE))
+    ha_names = set(ha_unit_enum_names())
 
     # Unit enums: replace the ones ZHA has, append the ones it's missing.
     new_class_sources: list[str] = []
@@ -163,9 +204,21 @@ def build_units_edits() -> tuple[SourceFile, list[str]]:
             new_class_sources.append(source)
             added.append(name)
     if new_class_sources:
-        source_file.append_classes(new_class_sources)
+        source_file.append_classes(new_class_sources, anchor=UNITS_BACKCOMPAT_ANCHOR)
 
-    return source_file, added
+    # Remove unit enums HA no longer defines. ZHA's unit enums exist solely to
+    # mirror HA, so "in ZHA but not HA" unambiguously means HA dropped it.
+    removed: list[str] = []
+    for node in source_file.tree.body:
+        if (
+            isinstance(node, ast.ClassDef)
+            and node.name.startswith("UnitOf")
+            and node.name not in ha_names
+        ):
+            source_file.remove_node(node)
+            removed.append(node.name)
+
+    return source_file, added, removed
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -182,10 +235,13 @@ def main(argv: list[str] | None = None) -> int:
         (build_device_class_edits(Path(zha_dir), qualnames), ["updated device classes"])
         for zha_dir, qualnames in DEVICE_CLASS_ENUMS.items()
     ]
-    units_file, added = build_units_edits()
-    unit_changes = (["added enums " + ", ".join(added)] if added else []) + [
-        "refreshed unit enums"
-    ]
+    units_file, added, removed = build_units_edits()
+    unit_changes: list[str] = []
+    if added:
+        unit_changes.append("added enums " + ", ".join(added))
+    if removed:
+        unit_changes.append("removed enums " + ", ".join(removed))
+    unit_changes.append("refreshed unit enums")
     edits.append((units_file, unit_changes))
 
     if args.check:
