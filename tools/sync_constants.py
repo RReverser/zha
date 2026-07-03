@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+from dataclasses import dataclass, field
 from enum import Enum
 import importlib
 import inspect
@@ -170,9 +171,100 @@ class SourceFile:
         return True
 
 
-def build_device_class_edits(path: Path, ha_qualnames: list[str]) -> SourceFile:
-    """Return a SourceFile with edits to copy each HA enum verbatim into ``path``."""
+@dataclass
+class EnumChange:
+    """A per-enum summary of what a sync changed, for the run/PR summary."""
+
+    name: str
+    is_new: bool = False
+    is_removed: bool = False
+    added: dict[str, str] = field(default_factory=dict)
+    removed_members: dict[str, str] = field(default_factory=dict)
+    changed: dict[str, tuple[str, str]] = field(default_factory=dict)
+    doc_changed: bool = False
+
+
+def _enum_members_from_node(node: ast.ClassDef) -> dict[str, str]:
+    """Return {member: value} for ``NAME = "value"`` assignments in a class body."""
+    members: dict[str, str] = {}
+    for stmt in node.body:
+        if (
+            isinstance(stmt, ast.Assign)
+            and len(stmt.targets) == 1
+            and isinstance(stmt.targets[0], ast.Name)
+            and isinstance(stmt.value, ast.Constant)
+            and isinstance(stmt.value.value, str)
+        ):
+            members[stmt.targets[0].id] = stmt.value.value
+    return members
+
+
+def _normalize_source(text: str) -> str:
+    """Strip trailing whitespace and surrounding blank lines, for comparison."""
+    return "\n".join(line.rstrip() for line in text.strip().splitlines())
+
+
+def diff_enum(
+    name: str, zha_node: ast.ClassDef, ha_enum: type[Enum], original: str
+) -> EnumChange | None:
+    """Return an EnumChange describing how ``ha_enum`` differs from ZHA's copy.
+
+    None if the class is unchanged. Member add/remove/value changes are exact;
+    docstring/comment/formatting changes are flagged (only) when no member
+    changed, since those already show up alongside member changes in the diff.
+    """
+    ha_members = {m.name: m.value for m in ha_enum}
+    zha_members = _enum_members_from_node(zha_node)
+    added = {k: v for k, v in ha_members.items() if k not in zha_members}
+    removed = {k: v for k, v in zha_members.items() if k not in ha_members}
+    changed = {
+        k: (zha_members[k], ha_members[k])
+        for k in zha_members.keys() & ha_members.keys()
+        if zha_members[k] != ha_members[k]
+    }
+    doc_changed = not (added or removed or changed) and _normalize_source(
+        ast.get_source_segment(original, zha_node) or ""
+    ) != _normalize_source(inspect.getsource(ha_enum))
+    if not (added or removed or changed or doc_changed):
+        return None
+    return EnumChange(
+        name=name,
+        added=added,
+        removed_members=removed,
+        changed=changed,
+        doc_changed=doc_changed,
+    )
+
+
+def format_changes(changes: list[EnumChange]) -> list[str]:
+    """Render EnumChange records as indented summary lines."""
+    lines: list[str] = []
+    for change in changes:
+        if change.is_new:
+            lines.append(f"  + added enum {change.name}")
+            continue
+        if change.is_removed:
+            lines.append(f"  - removed enum {change.name}")
+            continue
+        lines.append(f"  {change.name}:")
+        for member in sorted(change.added):
+            lines.append(f"    + {member} = {change.added[member]!r}")
+        for member in sorted(change.removed_members):
+            lines.append(f"    - {member} = {change.removed_members[member]!r}")
+        for member in sorted(change.changed):
+            old, new = change.changed[member]
+            lines.append(f"    ~ {member}: {old!r} -> {new!r}")
+        if change.doc_changed:
+            lines.append("    ~ docstring/comment updates")
+    return lines
+
+
+def build_device_class_edits(
+    path: Path, ha_qualnames: list[str]
+) -> tuple[SourceFile, list[EnumChange]]:
+    """Return a SourceFile and per-enum changes to copy each HA enum into ``path``."""
     source_file = SourceFile(path)
+    changes: list[EnumChange] = []
     for qualname in ha_qualnames:
         try:
             ha_enum = import_qualified(qualname)
@@ -184,26 +276,33 @@ def build_device_class_edits(path: Path, ha_qualnames: list[str]) -> SourceFile:
         node = source_file.class_node(ha_enum.__name__)
         if node is None:
             raise LookupError(f"{ha_enum.__name__} not found in {path}")
+        change = diff_enum(ha_enum.__name__, node, ha_enum, source_file.original)
+        if change is not None:
+            changes.append(change)
         source_file.replace_node(node, inspect.getsource(ha_enum))
-    return source_file
+    return source_file, changes
 
 
-def build_units_edits() -> tuple[SourceFile, list[str], list[str]]:
-    """Return edits to sync zha.units, plus the names of added and removed enums."""
+def build_units_edits() -> tuple[SourceFile, list[EnumChange]]:
+    """Return a SourceFile and per-enum changes to sync zha.units."""
     source_file = SourceFile(Path(UNITS_FILE))
     ha_names = set(ha_unit_enum_names())
+    changes: list[EnumChange] = []
 
     # Unit enums: replace the ones ZHA has, append the ones it's missing.
     new_class_sources: list[str] = []
-    added: list[str] = []
     for name in ha_unit_enum_names():
-        source = inspect.getsource(getattr(ha_const, name))
+        ha_enum = getattr(ha_const, name)
+        source = inspect.getsource(ha_enum)
         node = source_file.class_node(name)
         if node is not None:
+            change = diff_enum(name, node, ha_enum, source_file.original)
+            if change is not None:
+                changes.append(change)
             source_file.replace_node(node, source)
         else:
             new_class_sources.append(source)
-            added.append(name)
+            changes.append(EnumChange(name=name, is_new=True))
     if new_class_sources:
         source_file.append_classes(new_class_sources, anchor=UNITS_BACKCOMPAT_ANCHOR)
 
@@ -211,7 +310,6 @@ def build_units_edits() -> tuple[SourceFile, list[str], list[str]]:
     # mirror HA. `ha_names` only holds enums *defined* in homeassistant.const, so
     # guard against HA merely relocating one (still exposed via a re-export): if
     # HA still has the name, don't guess — fail so a human updates the tool.
-    removed: list[str] = []
     for node in source_file.tree.body:
         if not (isinstance(node, ast.ClassDef) and node.name.startswith("UnitOf")):
             continue
@@ -223,9 +321,9 @@ def build_units_edits() -> tuple[SourceFile, list[str], list[str]]:
                 f"still exposes it (it may have moved); update {Path(__file__).name}"
             )
         source_file.remove_node(node)
-        removed.append(node.name)
+        changes.append(EnumChange(name=node.name, is_removed=True))
 
-    return source_file, added, removed
+    return source_file, changes
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -238,18 +336,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    edits: list[tuple[SourceFile, list[str]]] = [
-        (build_device_class_edits(Path(zha_dir), qualnames), ["updated device classes"])
+    edits: list[tuple[SourceFile, list[EnumChange]]] = [
+        build_device_class_edits(Path(zha_dir), qualnames)
         for zha_dir, qualnames in DEVICE_CLASS_ENUMS.items()
     ]
-    units_file, added, removed = build_units_edits()
-    unit_changes: list[str] = []
-    if added:
-        unit_changes.append("added enums " + ", ".join(added))
-    if removed:
-        unit_changes.append("removed enums " + ", ".join(removed))
-    unit_changes.append("refreshed unit enums")
-    edits.append((units_file, unit_changes))
+    edits.append(build_units_edits())
 
     if args.check:
         stale = [sf.path for sf, _ in edits if sf.render() != sf.original]
@@ -263,14 +354,13 @@ def main(argv: list[str] | None = None) -> int:
         print("All mirrored constants are in sync.")
         return 0
 
-    changed = [(sf.path, desc) for sf, desc in edits if sf.flush()]
+    changed = [(sf.path, changes) for sf, changes in edits if sf.flush()]
     if changed:
-        print("Synced from homeassistant:")
-        for path, descriptions in changed:
+        print("Synced from Home Assistant:")
+        for path, changes in changed:
             print(f"\n{path}:")
-            for description in descriptions:
-                print(f"  {description}")
-        print("\nRun `ruff format zha/` to normalise whitespace.")
+            for line in format_changes(changes) or ["  updated"]:
+                print(line)
     else:
         print("All mirrored constants already in sync.")
     return 0
