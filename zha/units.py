@@ -239,43 +239,11 @@ class UnitOfSpeed(StrEnum):
     MILLIMETERS_PER_SECOND = "mm/s"
 
 
-# Concentration units
-CONCENTRATION_GRAMS_PER_CUBIC_METER: Final = "g/m³"
-CONCENTRATION_MICROGRAMS_PER_CUBIC_METER: Final = "μg/m³"
-CONCENTRATION_MILLIGRAMS_PER_CUBIC_METER: Final = "mg/m³"
-CONCENTRATION_MICROGRAMS_PER_CUBIC_FOOT: Final = "μg/ft³"
-CONCENTRATION_PARTS_PER_CUBIC_METER: Final = "p/m³"
-CONCENTRATION_PARTS_PER_MILLION: Final = "ppm"
-CONCENTRATION_PARTS_PER_BILLION: Final = "ppb"
-
-
 class UnitOfBloodGlucoseConcentration(StrEnum):
     """Blood glucose concentration units."""
 
     MILLIGRAMS_PER_DECILITER = "mg/dL"
     MILLIMOLE_PER_LITER = "mmol/L"
-
-
-# Signal_strength units
-SIGNAL_STRENGTH_DECIBELS: Final = "dB"
-SIGNAL_STRENGTH_DECIBELS_MILLIWATT: Final = "dBm"
-
-# Light units
-LIGHT_LUX: Final = "lx"
-
-# UV Index units
-UV_INDEX: Final = "UV index"
-
-# Percentage units
-PERCENTAGE: Final[str] = "%"
-
-# Rotational speed units
-REVOLUTIONS_PER_MINUTE: Final = "rpm"
-
-# Currency units
-CURRENCY_EURO: Final = "€"
-CURRENCY_DOLLAR: Final = "$"
-CURRENCY_CENT: Final = "¢"
 
 
 # Irradiance units
@@ -366,10 +334,75 @@ class UnitOfDataRate(StrEnum):
     GIBIBYTES_PER_SECOND = "GiB/s"
 
 
-# Kinetic energy
+class UnitOfDensity(StrEnum):
+    """Density units.
+
+    Ratio of a substance's mass to its volume.
+    """
+
+    GRAMS_PER_CUBIC_METER = "g/m³"
+    MILLIGRAMS_PER_CUBIC_METER = "mg/m³"
+    MICROGRAMS_PER_CUBIC_METER = "μg/m³"
+    MICROGRAMS_PER_CUBIC_FOOT = "μg/ft³"
+
+
+class UnitOfRatio(StrEnum):
+    """Ratio units."""
+
+    PARTS_PER_MILLION = "ppm"
+    PARTS_PER_BILLION = "ppb"
+    PERCENTAGE = "%"
+
+
+# ---------------------------------------------------------------------------
+# Backwards-compatibility constants mirroring homeassistant.const.
+#
+# Home Assistant derives several of these from the unit enums above. They are
+# kept here so existing imports keep working, and are maintained by hand:
+# tools/sync_constants.py syncs the enums above but never rewrites this section.
+# ---------------------------------------------------------------------------
+
+# Concentration units
+CONCENTRATION_GRAMS_PER_CUBIC_METER: Final = UnitOfDensity.GRAMS_PER_CUBIC_METER.value
+CONCENTRATION_MICROGRAMS_PER_CUBIC_METER: Final = (
+    UnitOfDensity.MICROGRAMS_PER_CUBIC_METER.value
+)
+CONCENTRATION_MILLIGRAMS_PER_CUBIC_METER: Final = (
+    UnitOfDensity.MILLIGRAMS_PER_CUBIC_METER.value
+)
+CONCENTRATION_MICROGRAMS_PER_CUBIC_FOOT: Final = (
+    UnitOfDensity.MICROGRAMS_PER_CUBIC_FOOT.value
+)
+# ZHA-only, not present in homeassistant.const
+CONCENTRATION_PARTS_PER_CUBIC_METER: Final = "p/m³"
+CONCENTRATION_PARTS_PER_MILLION: Final = UnitOfRatio.PARTS_PER_MILLION.value
+CONCENTRATION_PARTS_PER_BILLION: Final = UnitOfRatio.PARTS_PER_BILLION.value
+
+# Signal strength units
+SIGNAL_STRENGTH_DECIBELS: Final = "dB"
+SIGNAL_STRENGTH_DECIBELS_MILLIWATT: Final = "dBm"
+
+# Light units
+LIGHT_LUX: Final = "lx"
+
+# UV Index units
+UV_INDEX: Final = "UV index"
+
+# Percentage units
+PERCENTAGE: Final = UnitOfRatio.PERCENTAGE.value
+
+# Rotational speed units
+REVOLUTIONS_PER_MINUTE: Final = "rpm"
+
+# Currency units
+CURRENCY_EURO: Final = "€"
+CURRENCY_DOLLAR: Final = "$"
+CURRENCY_CENT: Final = "¢"
+
+# Kinetic energy (ZHA-only, not present in homeassistant.const)
 KILOJOULES_PER_KG: Final = "KJ/kg"
 
-# Count
+# Count (ZHA-only, not present in homeassistant.const)
 COUNT: Final = "count"
 
 DEGREE: Final = "°"

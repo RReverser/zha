@@ -13,12 +13,12 @@ What it does, per mirrored file:
 * Every ``UnitOf*`` enum HA defines is copied into `zha.units`; enums HA has that
   ZHA doesn't mirror yet are appended.
 
-Only enums are synced. Module-level constants are left untouched: ZHA keeps them
-as plain literals (``PERCENTAGE: Final = "%"``) whereas HA derives them from the
-enums (``UnitOfRatio.PERCENTAGE.value``), so copying those verbatim would reorder
-the file and create forward references. They rarely change and are easy to update
-by hand. ZHA-only symbols (e.g. ``COUNT``, ``KILOJOULES_PER_KG``) are never
-touched, and nothing is removed.
+Only enums are synced. The module-level constants ZHA mirrors live in a
+hand-maintained "backwards compatibility" section at the end of `zha.units`
+(some, like ``PERCENTAGE``, derive from the enums exactly as HA does). Copying
+those verbatim would reorder the file and create forward references, and they
+double as ZHA's public API, so they are deliberately left for humans to update.
+This tool never touches that section, nor ZHA-only symbols, and removes nothing.
 
 Run ``ruff format`` afterwards to normalise whitespace. Use ``--check`` for a dry
 run that exits 1 if anything would change.
