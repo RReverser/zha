@@ -1,0 +1,40 @@
+name: Sync device classes from Home Assistant
+
+# Compares ZHA's local copies of Home Assistant constants (unit enums, device
+# class enums, module-level constants) against the canonical `homeassistant`
+# package and fails if they have drifted out of sync. Unlike ESPHome's
+# equivalent, `tools/compare_constants.py` only *detects* drift, so this job
+# surfaces it via a failed run rather than opening a fix-up pull request.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "45 6 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  compare-constants:
+    name: Compare constants against Home Assistant
+    runs-on: ubuntu-latest
+    if: github.repository == 'zigpy/zha'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      - name: Install ZHA and Home Assistant
+        # Home Assistant requires Python 3.14.2+ (see pyproject.toml history).
+        # zha-quirks is needed because importing the platform device-class
+        # modules pulls in `zhaquirks`.
+        run: |
+          uv venv --python 3.14
+          uv pip install -e . "homeassistant>=2026.7.0" "zha-quirks>=2.0.0"
+
+      - name: Compare constants against Home Assistant
+        run: .venv/bin/python -m tools.compare_constants
