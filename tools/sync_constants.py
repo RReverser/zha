@@ -20,7 +20,8 @@ hand-maintained "backwards compatibility" section at the end of `zha.units`
 (some, like ``PERCENTAGE``, derive from the enums exactly as HA does). Copying
 those verbatim would reorder the file and create forward references, and they
 double as ZHA's public API, so they are deliberately left for humans to update.
-This tool never touches that section, nor ZHA-only symbols, and removes nothing.
+This tool never touches that section or ZHA-only symbols (so only enums, never
+constants, are added, changed, or removed).
 
 Run ``ruff format`` afterwards to normalise whitespace. Use ``--check`` for a dry
 run that exits 1 if anything would change.
