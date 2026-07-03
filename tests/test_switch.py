@@ -41,6 +41,7 @@ from tests.common import (
 from zha.application import Platform
 from zha.application.gateway import Gateway
 from zha.application.platforms import GroupEntity, PlatformEntity
+from zha.application.platforms.switch import ConfigurableAttributeSwitch
 from zha.exceptions import ZHAException
 from zha.quirks import QUIRK_REGISTRY_ENTRY_ATTR, DeviceRegistry
 from zha.zigbee.device import Device
@@ -768,6 +769,36 @@ async def test_switch_configurable_bitmap_mask(zha_gateway: Gateway) -> None:
         assert cluster.write_attributes.mock_calls == [
             call({attr_name: 0b10}, manufacturer=UNDEFINED)
         ]
+
+    # The `mask=` constructor argument (the path quirks v2 discovery uses) is
+    # honored: build a switch on the same cluster targeting the higher bit.
+    masked = ConfigurableAttributeSwitch(
+        endpoint=entity._endpoint,
+        device=zha_device,
+        cluster=cluster,
+        from_quirk=True,
+        attribute_name=attr_name,
+        mask=0b10,
+        fallback_name="Masked bit",
+        unique_id_suffix="masked-bit",
+    )
+    await send_attributes_report(zha_gateway, cluster, {attr_name: 0b10})
+    assert masked.is_on is True
+    await send_attributes_report(zha_gateway, cluster, {attr_name: 0b01})
+    assert masked.is_on is False
+
+    # A zero mask is rejected (it would make the switch a permanent no-op).
+    with pytest.raises(ValueError, match="mask must be a non-zero bitmask"):
+        ConfigurableAttributeSwitch(
+            endpoint=entity._endpoint,
+            device=zha_device,
+            cluster=cluster,
+            from_quirk=True,
+            attribute_name=attr_name,
+            mask=0,
+            fallback_name="Zero mask",
+            unique_id_suffix="zero-mask",
+        )
 
 
 WCAttrs = closures.WindowCovering.AttributeDefs

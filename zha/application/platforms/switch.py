@@ -440,6 +440,11 @@ class ConfigurableAttributeSwitch(PlatformEntity):
         self._off_value = off_value
         self._on_value = on_value
         if mask is not None:
+            if not mask:
+                raise ValueError(
+                    "mask must be a non-zero bitmask; a zero mask would make the "
+                    "switch a no-op that is always off"
+                )
             self._mask = mask
 
         super().__init__(
