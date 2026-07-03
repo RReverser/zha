@@ -20,7 +20,7 @@ $ python -m tools.regenerate_diagnostics
 
 ## Sync constants from Home Assistant
 
-ZHA keeps near 1:1 copies of some Home Assistant enums (unit enums in `zha.units`, and the device-class / mode enums under `zha.application.platforms`). This tool copies them verbatim — including docstrings and comments — from the installed `homeassistant` package, so they stay in sync. It requires `homeassistant` (and `zha-quirks`) to be installed.
+ZHA keeps near 1:1 copies of some Home Assistant enums (unit enums in `zha.units`, and the device-class / mode enums under `zha.application.platforms`). This tool copies them verbatim — including docstrings and comments — from the installed `homeassistant` package, so they stay in sync. Enums are added, refreshed, or removed to match HA. Run it from the repo root; it needs `homeassistant` installed but reads ZHA's files as text (it never imports them, so `zha`/`zha-quirks` don't need to be installed).
 
 ```console
 $ python -m tools.sync_constants          # copy the enums from HA into ZHA
@@ -28,4 +28,4 @@ $ python -m tools.sync_constants --check  # dry run, exits 1 if anything is out 
 $ ruff format zha/                         # normalise whitespace afterwards
 ```
 
-Only enums are synced; ZHA-only symbols and module-level constants are left untouched. The `Sync device classes from Home Assistant` GitHub workflow runs this against Home Assistant's `dev` branch on a schedule and opens a pull request with the result.
+Only enums are synced. ZHA-only symbols and the hand-maintained backwards-compatibility constants at the end of `zha.units` are left untouched. The `Sync device classes from Home Assistant` GitHub workflow runs this against Home Assistant's `dev` branch on a schedule and opens a pull request with the result.
