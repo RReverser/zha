@@ -208,16 +208,22 @@ def build_units_edits() -> tuple[SourceFile, list[str], list[str]]:
         source_file.append_classes(new_class_sources, anchor=UNITS_BACKCOMPAT_ANCHOR)
 
     # Remove unit enums HA no longer defines. ZHA's unit enums exist solely to
-    # mirror HA, so "in ZHA but not HA" unambiguously means HA dropped it.
+    # mirror HA. `ha_names` only holds enums *defined* in homeassistant.const, so
+    # guard against HA merely relocating one (still exposed via a re-export): if
+    # HA still has the name, don't guess — fail so a human updates the tool.
     removed: list[str] = []
     for node in source_file.tree.body:
-        if (
-            isinstance(node, ast.ClassDef)
-            and node.name.startswith("UnitOf")
-            and node.name not in ha_names
-        ):
-            source_file.remove_node(node)
-            removed.append(node.name)
+        if not (isinstance(node, ast.ClassDef) and node.name.startswith("UnitOf")):
+            continue
+        if node.name in ha_names:
+            continue
+        if hasattr(ha_const, node.name):
+            raise LookupError(
+                f"{node.name} is no longer defined in homeassistant.const but HA "
+                f"still exposes it (it may have moved); update {Path(__file__).name}"
+            )
+        source_file.remove_node(node)
+        removed.append(node.name)
 
     return source_file, added, removed
 

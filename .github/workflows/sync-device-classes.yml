@@ -14,6 +14,12 @@ on:
 permissions:
   contents: read
 
+# Serialise runs so a manual dispatch can't race the scheduled one on the
+# shared sync/device-classes branch.
+concurrency:
+  group: sync-device-classes
+  cancel-in-progress: false
+
 jobs:
   sync:
     name: Sync device classes
@@ -55,13 +61,13 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Install ZHA and Home Assistant
-        # Home Assistant requires Python 3.14.2+. The sync tool reads HA's enums
-        # and parses ZHA's files as text, so it needs neither the full ZHA import
-        # graph nor zha-quirks.
+      - name: Install Home Assistant
+        # The sync tool imports only `homeassistant` and reads ZHA's files as
+        # text (it never imports ZHA), so ZHA itself is not installed — avoiding a
+        # joint resolution of ZHA's and HA-dev's pins. HA requires Python 3.14.2+.
         run: |
           uv venv --python 3.14
-          uv pip install -e . -e ./lib/home-assistant
+          uv pip install -e ./lib/home-assistant
 
       - name: Sync constants
         run: .venv/bin/python -m tools.sync_constants
@@ -73,6 +79,7 @@ jobs:
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ steps.app-token.outputs.token }}
+          add-paths: zha/
           commit-message: "Sync device classes from Home Assistant"
           committer: "${{ steps.app-token.outputs.app-slug }}[bot] <${{ steps.app-user.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>"
           author: "${{ steps.app-token.outputs.app-slug }}[bot] <${{ steps.app-user.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>"
