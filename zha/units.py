@@ -370,7 +370,7 @@ CONCENTRATION_MILLIGRAMS_PER_CUBIC_METER: Final = (
 CONCENTRATION_MICROGRAMS_PER_CUBIC_FOOT: Final = (
     UnitOfDensity.MICROGRAMS_PER_CUBIC_FOOT.value
 )
-# ZHA-only, not present in homeassistant.const
+# Deprecated in homeassistant.const; kept for backwards compatibility
 CONCENTRATION_PARTS_PER_CUBIC_METER: Final = "p/m³"
 CONCENTRATION_PARTS_PER_MILLION: Final = UnitOfRatio.PARTS_PER_MILLION.value
 CONCENTRATION_PARTS_PER_BILLION: Final = UnitOfRatio.PARTS_PER_BILLION.value
