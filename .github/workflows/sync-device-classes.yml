@@ -40,7 +40,9 @@ jobs:
 
       - name: Get the app user id
         id: app-user
-        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        run: |
+          user_id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)
+          echo "user-id=$user_id" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
@@ -66,7 +68,7 @@ jobs:
         # text (it never imports ZHA), so ZHA itself is not installed — avoiding a
         # joint resolution of ZHA's and HA-dev's pins. HA requires Python 3.14.2+.
         run: |
-          uv venv --python 3.14
+          uv venv --python '>=3.14.2'
           uv pip install -e ./lib/home-assistant
 
       - name: Sync constants
