@@ -18,13 +18,14 @@ If entities change, the current diagnostics JSON will no longer be valid and CI 
 $ python -m tools.regenerate_diagnostics
 ```
 
-## Compare constants with Home Assistant
+## Sync constants from Home Assistant
 
-ZHA keeps local copies of some Home Assistant constants (unit enums in `zha.units`, and the device-class / mode enums under `zha.application.platforms`). This tool compares them against the installed `homeassistant` package to surface drift. It requires `homeassistant` (and `zha-quirks`) to be installed.
+ZHA keeps near 1:1 copies of some Home Assistant enums (unit enums in `zha.units`, and the device-class / mode enums under `zha.application.platforms`). This tool copies them verbatim — including docstrings and comments — from the installed `homeassistant` package, so they stay in sync. It requires `homeassistant` (and `zha-quirks`) to be installed.
 
 ```console
-$ python -m tools.compare_constants          # report drift, exits 1 if out of sync
-$ python -m tools.compare_constants --write  # apply the safe fixes in place
+$ python -m tools.sync_constants          # copy the enums from HA into ZHA
+$ python -m tools.sync_constants --check  # dry run, exits 1 if anything is out of sync
+$ ruff format zha/                         # normalise whitespace afterwards
 ```
 
-`--write` only applies the unambiguous, additive fixes (adding enum members HA has but ZHA is missing, and correcting value mismatches). Anything needing human judgement — ZHA-only symbols, type mismatches, or entirely new enums HA has that ZHA doesn't mirror — is reported but never written. The `Sync device classes from Home Assistant` GitHub workflow runs this on a schedule and opens a pull request with any safe fixes.
+Only enums are synced; ZHA-only symbols and module-level constants are left untouched. The `Sync device classes from Home Assistant` GitHub workflow runs this against Home Assistant's `dev` branch on a schedule and opens a pull request with the result.
