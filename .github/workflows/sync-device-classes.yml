@@ -2,9 +2,11 @@ name: Sync device classes from Home Assistant
 
 # Compares ZHA's local copies of Home Assistant constants (unit enums, device
 # class enums, module-level constants) against the canonical `homeassistant`
-# package and fails if they have drifted out of sync. Unlike ESPHome's
-# equivalent, `tools/compare_constants.py` only *detects* drift, so this job
-# surfaces it via a failed run rather than opening a fix-up pull request.
+# package. `tools/compare_constants.py --write` applies the safe, mechanical
+# fixes (adding enum members HA has that ZHA is missing, correcting value
+# mismatches) and this job opens/updates a pull request with them. Anything that
+# needs human judgement (ZHA-only symbols, type mismatches, entirely new enums)
+# is only reported, and makes the final step fail so the drift is not ignored.
 
 on:
   workflow_dispatch:
@@ -12,11 +14,12 @@ on:
     - cron: "45 6 * * *"
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
-  compare-constants:
-    name: Compare constants against Home Assistant
+  sync:
+    name: Sync device classes
     runs-on: ubuntu-latest
     if: github.repository == 'zigpy/zha'
     steps:
@@ -36,5 +39,37 @@ jobs:
           uv venv --python 3.14
           uv pip install -e . "homeassistant>=2026.7.0" "zha-quirks>=2.0.0"
 
-      - name: Compare constants against Home Assistant
+      - name: Apply safe fixes
+        run: .venv/bin/python -m tools.compare_constants --write
+
+      - name: Format
+        run: uvx ruff@0.15.16 format zha/
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          # A PR opened with the default GITHUB_TOKEN does not trigger the CI
+          # workflow. Provide a PAT/GitHub App token as SYNC_PR_TOKEN to have CI
+          # run on the sync PR; otherwise it falls back to GITHUB_TOKEN (which
+          # also needs "Allow GitHub Actions to create and approve pull requests"
+          # enabled in the repository settings).
+          token: ${{ secrets.SYNC_PR_TOKEN || github.token }}
+          commit-message: "Sync device classes from Home Assistant"
+          committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          branch: sync/device-classes
+          delete-branch: true
+          title: "Sync device classes from Home Assistant"
+          body: |
+            Automated safe fixes from `python -m tools.compare_constants --write`
+            (added enum members and corrected value mismatches to match the
+            `homeassistant` package).
+
+            Please review the changes — newly added members have no docstring or
+            comment yet. If the job that opened this PR also failed, there is
+            further drift (ZHA-only symbols, type mismatches, or entirely new
+            enums) that needs to be resolved by hand; see the run log.
+
+      - name: Fail on remaining drift
+        # After --write, anything left is drift a human must resolve.
         run: .venv/bin/python -m tools.compare_constants
