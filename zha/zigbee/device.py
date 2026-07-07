@@ -90,6 +90,7 @@ from zha.mixins import LogMixin
 from zha.quirks import (
     QUIRK_REGISTRY_ENTRY_ATTR,
     DeviceMatch,
+    QuirkRegistryEntry,
     ReplacingZigpyDeviceFactory,
 )
 from zha.zigbee.cluster_config import (
@@ -150,9 +151,13 @@ def get_device_automation_triggers(
     device: zigpy.device.Device,
 ) -> dict[tuple[str, str], dict[str, str]]:
     """Get the supported device automation triggers for a zigpy device."""
+    quirk_entry: QuirkRegistryEntry | None = getattr(
+        device, QUIRK_REGISTRY_ENTRY_ATTR, None
+    )
     return {
         ("device_offline", "device_offline"): {"device_event_type": "device_offline"},
         **getattr(device, "device_automation_triggers", {}),
+        **(quirk_entry.device_automation_triggers if quirk_entry is not None else {}),
     }
 
 

@@ -56,7 +56,7 @@ from zha.application.platforms.sensor.device_class import (
 )
 from zha.application.platforms.switch import Switch
 from zha.exceptions import ZHAException
-from zha.quirks import DeviceRegistry
+from zha.quirks import DeviceMatch, DeviceRegistry, ModelInfo, QuirkRegistryEntry
 from zha.zigbee.device import (
     ClusterBinding,
     Device,
@@ -722,6 +722,39 @@ async def test_device_automation_triggers(
     assert zha_device.device_automation_triggers == {
         ("device_offline", "device_offline"): {"device_event_type": "device_offline"}
     }
+
+
+async def test_device_automation_triggers_from_quirk_entry(
+    zha_gateway: Gateway,
+) -> None:
+    """Test triggers carried on the quirk registry entry are merged.
+
+    Consumers holding only the resolved zigpy device (e.g. HA's early device
+    trigger cache) must see quirk-defined triggers without building the full
+    ZHA device.
+    """
+    triggers = {("remote_button_short_press", "button_1"): {"command": "single"}}
+
+    registry = DeviceRegistry()
+    registry.register(
+        QuirkRegistryEntry(
+            device_match=DeviceMatch(
+                applies_to=(ModelInfo("FakeManufacturer", "FakeModel"),)
+            ),
+            device_automation_triggers=triggers,
+        )
+    )
+
+    zigpy_dev = registry.resolve(zigpy_device(zha_gateway, with_basic_cluster=True))
+
+    expected_triggers = {
+        ("device_offline", "device_offline"): {"device_event_type": "device_offline"},
+        **triggers,
+    }
+    assert get_device_automation_triggers(zigpy_dev) == expected_triggers
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    assert zha_device.device_automation_triggers == expected_triggers
 
 
 async def test_device_properties(

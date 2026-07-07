@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 import contextlib
 from dataclasses import dataclass, field
 import inspect
@@ -149,6 +149,12 @@ class QuirkRegistryEntry:
         Callable[[zigpy.device.Device], zigpy.device.Device], ...
     ] = ()
     zha_device_factory: Callable[..., Device] | None = None
+    # Quirk-defined device automation triggers. Carried on the entry so consumers
+    # holding only the resolved zigpy device (e.g. HA's early device trigger
+    # cache) can read them without building the full ZHA device.
+    device_automation_triggers: Mapping[tuple[str, str], Mapping[str, str]] = field(
+        default_factory=dict
+    )
     # Excluded from equality so identical quirks registered at different sites still
     # deduplicate.
     source: QuirkSource | None = field(default=None, compare=False)
