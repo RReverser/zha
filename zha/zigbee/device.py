@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import asyncio
 from collections import defaultdict
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 import contextlib
 import copy
 import dataclasses
@@ -149,14 +149,13 @@ def _cluster_entry(cluster_id: int, cluster: Cluster) -> dict[str, Any]:
 
 def get_device_automation_triggers(
     device: zigpy.device.Device,
-) -> dict[tuple[str, str], dict[str, str]]:
+) -> dict[tuple[str, str], Mapping[str, str]]:
     """Get the supported device automation triggers for a zigpy device."""
     quirk_entry: QuirkRegistryEntry | None = getattr(
         device, QUIRK_REGISTRY_ENTRY_ATTR, None
     )
     return {
         ("device_offline", "device_offline"): {"device_event_type": "device_offline"},
-        **getattr(device, "device_automation_triggers", {}),
         **(quirk_entry.device_automation_triggers if quirk_entry is not None else {}),
     }
 
@@ -503,7 +502,7 @@ class Device(LogMixin, EventBase):
 
     def _quirk_device_automation_triggers(
         self,
-    ) -> dict[tuple[str, str], dict[str, str]]:
+    ) -> dict[tuple[str, str], Mapping[str, str]]:
         """Device automation triggers contributed by a quirk."""
         return {}
 
@@ -667,7 +666,7 @@ class Device(LogMixin, EventBase):
         return commands
 
     @cached_property
-    def device_automation_triggers(self) -> dict[tuple[str, str], dict[str, str]]:
+    def device_automation_triggers(self) -> dict[tuple[str, str], Mapping[str, str]]:
         """Return the device automation triggers for this device."""
         triggers = get_device_automation_triggers(self._zigpy_device)
         triggers.update(self._quirk_device_automation_triggers())

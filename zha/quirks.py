@@ -208,6 +208,10 @@ class DeviceRegistry:
                 device_match=cls._device_match,
                 zigpy_transforms=tuple(transforms),
                 zha_device_factory=cls,
+                # `device_automation_triggers` is left empty: no `register_device`
+                # caller defines triggers. If a hand-written quirk ever does,
+                # populate the entry from `cls._zigpy_device_cls` here, like the
+                # zha-quirks registration paths do.
                 source=QuirkSource.from_class(cls),
             )
         )
