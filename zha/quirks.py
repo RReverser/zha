@@ -6,6 +6,7 @@ from collections import defaultdict
 from collections.abc import Callable, Iterator
 import contextlib
 from dataclasses import dataclass, field
+import enum
 import inspect
 import logging
 from pathlib import Path
@@ -44,6 +45,18 @@ class ModelInfo(NamedTuple):
 
     manufacturer: str | None
     model: str | None
+
+
+class QuirkPriority(enum.IntEnum):
+    """Standard match priority tiers for registered quirks.
+
+    Higher-priority entries match first; within a tier, custom quirks outrank
+    built-in quirks and the most recently registered entry wins (see
+    `DeviceRegistry`).
+    """
+
+    V1 = 1
+    V2 = 2
 
 
 def _read_current_firmware_version(zigpy_device: zigpy.device.Device) -> int | None:
@@ -149,13 +162,28 @@ class QuirkRegistryEntry:
         Callable[[zigpy.device.Device], zigpy.device.Device], ...
     ] = ()
     zha_device_factory: Callable[..., Device] | None = None
+    # Match priority tier: higher-priority entries match before lower ones,
+    # regardless of registration order. Legacy v1 quirks register with
+    # `QuirkPriority.V1`; everything else defaults to `QuirkPriority.V2`.
+    priority: int = QuirkPriority.V2
     # Excluded from equality so identical quirks registered at different sites still
     # deduplicate.
     source: QuirkSource | None = field(default=None, compare=False)
 
 
 class DeviceRegistry:
-    """Registry of quirk entries, keyed by (manufacturer, model)."""
+    """Registry of quirk entries, keyed by (manufacturer, model).
+
+    Entries match in a fixed priority order rather than by registration
+    recency alone, so a stale custom v1 quirk cannot shadow its built-in v2
+    replacement:
+
+        custom v2 > built-in v2 > custom v1 > built-in v1
+
+    "Custom" means the entry's source file lives under the custom quirks root
+    (remembered from `purge_custom_quirks`, which always precedes custom quirk
+    imports). Within a tier, the most recently registered entry matches first.
+    """
 
     def __init__(self) -> None:
         """Initialize the registry."""
@@ -167,12 +195,39 @@ class DeviceRegistry:
         # Matched against every device by their filters alone, used mostly for legacy v1
         # quirks without model/manufacturer filters.
         self._wildcard_registry: list[QuirkRegistryEntry] = []
+        # Source root of custom quirks, used to rank them above built-in quirks.
+        self._custom_quirks_root: Path | None = None
+
+    def _entry_priority(self, entry: QuirkRegistryEntry) -> tuple[int, bool]:
+        """Effective match priority of an entry (higher matches first)."""
+        is_custom = (
+            self._custom_quirks_root is not None
+            and entry.source is not None
+            and entry.source.file is not None
+            and Path(entry.source.file).is_relative_to(self._custom_quirks_root)
+        )
+        return (entry.priority, is_custom)
+
+    def _insert_by_priority(
+        self, entries: list[QuirkRegistryEntry], entry: QuirkRegistryEntry
+    ) -> None:
+        """Insert `entry` before existing entries of equal or lower priority."""
+        priority = self._entry_priority(entry)
+        index = next(
+            (
+                index
+                for index, existing in enumerate(entries)
+                if self._entry_priority(existing) <= priority
+            ),
+            len(entries),
+        )
+        entries.insert(index, entry)
 
     def register(self, entry: QuirkRegistryEntry) -> QuirkRegistryEntry:
         """Add a quirk entry to the registry, ignoring exact duplicates."""
         if not entry.device_match.applies_to:
             if entry not in self._wildcard_registry:
-                self._wildcard_registry.insert(0, entry)
+                self._insert_by_priority(self._wildcard_registry, entry)
             return entry
 
         for manufacturer, model in entry.device_match.applies_to:
@@ -183,7 +238,7 @@ class DeviceRegistry:
 
             entries = self._registry[ModelInfo(manufacturer, model)]
             if entry not in entries:
-                entries.insert(0, entry)
+                self._insert_by_priority(entries, entry)
 
         return entry
 
@@ -279,7 +334,13 @@ class DeviceRegistry:
             self._registry[ModelInfo(manufacturer, model)].remove(entry)
 
     def purge_custom_quirks(self, custom_quirks_root: Path) -> None:
-        """Remove quirks loaded from the custom quirks directory."""
+        """Remove quirks loaded from the custom quirks directory.
+
+        The root is also remembered so custom quirks registered afterwards are
+        ranked above built-in quirks of the same generation; purging always
+        precedes (re-)importing the custom quirks directory.
+        """
+        self._custom_quirks_root = custom_quirks_root
 
         # Prefer the explicit registry to the wildcard registry
         for entries in (*self._registry.values(), self._wildcard_registry):
@@ -295,12 +356,14 @@ class DeviceRegistry:
         """Snapshot the registry and restore it on exit."""
         saved = {key: list(entries) for key, entries in self._registry.items()}
         saved_wildcard = list(self._wildcard_registry)
+        saved_custom_quirks_root = self._custom_quirks_root
         try:
             yield
         finally:
             self._registry.clear()
             self._registry.update(saved)
             self._wildcard_registry[:] = saved_wildcard
+            self._custom_quirks_root = saved_custom_quirks_root
 
 
 DEVICE_REGISTRY = DeviceRegistry()
