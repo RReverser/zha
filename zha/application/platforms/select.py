@@ -542,10 +542,6 @@ class HueV1MotionSensitivity(ZCLEnumSelectEntity):
                 OccupancySensing.AttributeDefs.pir_u_to_o_delay: AttrConfig(
                     read_on_startup=False,
                 ),
-                # Hue-specific manufacturer attribute backing this entity;
-                # read on startup so the entity is created on freshly-paired
-                # devices (regression from #657 dropping the cluster handler
-                # `ZCL_INIT_ATTRS` that used to read it).
                 "sensitivity": AttrConfig(read_on_startup=False),
             },
         ),
@@ -581,8 +577,6 @@ class HueV2MotionSensitivity(ZCLEnumSelectEntity):
     _server_cluster_config = {
         OccupancySensing.cluster_id: ClusterConfig(
             attributes={
-                # See HueV1MotionSensitivity: read on startup so the entity is
-                # created on freshly-paired devices (regression from #657).
                 "sensitivity": AttrConfig(read_on_startup=False),
             },
         ),
@@ -1127,10 +1121,6 @@ class DanfossExerciseDayOfTheWeek(ZCLEnumSelectEntity):
                 Thermostat.AttributeDefs.setpoint_change_source_timestamp: AttrConfig(
                     read_on_startup=False,
                 ),
-                # Danfoss proprietary attribute backing this entity; read on
-                # startup so the entity is created on freshly-paired devices
-                # (regression from #657 dropping the Danfoss thermostat cluster
-                # handler `ZCL_INIT_ATTRS` that used to read it).
                 "exercise_day_of_week": AttrConfig(read_on_startup=False),
             },
         ),

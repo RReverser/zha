@@ -1552,9 +1552,6 @@ class DanfossExerciseTriggerTime(NumberConfigurationEntity):
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
-    # Danfoss proprietary attribute backing this entity; read on startup so the
-    # entity is created on freshly-paired devices (regression from #657
-    # dropping the Danfoss thermostat cluster handler `ZCL_INIT_ATTRS`).
     _server_cluster_config = {
         Thermostat.cluster_id: ClusterConfig(
             attributes={"exercise_trigger_time": AttrConfig(read_on_startup=False)},
@@ -1578,12 +1575,10 @@ class DanfossExternalMeasuredRoomSensor(ZCLTemperatureEntity):
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
-    # Read on startup so the entity is created on freshly-paired devices
-    # (regression from #657). `read_on_startup=True` mirrors the pre-#657
-    # `ZCL_INIT_ATTRS` entry (a fresh read, as the value can change on-device).
     _server_cluster_config = {
         Thermostat.cluster_id: ClusterConfig(
             attributes={
+                # Read fresh, value can change on-device
                 "external_measured_room_sensor": AttrConfig(read_on_startup=True)
             },
         ),
@@ -1607,12 +1602,12 @@ class DanfossLoadRoomMean(NumberConfigurationEntity):
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
-    # Read on startup so the entity is created on freshly-paired devices
-    # (regression from #657). `read_on_startup=True` mirrors the pre-#657
-    # `ZCL_INIT_ATTRS` entry (a fresh read, as the value can change on-device).
     _server_cluster_config = {
         Thermostat.cluster_id: ClusterConfig(
-            attributes={"load_room_mean": AttrConfig(read_on_startup=True)},
+            attributes={
+                # Read fresh, value can change on-device
+                "load_room_mean": AttrConfig(read_on_startup=True)
+            },
         ),
     }
 
@@ -1637,8 +1632,6 @@ class DanfossRegulationSetpointOffset(NumberConfigurationEntity):
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
-    # Danfoss proprietary attribute backing this entity; read on startup so the
-    # entity is created on freshly-paired devices (regression from #657).
     _server_cluster_config = {
         Thermostat.cluster_id: ClusterConfig(
             attributes={
