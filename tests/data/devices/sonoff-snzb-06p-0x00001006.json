@@ -8,7 +8,7 @@
   "friendly_model": "SNZB-06P",
   "name": "SONOFF SNZB-06P",
   "quirk_applied": true,
-  "quirk_class": "zhaquirks.sonoff.snzb06p:SonoffPresenceSenorSNZB06P",
+  "quirk_class": "zhaquirks.sonoff.snzb06p:(SONOFF / SNZB-06P)",
   "exposes_features": [],
   "manufacturer_code": 4742,
   "power_source": "Mains",
@@ -229,11 +229,11 @@
     "number": [
       {
         "info_object": {
-          "fallback_name": null,
+          "fallback_name": "Presence detection timeout",
           "unique_id": "ab:cd:ef:12:dd:23:ca:15-1-1030-presence_detection_timeout",
           "migrate_unique_ids": [],
           "platform": "number",
-          "class_name": "SonoffPresenceSenorTimeout",
+          "class_name": "NumberConfigurationEntity",
           "translation_key": "presence_detection_timeout",
           "translation_placeholders": null,
           "device_class": null,
@@ -249,11 +249,11 @@
           "mode": "box",
           "native_max_value": 60,
           "native_min_value": 15,
-          "native_step": 1.0,
+          "native_step": 1,
           "native_unit_of_measurement": null
         },
         "state": {
-          "class_name": "SonoffPresenceSenorTimeout",
+          "class_name": "NumberConfigurationEntity",
           "available": true,
           "state": 15
         }
@@ -262,11 +262,11 @@
     "select": [
       {
         "info_object": {
-          "fallback_name": null,
+          "fallback_name": "Detection sensitivity",
           "unique_id": "ab:cd:ef:12:dd:23:ca:15-1-1030-detection_sensitivity",
           "migrate_unique_ids": [],
           "platform": "select",
-          "class_name": "SonoffPresenceDetectionSensitivity",
+          "class_name": "ZCLEnumSelectEntity",
           "translation_key": "detection_sensitivity",
           "translation_placeholders": null,
           "device_class": null,
@@ -279,7 +279,7 @@
           "endpoint_id": 1,
           "available": true,
           "group_id": null,
-          "enum": "SonoffPresenceDetectionSensitivityEnum",
+          "enum": "PresenceDetectionSensitivity",
           "options": [
             "Low",
             "Medium",
@@ -287,7 +287,7 @@
           ]
         },
         "state": {
-          "class_name": "SonoffPresenceDetectionSensitivity",
+          "class_name": "ZCLEnumSelectEntity",
           "available": true,
           "state": "Low"
         }
@@ -352,11 +352,11 @@
       },
       {
         "info_object": {
-          "fallback_name": null,
+          "fallback_name": "Last illumination state",
           "unique_id": "ab:cd:ef:12:dd:23:ca:15-1-64529-last_illumination",
           "migrate_unique_ids": [],
           "platform": "sensor",
-          "class_name": "SonoffPresenceSenorIlluminationStatus",
+          "class_name": "EnumSensor",
           "translation_key": "last_illumination_state",
           "translation_placeholders": null,
           "device_class": "enum",
@@ -373,7 +373,7 @@
           "unit": null
         },
         "state": {
-          "class_name": "SonoffPresenceSenorIlluminationStatus",
+          "class_name": "EnumSensor",
           "available": true,
           "state": "Light"
         }

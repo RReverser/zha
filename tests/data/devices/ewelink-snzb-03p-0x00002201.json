@@ -7,8 +7,8 @@
   "friendly_manufacturer": "eWeLink",
   "friendly_model": "SNZB-03P",
   "name": "eWeLink SNZB-03P",
-  "quirk_applied": false,
-  "quirk_class": "zigpy.device.Device",
+  "quirk_applied": true,
+  "quirk_class": "zhaquirks.sonoff.snzb03p:(eWeLink / SNZB-03P)",
   "exposes_features": [],
   "manufacturer_code": 4742,
   "power_source": "Battery or Unknown",
@@ -326,11 +326,11 @@
     "number": [
       {
         "info_object": {
-          "fallback_name": null,
+          "fallback_name": "Presence detection timeout",
           "unique_id": "ab:cd:ef:12:cb:2e:18:c7-1-1030-presence_detection_timeout",
           "migrate_unique_ids": [],
           "platform": "number",
-          "class_name": "SonoffPresenceSenorTimeout",
+          "class_name": "NumberConfigurationEntity",
           "translation_key": "presence_detection_timeout",
           "translation_placeholders": null,
           "device_class": null,
@@ -346,11 +346,11 @@
           "mode": "box",
           "native_max_value": 60,
           "native_min_value": 15,
-          "native_step": 1.0,
+          "native_step": 1,
           "native_unit_of_measurement": null
         },
         "state": {
-          "class_name": "SonoffPresenceSenorTimeout",
+          "class_name": "NumberConfigurationEntity",
           "available": true,
           "state": 60
         }
