@@ -74,7 +74,6 @@ from zha.application.platforms.const import (
     IKEA_AIR_PURIFIER_CLUSTER,
     INOVELLI_CLUSTER,
     SMARTTHINGS_HUMIDITY_CLUSTER,
-    SONOFF_CLUSTER,
     TUYA_MANUFACTURER_CLUSTER,
     VOC_LEVEL_CLUSTER,
 )
@@ -3442,29 +3441,6 @@ class AqaraSmokeDensityDbm(Sensor):
     _cluster_match = ClusterMatch(
         server_clusters=frozenset({AQARA_OPPLE_CLUSTER}),
         models=frozenset({"lumi.sensor_smoke.acn03"}),
-    )
-
-
-class SonoffIlluminationStates(types.enum8):
-    """Enum for displaying last Illumination state."""
-
-    Dark = 0x00
-    Light = 0x01
-
-
-@register_entity(SONOFF_CLUSTER)
-class SonoffPresenceSenorIlluminationStatus(EnumSensor):
-    """Sensor that displays the illumination status the last time peresence was detected."""
-
-    _attribute_name = "last_illumination_state"
-    _unique_id_suffix = "last_illumination"
-    _attr_translation_key: str = "last_illumination_state"
-    _enum = SonoffIlluminationStates
-    _cluster_id = SONOFF_CLUSTER
-
-    _cluster_match = ClusterMatch(
-        server_clusters=frozenset({SONOFF_CLUSTER}),
-        models=frozenset({"SNZB-06P"}),
     )
 
 

@@ -706,36 +706,6 @@ class PIRUnoccupiedToOccupiedDelayConfigurationEntity(NumberConfigurationEntity)
     )
 
 
-@register_entity(OccupancySensing.cluster_id)
-class SonoffPresenceSenorTimeout(NumberConfigurationEntity):
-    """Configuration of Sonoff sensor presence detection timeout."""
-
-    _unique_id_suffix = "presence_detection_timeout"
-    _attr_entity_category = EntityCategory.CONFIG
-    _attr_native_min_value: int = 15
-    _attr_native_max_value: int = 60
-    _attribute_name = "ultrasonic_o_to_u_delay"
-    _attr_translation_key: str = "presence_detection_timeout"
-    _cluster_id = OccupancySensing.cluster_id
-
-    _attr_mode: NumberMode = NumberMode.BOX
-
-    _cluster_match = ClusterMatch(
-        server_clusters=frozenset({OccupancySensing.cluster_id}),
-        models=frozenset({"SNZB-06P", "SNZB-03P"}),
-    )
-
-    _server_cluster_config = {
-        OccupancySensing.cluster_id: ClusterConfig(
-            attributes={
-                OccupancySensing.AttributeDefs.ultrasonic_o_to_u_delay: AttrConfig(
-                    read_on_startup=False,
-                ),
-            },
-        ),
-    }
-
-
 @register_entity(TUYA_MANUFACTURER_CLUSTER)
 class TimerDurationMinutes(NumberConfigurationEntity):
     """Representation of a ZHA timer duration configuration entity."""

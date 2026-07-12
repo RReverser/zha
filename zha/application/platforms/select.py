@@ -926,40 +926,6 @@ class AqaraThermostatPreset(ZCLEnumSelectEntity):
     )
 
 
-class SonoffPresenceDetectionSensitivityEnum(types.enum8):
-    """Enum for detection sensitivity select entity."""
-
-    Low = 0x01
-    Medium = 0x02
-    High = 0x03
-
-
-@register_entity(OccupancySensing.cluster_id)
-class SonoffPresenceDetectionSensitivity(ZCLEnumSelectEntity):
-    """Entity to set the detection sensitivity of the Sonoff SNZB-06P."""
-
-    _unique_id_suffix = "detection_sensitivity"
-    _attribute_name = "ultrasonic_u_to_o_threshold"
-    _enum = SonoffPresenceDetectionSensitivityEnum
-    _attr_translation_key: str = "detection_sensitivity"
-    _cluster_id = OccupancySensing.cluster_id
-
-    _cluster_match = ClusterMatch(
-        server_clusters=frozenset({OccupancySensing.cluster_id}),
-        models=frozenset({"SNZB-06P", "SNZB-03P"}),
-    )
-
-    _server_cluster_config = {
-        OccupancySensing.cluster_id: ClusterConfig(
-            attributes={
-                OccupancySensing.AttributeDefs.ultrasonic_u_to_o_threshold: AttrConfig(
-                    read_on_startup=False,
-                ),
-            },
-        ),
-    }
-
-
 class KeypadLockoutEnum(types.enum8):
     """Keypad lockout options."""
 

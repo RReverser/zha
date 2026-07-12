@@ -861,25 +861,6 @@ class SonoffManufacturerBind(VirtualEntity):
     }
 
 
-@register_entity(SONOFF_CLUSTER)
-class SonoffPresenceSensorInit(VirtualEntity):
-    """Sonoff SNZB-06P presence sensor attribute init."""
-
-    _unique_id_suffix = "sonoff_presence_sensor_init"
-
-    _cluster_match = ClusterMatch(
-        server_clusters=frozenset({SONOFF_CLUSTER}),
-        models=frozenset({"SNZB-06P"}),
-    )
-    _server_cluster_config = {
-        SONOFF_CLUSTER: ClusterConfig(
-            attributes={
-                "last_illumination_state": AttrConfig(read_on_startup=False),
-            },
-        ),
-    }
-
-
 @register_entity(TUYA_MANUFACTURER_CLUSTER)
 class TuyaManufacturerBind(VirtualEntity):
     """Bind the Tuya manufacturer cluster on every device that exposes it."""
