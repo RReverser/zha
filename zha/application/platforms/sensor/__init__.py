@@ -350,8 +350,36 @@ class Sensor(BaseSensor):
         if self._is_non_value(raw_state):
             return None
         if self._attribute_converter:
-            return self._attribute_converter(raw_state)
-        return self.formatter(raw_state)
+            value = self._attribute_converter(raw_state)
+        else:
+            value = self.formatter(raw_state)
+        if self._attr_device_class == SensorDeviceClass.TIMESTAMP:
+            value = self._coerce_timestamp(value)
+        return value
+
+    @staticmethod
+    def _coerce_timestamp(
+        value: date | datetime | str | int | float | None,
+    ) -> datetime | None:
+        """Coerce a cached attribute value into a timezone-aware ``datetime``.
+
+        ``TIMESTAMP`` sensors must hand Home Assistant a ``datetime`` object.
+        Quirks may store the value as a ``datetime``, but zigpy persists its
+        attribute cache to SQLite, whose default adapter serializes a
+        ``datetime`` to an ISO string with no reverse converter -- so after a
+        restart the cached value comes back as a ``str``. Integers are treated
+        as seconds since the ZCL epoch, matching native ``UTCTime`` attributes.
+        """
+        if value is None or isinstance(value, datetime):
+            return value
+        if isinstance(value, str):
+            try:
+                return datetime.fromisoformat(value)
+            except ValueError:
+                return None
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return ZCL_EPOCH + timedelta(seconds=value)
+        return None
 
     def handle_attribute_updated(
         self,

@@ -1467,6 +1467,112 @@ async def test_timestamp_sensor_v2(zha_gateway: Gateway) -> None:
     assert entity.state["state"] == datetime(2024, 10, 4, 11, 15, 15, tzinfo=UTC)
 
 
+class StringTimestampCluster(CustomCluster, ManufacturerSpecificCluster):
+    """Timestamp Quirk V2 Cluster storing a datetime in a CharacterString attr."""
+
+    cluster_id = 0xEF01
+    ep_attribute = "string_time_test_cluster"
+    attributes = {
+        0xEF66: ("start_time", t.CharacterString, True),
+    }
+
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize."""
+        super().__init__(*args, **kwargs)
+        # populate cache to create the entity
+        self._attr_cache.update({0xEF66: "unused"})
+
+
+(
+    QuirkBuilder("Fake_StrTimestamp_sensor", "Fake_Model_str_sensor")
+    .replaces(StringTimestampCluster)
+    .sensor(
+        "start_time",
+        StringTimestampCluster.cluster_id,
+        device_class=SensorDeviceClassV2.TIMESTAMP,
+        translation_key="start_time",
+        fallback_name="Start Time",
+    )
+    .add_to_registry()
+)
+
+
+async def zigpy_device_string_timestamp_sensor_v2_mock(zha_gateway: Gateway):
+    """Mock a string timestamp test device."""
+    zigpy_device = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_INPUT: [
+                    general.Basic.cluster_id,
+                    StringTimestampCluster.cluster_id,
+                ],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zigpy.profiles.zha.DeviceType.ON_OFF_SWITCH,
+                SIG_EP_PROFILE: zigpy.profiles.zha.PROFILE_ID,
+            }
+        },
+        manufacturer="Fake_StrTimestamp_sensor",
+        model="Fake_Model_str_sensor",
+    )
+    zigpy_device = get_device(zigpy_device)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    return zha_device, zigpy_device.endpoints[1].string_time_test_cluster
+
+
+async def test_timestamp_sensor_v2_string_value(zha_gateway: Gateway) -> None:
+    """Test a TIMESTAMP sensor whose cached value round-tripped to a string.
+
+    A quirk may store a ``datetime`` in a ``CharacterString`` attribute, but
+    zigpy persists its attribute cache to SQLite, whose default adapter
+    serializes the ``datetime`` to an ISO string. After a restart the value is
+    read back as a ``str``, which previously raised ``'str' object has no
+    attribute 'tzinfo'`` when handed to Home Assistant. It must be coerced back
+    into a ``datetime``. Regression test for home-assistant/core#148202.
+    """
+    zha_device, cluster = await zigpy_device_string_timestamp_sensor_v2_mock(
+        zha_gateway
+    )
+    entity = get_entity(zha_device, platform=Platform.SENSOR, qualifier="start_time")
+
+    expected = datetime(2025, 7, 5, 9, 33, 17, 905219, tzinfo=UTC)
+
+    # A live report stores a real datetime object (works today).
+    await send_attributes_report(zha_gateway, cluster, {"start_time": expected})
+    assert entity.state["state"] == expected
+
+    # Simulate the value having been persisted to SQLite and reloaded as the
+    # ISO string produced by the default datetime adapter.
+    await send_attributes_report(
+        zha_gateway, cluster, {"start_time": "2025-07-05 09:33:17.905219+00:00"}
+    )
+    assert entity.state["state"] == expected
+
+    # A string that cannot be parsed yields no state rather than raising.
+    await send_attributes_report(
+        zha_gateway, cluster, {"start_time": "not-a-timestamp"}
+    )
+    assert entity.state["state"] is None
+
+
+def test_coerce_timestamp() -> None:
+    """Test coercion of cached values into datetimes for TIMESTAMP sensors."""
+    coerce = sensor.Sensor._coerce_timestamp
+    dt = datetime(2024, 10, 4, 11, 15, 15, tzinfo=UTC)
+
+    # datetime objects pass through unchanged
+    assert coerce(dt) is dt
+    # ISO strings (e.g. reloaded from SQLite) are parsed back
+    assert coerce("2024-10-04 11:15:15+00:00") == dt
+    # integers are seconds since the ZCL epoch (2000-01-01 UTC)
+    assert coerce(781355715) == dt
+    assert coerce(781355715.0) == dt
+    # invalid or unexpected values yield None instead of raising
+    assert coerce(None) is None
+    assert coerce("not-a-timestamp") is None
+    assert coerce(True) is None
+
+
 class OppleCluster(CustomCluster, ManufacturerSpecificCluster):
     """Aqara manufacturer specific cluster."""
 
