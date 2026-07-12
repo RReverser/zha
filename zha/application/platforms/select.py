@@ -542,6 +542,11 @@ class HueV1MotionSensitivity(ZCLEnumSelectEntity):
                 OccupancySensing.AttributeDefs.pir_u_to_o_delay: AttrConfig(
                     read_on_startup=False,
                 ),
+                # Hue-specific manufacturer attribute backing this entity;
+                # read on startup so the entity is created on freshly-paired
+                # devices (regression from #657 dropping the cluster handler
+                # `ZCL_INIT_ATTRS` that used to read it).
+                "sensitivity": AttrConfig(read_on_startup=False),
             },
         ),
     }
@@ -572,6 +577,16 @@ class HueV2MotionSensitivity(ZCLEnumSelectEntity):
         manufacturers=frozenset({"Philips", "Signify Netherlands B.V."}),
         models=frozenset({"SML002", "SML003", "SML004"}),
     )
+
+    _server_cluster_config = {
+        OccupancySensing.cluster_id: ClusterConfig(
+            attributes={
+                # See HueV1MotionSensitivity: read on startup so the entity is
+                # created on freshly-paired devices (regression from #657).
+                "sensitivity": AttrConfig(read_on_startup=False),
+            },
+        ),
+    }
 
 
 class AqaraMonitoringModess(types.enum8):
@@ -940,6 +955,16 @@ class SonoffPresenceDetectionSensitivity(ZCLEnumSelectEntity):
         models=frozenset({"SNZB-06P", "SNZB-03P"}),
     )
 
+    _server_cluster_config = {
+        OccupancySensing.cluster_id: ClusterConfig(
+            attributes={
+                OccupancySensing.AttributeDefs.ultrasonic_u_to_o_threshold: AttrConfig(
+                    read_on_startup=False,
+                ),
+            },
+        ),
+    }
+
 
 class KeypadLockoutEnum(types.enum8):
     """Keypad lockout options."""
@@ -1102,6 +1127,11 @@ class DanfossExerciseDayOfTheWeek(ZCLEnumSelectEntity):
                 Thermostat.AttributeDefs.setpoint_change_source_timestamp: AttrConfig(
                     read_on_startup=False,
                 ),
+                # Danfoss proprietary attribute backing this entity; read on
+                # startup so the entity is created on freshly-paired devices
+                # (regression from #657 dropping the Danfoss thermostat cluster
+                # handler `ZCL_INIT_ATTRS` that used to read it).
+                "exercise_day_of_week": AttrConfig(read_on_startup=False),
             },
         ),
     }
@@ -1133,6 +1163,12 @@ class DanfossOrientation(ZCLEnumSelectEntity):
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
 
+    _server_cluster_config = {
+        Thermostat.cluster_id: ClusterConfig(
+            attributes={"orientation": AttrConfig(read_on_startup=False)},
+        ),
+    }
+
 
 @register_entity(Thermostat.cluster_id)
 class DanfossAdaptationRunControl(ZCLEnumSelectEntity):
@@ -1148,6 +1184,12 @@ class DanfossAdaptationRunControl(ZCLEnumSelectEntity):
         server_clusters=frozenset({Thermostat.cluster_id}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
+
+    _server_cluster_config = {
+        Thermostat.cluster_id: ClusterConfig(
+            attributes={"adaptation_run_control": AttrConfig(read_on_startup=False)},
+        ),
+    }
 
 
 class DanfossControlAlgorithmScaleFactorEnum(types.enum8):
@@ -1189,6 +1231,14 @@ class DanfossControlAlgorithmScaleFactor(ZCLEnumSelectEntity):
         server_clusters=frozenset({Thermostat.cluster_id}),
         exposed_features=frozenset({DANFOSS_ALLY_THERMOSTAT}),
     )
+
+    _server_cluster_config = {
+        Thermostat.cluster_id: ClusterConfig(
+            attributes={
+                "control_algorithm_scale_factor": AttrConfig(read_on_startup=False)
+            },
+        ),
+    }
 
 
 @register_entity(UserInterface.cluster_id)

@@ -8,7 +8,7 @@ from zigpy.exceptions import ZigbeeException
 from zigpy.profiles import zha
 import zigpy.types
 from zigpy.typing import UNDEFINED
-from zigpy.zcl.clusters import general, lighting
+from zigpy.zcl.clusters import general, lighting, measurement
 import zigpy.zdo.types as zdo_t
 
 from tests.common import (
@@ -430,3 +430,48 @@ async def test_color_number(
     )
     await zha_gateway.async_block_till_done()
     assert entity.state["state"] == initial_value
+
+
+async def test_sonoff_presence_timeout_startup_read(
+    zha_gateway: Gateway,
+) -> None:
+    """Test the Sonoff presence timeout number is created via a startup read.
+
+    Regression test: the ``ultrasonic_o_to_u_delay`` attribute backing this
+    entity must be read on startup. If it isn't, the attribute has no cached
+    value and the entity is culled on freshly-paired devices (which never had
+    the value persisted from an earlier read).
+    """
+    zigpy_device = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_PROFILE: zha.PROFILE_ID,
+                SIG_EP_TYPE: zha.DeviceType.OCCUPANCY_SENSOR,
+                SIG_EP_INPUT: [
+                    general.Basic.cluster_id,
+                    measurement.OccupancySensing.cluster_id,
+                ],
+                SIG_EP_OUTPUT: [],
+            }
+        },
+        manufacturer="SONOFF",
+        model="SNZB-06P",
+    )
+    cluster = zigpy_device.endpoints[1].occupancy
+    cluster.PLUGGED_ATTR_READS = {
+        "occupancy": 0,
+        "ultrasonic_o_to_u_delay": 30,
+    }
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+
+    attr_reads = set()
+    for call_args in cluster.read_attributes.call_args_list:
+        attr_reads |= set(call_args[0][0])
+    assert "ultrasonic_o_to_u_delay" in attr_reads
+
+    entity = get_entity(
+        zha_device, platform=Platform.NUMBER, qualifier="presence_detection_timeout"
+    )
+    assert entity.state["state"] == 30
