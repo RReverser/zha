@@ -231,7 +231,9 @@ class Group(LogMixin):
 
     def unregister_group_entity(self, group_entity: GroupEntity) -> None:
         """Unregister a group entity."""
-        if group_entity.unique_id in self._group_entities:
+        # Only unregister if this exact entity is registered, so a delayed
+        # removal cannot unregister a recreated entity with the same unique id
+        if self._group_entities.get(group_entity.unique_id) is group_entity:
             self._group_entities.pop(group_entity.unique_id)
             self._entity_unsubs.pop(group_entity.unique_id)()
 
@@ -353,3 +355,7 @@ class Group(LogMixin):
                     group_entity,
                     exc_info=True,
                 )
+        # Unsubscribe any remaining member entity subscriptions
+        while self._entity_unsubs:
+            _, unsub = self._entity_unsubs.popitem()
+            unsub()
