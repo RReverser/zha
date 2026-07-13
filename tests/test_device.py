@@ -2131,3 +2131,33 @@ async def test_async_reinterview_device_active_coordinator(
 
     assert "Skipping reinterview for active coordinator" in caplog.text
     mock_reinterview.assert_not_called()
+
+
+async def test_reconfigure_does_not_leak_pending_entities(
+    zha_gateway: Gateway,
+) -> None:
+    """Reconfiguring an initialized device tears down its prospective entities."""
+    zigpy_device = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_INPUT: [
+                    general.Basic.cluster_id,
+                    general.OnOff.cluster_id,
+                ],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zigpy.profiles.zha.DeviceType.ON_OFF_SWITCH,
+                SIG_EP_PROFILE: zigpy.profiles.zha.PROFILE_ID,
+            }
+        },
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    assert not zha_device._pending_entities
+
+    # A rejoin/reconfigure runs `async_configure()` without a following
+    # `async_initialize()`; the prospects discovered for config aggregation
+    # must not stay subscribed in `_pending_entities`.
+    await zha_device.async_configure()
+    await zha_gateway.async_block_till_done()
+
+    assert not zha_device._pending_entities

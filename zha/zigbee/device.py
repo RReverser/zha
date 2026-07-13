@@ -1009,6 +1009,15 @@ class Device(LogMixin, EventBase):
         if aggregated and not self.skip_configuration:
             await configure_cluster_configs(self, aggregated)
 
+        # On a reconfigure/rejoin of an already-initialized device the
+        # prospective entities were only needed for config aggregation; tear
+        # them down so their `on_add()` subscriptions don't accumulate next to
+        # the live entities (only `async_initialize` adds pending entities).
+        if self._initialized:
+            for entity in self._pending_entities:
+                await entity.on_remove()
+            self._pending_entities.clear()
+
         self.emit_reconfigure_done()
 
         self.debug("completed configuration")
