@@ -15,7 +15,6 @@ from zigpy.zcl import (
     AttributeReportedEvent,
     AttributeUpdatedEvent,
     AttributeWrittenEvent,
-    ReportingConfig,
 )
 from zigpy.zcl.clusters.general import LevelControl, OnOff
 from zigpy.zcl.clusters.hvac import Thermostat, UserInterface
@@ -357,14 +356,7 @@ class StartupOnOffSelectEntity(ZCLEnumSelectEntity):
 
     _server_cluster_config = {
         OnOff.cluster_id: ClusterConfig(
-            bind=True,
             attributes={
-                OnOff.AttributeDefs.on_off: AttrConfig(
-                    read_on_startup=True,
-                    reporting=ReportingConfig(
-                        min_interval=0, max_interval=900, reportable_change=1
-                    ),
-                ),
                 OnOff.AttributeDefs.start_up_on_off: AttrConfig(
                     read_on_startup=False,
                 ),
