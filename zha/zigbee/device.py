@@ -1157,7 +1157,17 @@ class Device(LogMixin, EventBase):
         new_entities: dict[tuple[Platform, str], PlatformEntity] = {}
 
         for entity in self._pending_entities:
-            entity.recompute_capabilities()
+            # Iterate defensively so a failure in any single entity does not
+            # abort initialization for the rest of the device
+            try:
+                entity.recompute_capabilities()
+            except Exception:  # pylint: disable=broad-except
+                _LOGGER.exception(
+                    "Failed to recompute capabilities for entity %s, skipping it",
+                    entity,
+                )
+                await entity.on_remove()
+                continue
 
             # Ignore unsupported entities
             if not entity.is_supported() or not entity.is_supported_in_list(
@@ -1193,7 +1203,16 @@ class Device(LogMixin, EventBase):
 
         # Remove all entities that are no longer supported
         for entity in entities[:]:
-            entity.recompute_capabilities()
+            # A failed recomputation keeps the existing entity as-is rather
+            # than aborting the recomputation of the remaining entities
+            try:
+                entity.recompute_capabilities()
+            except Exception:  # pylint: disable=broad-except
+                _LOGGER.exception(
+                    "Failed to recompute capabilities for entity %s, keeping it",
+                    entity,
+                )
+                continue
 
             if not entity.is_supported() or not entity.is_supported_in_list(entities):
                 self.debug("Removing unsupported entity %s", entity)

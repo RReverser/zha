@@ -49,7 +49,7 @@ from zha.application.gateway import Gateway
 from zha.application.platforms import PlatformEntity
 from zha.application.platforms.binary_sensor import IASZone
 from zha.application.platforms.light import Light
-from zha.application.platforms.sensor import LQISensor, RSSISensor
+from zha.application.platforms.sensor import AnalogInputSensor, LQISensor, RSSISensor
 from zha.application.platforms.sensor.device_class import (
     SensorDeviceClass,
     SensorStateClass,
@@ -2131,3 +2131,71 @@ async def test_async_reinterview_device_active_coordinator(
 
     assert "Skipping reinterview for active coordinator" in caplog.text
     mock_reinterview.assert_not_called()
+
+
+async def test_add_pending_entities_recompute_failure_is_isolated(
+    zha_gateway: Gateway, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Test a failing `recompute_capabilities` only drops that entity (issue #826)."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/isilentllc-masterbed-light-controller.json",
+    )
+    zigpy_dev.endpoints[2].analog_input.update_attribute(
+        general.AnalogInput.AttributeDefs.description.id, "Some description"
+    )
+
+    # Succeed on the first (construction-time) call for each entity and fail
+    # afterwards, so the failure surfaces in `_add_pending_entities` — like a
+    # poison attribute value that is only read during initialization
+    constructed: set[int] = set()
+
+    def _flaky_recompute(self: AnalogInputSensor) -> None:
+        if id(self) in constructed:
+            raise RuntimeError("recompute failed")
+        constructed.add(id(self))
+
+    with patch.object(AnalogInputSensor, "recompute_capabilities", _flaky_recompute):
+        zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    assert "Failed to recompute capabilities" in caplog.text
+
+    # The failing entity is dropped, but the rest of the device initializes
+    get_entity(zha_device, platform=Platform.LIGHT)
+    with pytest.raises(KeyError):
+        get_entity(
+            zha_device, platform=Platform.SENSOR, exact_entity_type=AnalogInputSensor
+        )
+
+
+async def test_recompute_entities_recompute_failure_keeps_entity(
+    zha_gateway: Gateway, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Test a failing `recompute_capabilities` keeps the existing entity."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/isilentllc-masterbed-light-controller.json",
+    )
+    zigpy_dev.endpoints[2].analog_input.update_attribute(
+        general.AnalogInput.AttributeDefs.description.id, "Some description"
+    )
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    entity = get_entity(
+        zha_device, platform=Platform.SENSOR, exact_entity_type=AnalogInputSensor
+    )
+
+    with patch.object(
+        entity,
+        "recompute_capabilities",
+        side_effect=RuntimeError("recompute failed"),
+    ):
+        await zha_device.recompute_entities()
+
+    assert "Failed to recompute capabilities" in caplog.text
+    assert (
+        get_entity(
+            zha_device, platform=Platform.SENSOR, exact_entity_type=AnalogInputSensor
+        )
+        is entity
+    )
