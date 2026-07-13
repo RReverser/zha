@@ -409,6 +409,9 @@ class OnOffTransitionTimeConfigurationEntity(NumberConfigurationEntity):
         server_clusters=frozenset({LevelControl.cluster_id}),
     )
 
+    # Cluster-level bind and current_level read/reporting for LevelControl
+    # devices without a light-like entity; the sibling configuration
+    # entities below only read their own backing attribute.
     _server_cluster_config = {
         LevelControl.cluster_id: ClusterConfig(
             bind=True,
@@ -420,21 +423,6 @@ class OnOffTransitionTimeConfigurationEntity(NumberConfigurationEntity):
                     ),
                 ),
                 LevelControl.AttributeDefs.on_off_transition_time: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.on_level: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.on_transition_time: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.off_transition_time: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.default_move_rate: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.start_up_current_level: AttrConfig(
                     read_on_startup=False,
                 ),
             },
@@ -457,6 +445,16 @@ class OnLevelConfigurationEntity(NumberConfigurationEntity):
         server_clusters=frozenset({LevelControl.cluster_id}),
     )
 
+    _server_cluster_config = {
+        LevelControl.cluster_id: ClusterConfig(
+            attributes={
+                LevelControl.AttributeDefs.on_level: AttrConfig(
+                    read_on_startup=False,
+                ),
+            },
+        ),
+    }
+
 
 @register_entity(LevelControl.cluster_id)
 class OnTransitionTimeConfigurationEntity(NumberConfigurationEntity):
@@ -473,6 +471,16 @@ class OnTransitionTimeConfigurationEntity(NumberConfigurationEntity):
         server_clusters=frozenset({LevelControl.cluster_id}),
     )
 
+    _server_cluster_config = {
+        LevelControl.cluster_id: ClusterConfig(
+            attributes={
+                LevelControl.AttributeDefs.on_transition_time: AttrConfig(
+                    read_on_startup=False,
+                ),
+            },
+        ),
+    }
+
 
 @register_entity(LevelControl.cluster_id)
 class OffTransitionTimeConfigurationEntity(NumberConfigurationEntity):
@@ -488,6 +496,16 @@ class OffTransitionTimeConfigurationEntity(NumberConfigurationEntity):
     _cluster_match = ClusterMatch(
         server_clusters=frozenset({LevelControl.cluster_id}),
     )
+
+    _server_cluster_config = {
+        LevelControl.cluster_id: ClusterConfig(
+            attributes={
+                LevelControl.AttributeDefs.off_transition_time: AttrConfig(
+                    read_on_startup=False,
+                ),
+            },
+        ),
+    }
 
 
 @register_entity(LevelControl.cluster_id)
@@ -506,6 +524,16 @@ class DefaultMoveRateConfigurationEntity(NumberConfigurationEntity):
         server_clusters=frozenset({LevelControl.cluster_id}),
     )
 
+    _server_cluster_config = {
+        LevelControl.cluster_id: ClusterConfig(
+            attributes={
+                LevelControl.AttributeDefs.default_move_rate: AttrConfig(
+                    read_on_startup=False,
+                ),
+            },
+        ),
+    }
+
 
 @register_entity(LevelControl.cluster_id)
 class StartUpCurrentLevelConfigurationEntity(NumberConfigurationEntity):
@@ -521,6 +549,16 @@ class StartUpCurrentLevelConfigurationEntity(NumberConfigurationEntity):
     _cluster_match = ClusterMatch(
         server_clusters=frozenset({LevelControl.cluster_id}),
     )
+
+    _server_cluster_config = {
+        LevelControl.cluster_id: ClusterConfig(
+            attributes={
+                LevelControl.AttributeDefs.start_up_current_level: AttrConfig(
+                    read_on_startup=False,
+                ),
+            },
+        ),
+    }
 
 
 @register_entity(Color.cluster_id)

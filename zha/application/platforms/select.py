@@ -1218,32 +1218,7 @@ class BegaColorTemperatureChannelSelect(ZCLEnumSelectEntity):
 
     _server_cluster_config = {
         LevelControl.cluster_id: ClusterConfig(
-            bind=True,
             attributes={
-                LevelControl.AttributeDefs.current_level: AttrConfig(
-                    read_on_startup=True,
-                    reporting=ReportingConfig(
-                        min_interval=1, max_interval=900, reportable_change=1
-                    ),
-                ),
-                LevelControl.AttributeDefs.on_off_transition_time: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.on_level: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.on_transition_time: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.off_transition_time: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.default_move_rate: AttrConfig(
-                    read_on_startup=False,
-                ),
-                LevelControl.AttributeDefs.start_up_current_level: AttrConfig(
-                    read_on_startup=False,
-                ),
                 "switchable_white": AttrConfig(read_on_startup=False),
                 "switchable_color_temperature_1": AttrConfig(read_on_startup=False),
                 "switchable_color_temperature_2": AttrConfig(read_on_startup=False),
