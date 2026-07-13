@@ -669,18 +669,8 @@ class PIROccupiedToUnoccupiedDelayConfigurationEntity(NumberConfigurationEntity)
 
     _server_cluster_config = {
         OccupancySensing.cluster_id: ClusterConfig(
-            bind=True,
             attributes={
-                OccupancySensing.AttributeDefs.occupancy: AttrConfig(
-                    read_on_startup=True,
-                    reporting=ReportingConfig(
-                        min_interval=0, max_interval=900, reportable_change=1
-                    ),
-                ),
                 OccupancySensing.AttributeDefs.pir_o_to_u_delay: AttrConfig(
-                    read_on_startup=False,
-                ),
-                OccupancySensing.AttributeDefs.pir_u_to_o_delay: AttrConfig(
                     read_on_startup=False,
                 ),
             },
@@ -704,6 +694,16 @@ class PIRUnoccupiedToOccupiedDelayConfigurationEntity(NumberConfigurationEntity)
     _cluster_match = ClusterMatch(
         server_clusters=frozenset({OccupancySensing.cluster_id}),
     )
+
+    _server_cluster_config = {
+        OccupancySensing.cluster_id: ClusterConfig(
+            attributes={
+                OccupancySensing.AttributeDefs.pir_u_to_o_delay: AttrConfig(
+                    read_on_startup=False,
+                ),
+            },
+        ),
+    }
 
 
 @register_entity(OccupancySensing.cluster_id)

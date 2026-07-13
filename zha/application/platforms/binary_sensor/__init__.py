@@ -252,12 +252,6 @@ class Occupancy(BinarySensor):
                         min_interval=0, max_interval=900, reportable_change=1
                     ),
                 ),
-                OccupancySensing.AttributeDefs.pir_o_to_u_delay: AttrConfig(
-                    read_on_startup=False,
-                ),
-                OccupancySensing.AttributeDefs.pir_u_to_o_delay: AttrConfig(
-                    read_on_startup=False,
-                ),
             },
         ),
     }
