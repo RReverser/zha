@@ -42,7 +42,9 @@ from zha.application.platforms.const import (
     IKEA_REMOTE_CLUSTER,
     IKEA_SHORTCUT_V1_CLUSTER,
     INOVELLI_CLUSTER,
+    LEGRAND_CABLE_OUTLET_CLUSTER,
     OSRAM_CLUSTER,
+    PHILIPS_CONTACT_CLUSTER,
     PHILIPS_REMOTE_CLUSTER,
     SINOPE_MANUFACTURER_CLUSTER,
     SMARTTHINGS_ACCELERATION_CLUSTER,
@@ -438,6 +440,58 @@ class PhilipsRemoteBind(VirtualEntity):
     )
     _server_cluster_config = {
         PHILIPS_REMOTE_CLUSTER: ClusterConfig(bind=True),
+    }
+
+
+@register_entity(PHILIPS_CONTACT_CLUSTER)
+class PhilipsContactInit(VirtualEntity):
+    """Philips SOC001 contact cluster bind + reporting.
+
+    Restores the pre-#657 `PhillipsContactClusterHandler` behavior: bind the
+    cluster and configure immediate reporting for `contact` and `tamper`.
+    """
+
+    _unique_id_suffix = "philips_contact_init"
+
+    _cluster_match = ClusterMatch(
+        server_clusters=frozenset({PHILIPS_CONTACT_CLUSTER}),
+    )
+    _server_cluster_config = {
+        PHILIPS_CONTACT_CLUSTER: ClusterConfig(
+            bind=True,
+            attributes={
+                "contact": AttrConfig(
+                    read_on_startup=True,
+                    reporting=ReportingConfig(
+                        min_interval=0, max_interval=900, reportable_change=1
+                    ),
+                ),
+                "tamper": AttrConfig(
+                    read_on_startup=True,
+                    reporting=ReportingConfig(
+                        min_interval=0, max_interval=900, reportable_change=1
+                    ),
+                ),
+            },
+        ),
+    }
+
+
+@register_entity(LEGRAND_CABLE_OUTLET_CLUSTER)
+class LegrandCableOutletBind(VirtualEntity):
+    """Bind the Legrand cable outlet cluster on every device that exposes it.
+
+    Restores the pre-#657 `LegrandCableOutletClusterHandler` behavior, which
+    bound the cluster via the handler's default configuration.
+    """
+
+    _unique_id_suffix = "legrand_cable_outlet_bind"
+
+    _cluster_match = ClusterMatch(
+        server_clusters=frozenset({LEGRAND_CABLE_OUTLET_CLUSTER}),
+    )
+    _server_cluster_config = {
+        LEGRAND_CABLE_OUTLET_CLUSTER: ClusterConfig(bind=True),
     }
 
 
