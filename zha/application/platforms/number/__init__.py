@@ -1578,7 +1578,6 @@ class DanfossExternalMeasuredRoomSensor(ZCLTemperatureEntity):
     _server_cluster_config = {
         Thermostat.cluster_id: ClusterConfig(
             attributes={
-                # Read fresh, value can change on-device
                 "external_measured_room_sensor": AttrConfig(read_on_startup=True)
             },
         ),
@@ -1604,10 +1603,7 @@ class DanfossLoadRoomMean(NumberConfigurationEntity):
 
     _server_cluster_config = {
         Thermostat.cluster_id: ClusterConfig(
-            attributes={
-                # Read fresh, value can change on-device
-                "load_room_mean": AttrConfig(read_on_startup=True)
-            },
+            attributes={"load_room_mean": AttrConfig(read_on_startup=True)},
         ),
     }
 
