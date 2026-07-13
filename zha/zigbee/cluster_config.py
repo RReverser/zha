@@ -71,7 +71,8 @@ def aggregate_cluster_configs(
 ) -> dict[tuple[int, int, bool], AggregatedClusterConfig]:
     """Aggregate cluster configurations from entities.
 
-    Returns a dict keyed by (endpoint_id, cluster_id) with merged configs.
+    Returns a dict keyed by (endpoint_id, cluster_id, is_server) with merged
+    configs.
     """
     result: dict[tuple[int, int, bool], AggregatedClusterConfig] = {}
 
@@ -178,7 +179,19 @@ async def configure_cluster_configs(
         for attr_name, attr_config in agg.attributes.items():
             if attr_config.reporting is None:
                 continue
-            attr_def = agg.cluster.find_attribute(attr_name)
+            try:
+                attr_def = agg.cluster.find_attribute(attr_name)
+            except KeyError:
+                # A quirk-provided attribute may be missing when the device is
+                # matched without the expected quirk (e.g. a custom quirk that
+                # drops it); don't abort the whole configure pass.
+                _LOGGER.warning(
+                    "[%s] Attribute %r not found on cluster %s, skipping reporting",
+                    agg.cluster.endpoint.device.ieee,
+                    attr_name,
+                    agg.cluster.ep_attribute,
+                )
+                continue
             reporting_attrs[attr_def] = attr_config.reporting
 
         if reporting_attrs:
