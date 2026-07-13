@@ -196,10 +196,19 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
     in_cluster_ids_with_renamed = set(endpoint.zigpy_endpoint.in_clusters)
     out_cluster_ids_with_renamed = set(endpoint.zigpy_endpoint.out_clusters)
 
+    # A cluster id present on both endpoint sides would evaluate the registry
+    # twice and instantiate every matching entity twice (the duplicate is only
+    # discarded later by `_add_pending_entities`, after `on_add()` already ran).
+    seen_cluster_ids: set[int] = set()
+
     for cluster in itertools.chain(
         endpoint.zigpy_endpoint.in_clusters.values(),
         endpoint.zigpy_endpoint.out_clusters.values(),
     ):
+        if cluster.cluster_id in seen_cluster_ids:
+            continue
+        seen_cluster_ids.add(cluster.cluster_id)
+
         # To speed up lookups, we key ENTITY_REGISTRY by cluster ID. First, we find all
         # compatible entities and their matching criteria.
         for entity_class in ENTITY_REGISTRY.get(cluster.cluster_id, []):

@@ -997,3 +997,34 @@ async def test_entityless_cluster_binds_via_virtual_entity(
     await zha_gateway.async_block_till_done(wait_background_tasks=True)
 
     assert len(philips_cluster.bind.mock_calls) == 1
+
+
+async def test_no_duplicate_discovery_for_dual_side_cluster(
+    zha_gateway: Gateway,
+) -> None:
+    """Entities are discovered once when a cluster id is on both endpoint sides."""
+    zigpy_device = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_INPUT: [
+                    zigpy.zcl.clusters.general.Basic.cluster_id,
+                    zigpy.zcl.clusters.general.OnOff.cluster_id,
+                ],
+                SIG_EP_OUTPUT: [zigpy.zcl.clusters.general.OnOff.cluster_id],
+                SIG_EP_TYPE: zigpy.profiles.zha.DeviceType.ON_OFF_SWITCH,
+                SIG_EP_PROFILE: zigpy.profiles.zha.PROFILE_ID,
+            }
+        },
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+
+    # Each (class, unique_id) pair must be discovered exactly once; a cluster id
+    # present as both an in- and out-cluster used to instantiate every matching
+    # entity twice.
+    seen = [
+        (type(entity).__name__, entity.unique_id)
+        for entity in zha_device._discovered_entities
+    ]
+    assert seen
+    assert len(seen) == len(set(seen))
