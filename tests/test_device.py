@@ -49,7 +49,12 @@ from zha.application.gateway import Gateway
 from zha.application.platforms import PlatformEntity
 from zha.application.platforms.binary_sensor import IASZone
 from zha.application.platforms.light import Light
-from zha.application.platforms.sensor import AnalogInputSensor, LQISensor, RSSISensor
+from zha.application.platforms.sensor import (
+    AnalogInputSensor,
+    LQISensor,
+    RSSISensor,
+    Temperature,
+)
 from zha.application.platforms.sensor.device_class import (
     SensorDeviceClass,
     SensorStateClass,
@@ -2160,8 +2165,40 @@ async def test_add_pending_entities_recompute_failure_is_isolated(
 
     assert "Failed to recompute capabilities" in caplog.text
 
+    # The failing entity is dropped, but the rest of the device initializes,
+    # including entities discovered after the failing ones
+    get_entity(zha_device, platform=Platform.LIGHT)
+    get_entity(zha_device, platform=Platform.SENSOR, exact_entity_type=Temperature)
+    with pytest.raises(KeyError):
+        get_entity(
+            zha_device, platform=Platform.SENSOR, exact_entity_type=AnalogInputSensor
+        )
+
+
+async def test_add_pending_entities_is_supported_failure_is_isolated(
+    zha_gateway: Gateway, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Test a failing `is_supported` only drops that entity."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/isilentllc-masterbed-light-controller.json",
+    )
+    zigpy_dev.endpoints[2].analog_input.update_attribute(
+        general.AnalogInput.AttributeDefs.description.id, "Some description"
+    )
+
+    with patch.object(
+        AnalogInputSensor,
+        "is_supported",
+        side_effect=RuntimeError("is_supported failed"),
+    ):
+        zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    assert "Failed to recompute capabilities" in caplog.text
+
     # The failing entity is dropped, but the rest of the device initializes
     get_entity(zha_device, platform=Platform.LIGHT)
+    get_entity(zha_device, platform=Platform.SENSOR, exact_entity_type=Temperature)
     with pytest.raises(KeyError):
         get_entity(
             zha_device, platform=Platform.SENSOR, exact_entity_type=AnalogInputSensor

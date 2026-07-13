@@ -1161,6 +1161,9 @@ class Device(LogMixin, EventBase):
             # abort initialization for the rest of the device
             try:
                 entity.recompute_capabilities()
+                supported = entity.is_supported() and entity.is_supported_in_list(
+                    all_entities.values()
+                )
             except Exception:  # pylint: disable=broad-except
                 _LOGGER.exception(
                     "Failed to recompute capabilities for entity %s, skipping it",
@@ -1170,9 +1173,7 @@ class Device(LogMixin, EventBase):
                 continue
 
             # Ignore unsupported entities
-            if not entity.is_supported() or not entity.is_supported_in_list(
-                all_entities.values()
-            ):
+            if not supported:
                 await entity.on_remove()
                 continue
 
@@ -1204,9 +1205,14 @@ class Device(LogMixin, EventBase):
         # Remove all entities that are no longer supported
         for entity in entities[:]:
             # A failed recomputation keeps the existing entity as-is rather
-            # than aborting the recomputation of the remaining entities
+            # than aborting the recomputation of the remaining entities.
+            # Removal is destructive, so it only happens after a successful
+            # recomputation positively determined the entity is unsupported.
             try:
                 entity.recompute_capabilities()
+                supported = entity.is_supported() and entity.is_supported_in_list(
+                    entities
+                )
             except Exception:  # pylint: disable=broad-except
                 _LOGGER.exception(
                     "Failed to recompute capabilities for entity %s, keeping it",
@@ -1214,7 +1220,7 @@ class Device(LogMixin, EventBase):
                 )
                 continue
 
-            if not entity.is_supported() or not entity.is_supported_in_list(entities):
+            if not supported:
                 self.debug("Removing unsupported entity %s", entity)
                 await self._remove_entity(entity, remove=True)
                 entities.remove(entity)
