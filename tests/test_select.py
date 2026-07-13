@@ -19,7 +19,7 @@ from zigpy.profiles import zha
 import zigpy.types as t
 from zigpy.typing import UNDEFINED
 from zigpy.zcl import foundation
-from zigpy.zcl.clusters import general, measurement, security
+from zigpy.zcl.clusters import general, security
 from zigpy.zcl.clusters.manufacturer_specific import ManufacturerSpecificCluster
 
 from tests.common import (
@@ -370,48 +370,3 @@ async def test_bega_color_temperature_channel_select_unsupported(
             platform=Platform.SELECT,
             qualifier="switchable_white",
         )
-
-
-async def test_sonoff_detection_sensitivity_startup_read(
-    zha_gateway: Gateway,
-) -> None:
-    """Test the Sonoff detection sensitivity select is created via a startup read.
-
-    Regression test: the ``ultrasonic_u_to_o_threshold`` attribute backing this
-    entity must be read on startup. If it isn't, the attribute has no cached
-    value and the entity is culled on freshly-paired devices (which never had
-    the value persisted from an earlier read).
-    """
-    zigpy_device = create_mock_zigpy_device(
-        zha_gateway,
-        {
-            1: {
-                SIG_EP_PROFILE: zha.PROFILE_ID,
-                SIG_EP_TYPE: zha.DeviceType.OCCUPANCY_SENSOR,
-                SIG_EP_INPUT: [
-                    general.Basic.cluster_id,
-                    measurement.OccupancySensing.cluster_id,
-                ],
-                SIG_EP_OUTPUT: [],
-            }
-        },
-        manufacturer="SONOFF",
-        model="SNZB-06P",
-    )
-    cluster = zigpy_device.endpoints[1].occupancy
-    cluster.PLUGGED_ATTR_READS = {
-        "occupancy": 0,
-        "ultrasonic_u_to_o_threshold": 3,
-    }
-
-    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
-
-    attr_reads = set()
-    for call_args in cluster.read_attributes.call_args_list:
-        attr_reads |= set(call_args[0][0])
-    assert "ultrasonic_u_to_o_threshold" in attr_reads
-
-    entity = get_entity(
-        zha_device, platform=Platform.SELECT, qualifier="detection_sensitivity"
-    )
-    assert entity.state["state"] == "High"

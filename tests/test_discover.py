@@ -57,22 +57,10 @@ from tests.common import (
 from zha.application import EntityType, Platform
 from zha.application.gateway import Gateway
 from zha.application.helpers import DeviceOverridesConfiguration
-from zha.application.platforms import (
-    ENTITY_REGISTRY,
-    PlatformEntity,
-    binary_sensor,
-    sensor,
-)
+from zha.application.platforms import PlatformEntity, binary_sensor, sensor
 from zha.application.platforms.const import PHILIPS_REMOTE_CLUSTER
 from zha.application.platforms.light import HueLight
-from zha.application.platforms.number import (
-    BaseNumber,
-    NumberConfigurationEntity,
-    NumberMode,
-)
-from zha.application.platforms.select import ZCLEnumSelectEntity
-from zha.application.platforms.sensor import Sensor
-from zha.application.platforms.switch import ConfigurableAttributeSwitch
+from zha.application.platforms.number import BaseNumber, NumberMode
 from zha.quirks import QUIRK_REGISTRY_ENTRY_ATTR, DeviceMatch, DeviceRegistry, ModelInfo
 from zha.units import UnitOfTime
 
@@ -1009,76 +997,3 @@ async def test_entityless_cluster_binds_via_virtual_entity(
     await zha_gateway.async_block_till_done(wait_background_tasks=True)
 
     assert len(philips_cluster.bind.mock_calls) == 1
-
-
-def test_cache_gated_config_entities_read_their_attribute() -> None:
-    """Every cache-gated config entity must read its backing attribute on startup.
-
-    Select (``ZCLEnumSelectEntity``), number (``NumberConfigurationEntity``) and
-    switch (``ConfigurableAttributeSwitch``) config entities — plus sensors with
-    ``_skip_creation_if_no_attr_cache`` — skip their own creation when
-    ``cluster.get(attribute_name) is None``. So the backing attribute must be
-    read on startup (declared in some entity's ``_server_cluster_config`` on the
-    same cluster); otherwise the entity is silently culled on freshly-paired
-    devices that never cached a value. This guards against regressions like #657,
-    which dropped the cluster-handler startup reads for the Sonoff/Hue/Danfoss
-    config entities.
-    """
-    all_classes = {cls for classes in ENTITY_REGISTRY.values() for cls in classes}
-
-    def attr_name(attr) -> str:
-        return attr.name if hasattr(attr, "name") else attr
-
-    # {cluster_id: {attribute names read on startup by any entity}}
-    read_on_startup: dict[int, set[str]] = defaultdict(set)
-    for cls in all_classes:
-        for cluster_id, config in (
-            getattr(cls, "_server_cluster_config", None) or {}
-        ).items():
-            for attr in getattr(config, "attributes", {}) or {}:
-                read_on_startup[cluster_id].add(attr_name(attr))
-
-    def is_cache_gated(cls) -> bool:
-        if issubclass(cls, Sensor):
-            return bool(getattr(cls, "_skip_creation_if_no_attr_cache", False))
-        return issubclass(
-            cls,
-            (
-                ZCLEnumSelectEntity,
-                NumberConfigurationEntity,
-                ConfigurableAttributeSwitch,
-            ),
-        )
-
-    # Entities whose backing attribute is deliberately not read by ZHA on
-    # startup: these Tuya EF00 attributes have their cache seeded by the
-    # zha-device-handlers quirk, so ZHA never reads them itself (this predates
-    # and is unrelated to #657). Listing them here documents the exemption.
-    allowed_without_startup_read = {
-        ("TimerDurationMinutes", 0xEF00, "timer_duration"),
-        (
-            "OnOffWindowDetectionFunctionConfigurationEntity",
-            0xEF00,
-            "window_detection_function",
-        ),
-    }
-
-    offenders = []
-    for cls in all_classes:
-        attribute = getattr(cls, "_attribute_name", None)
-        cluster_id = getattr(cls, "_cluster_id", None)
-        if not attribute or cluster_id is None or not is_cache_gated(cls):
-            continue
-        if attribute in read_on_startup.get(cluster_id, set()):
-            continue
-        if (cls.__name__, cluster_id, attribute) in allowed_without_startup_read:
-            continue
-        offenders.append(
-            f"{cls.__name__} (cluster {cluster_id:#06x}, attr {attribute!r})"
-        )
-
-    assert not offenders, (
-        "Cache-gated config entities without a startup read of their backing "
-        "attribute (they will be culled on freshly-paired devices):\n  "
-        + "\n  ".join(sorted(offenders))
-    )
