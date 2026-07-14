@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any, Final
 from zigpy.device import Device as ZigpyDevice
 import zigpy.exceptions
 from zigpy.profiles import PROFILES
-from zigpy.types import uint1_t, uint8_t, uint16_t
+from zigpy.types import Struct, uint1_t, uint8_t, uint16_t
 from zigpy.types.named import EUI64, NWK, ExtendedPanId
 from zigpy.typing import UNDEFINED, UndefinedType
 import zigpy.zcl
@@ -1451,10 +1451,17 @@ class Device(LogMixin, EventBase):
             return  # client commands don't return a response
         if isinstance(response, Exception):
             raise ZHAException("Failed to issue cluster command") from response
-        if response[1] is not ZclStatus.SUCCESS:
+        if not isinstance(response, Struct):
             raise ZHAException(
-                f"Failed to issue cluster command with status: {response[1]}"
+                f"Failed to issue cluster command with unexpected response: {response!r}"
             )
+        status = getattr(response, "status", None)
+        if (
+            isinstance(status, Enum)
+            and isinstance(status, int)
+            and int(status) != int(ZclStatus.SUCCESS)
+        ):
+            raise ZHAException(f"Failed to issue cluster command with status: {status}")
 
     async def async_add_to_group(self, group_id: int) -> None:
         """Add this device to the provided zigbee group."""

@@ -18,11 +18,11 @@ import zigpy.profiles.zha
 import zigpy.types
 from zigpy.typing import UNDEFINED
 from zigpy.zcl import ClusterType
-from zigpy.zcl.clusters import general
+from zigpy.zcl.clusters import general, security
 from zigpy.zcl.clusters.general import Ota, PowerConfiguration
 from zigpy.zcl.clusters.lighting import Color
 from zigpy.zcl.clusters.measurement import CarbonDioxideConcentration
-from zigpy.zcl.foundation import Status, WriteAttributesResponse
+from zigpy.zcl.foundation import DefaultResponse, Status, WriteAttributesResponse
 from zigpy.zcl.helpers import ReportingConfig
 import zigpy.zdo.types as zdo_t
 
@@ -84,6 +84,21 @@ def zigpy_device(zha_gateway: Gateway, with_basic_cluster: bool = True, **kwargs
         }
     }
     return create_mock_zigpy_device(zha_gateway, endpoints, **kwargs)
+
+
+class _PlainStructResponse(zigpy.types.Struct):
+    payload: zigpy.types.uint16_t
+
+
+async def _issue_on_cluster_command(zha_device: Device) -> None:
+    await zha_device.issue_cluster_command(
+        3,
+        general.OnOff.cluster_id,
+        general.OnOff.ServerCommandDefs.on.id,
+        CLUSTER_COMMAND_SERVER,
+        None,
+        {},
+    )
 
 
 def zigpy_device_mains(zha_gateway: Gateway, with_basic_cluster: bool = True):
@@ -566,7 +581,7 @@ async def test_write_zigbee_attribute(
 async def test_issue_cluster_command(
     zha_gateway: Gateway,
 ) -> None:
-    """Test issue_cluster_command method."""
+    """Test issuing cluster commands and validating their responses."""
     zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
     zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
 
@@ -583,19 +598,79 @@ async def test_issue_cluster_command(
             None,
         )
 
-    cluster = zigpy_dev.endpoints[3].on_off
+    successful_response = DefaultResponse(
+        command_id=general.OnOff.ServerCommandDefs.on.id,
+        status=Status.SUCCESS,
+    )
+    with patch(
+        "zigpy.zcl.Cluster.request", return_value=successful_response
+    ) as request_mock:
+        await _issue_on_cluster_command(zha_device)
+    request_mock.assert_awaited_once()
 
-    with patch("zigpy.zcl.Cluster.request", return_value=[0x5, Status.SUCCESS]):
+    failure_response = DefaultResponse(
+        command_id=general.OnOff.ServerCommandDefs.on.id,
+        status=Status.FAILURE,
+    )
+    with (
+        patch("zigpy.zcl.Cluster.request", return_value=failure_response),
+        pytest.raises(
+            ZHAException, match="Failed to issue cluster command with status"
+        ),
+    ):
+        await _issue_on_cluster_command(zha_device)
+
+    plain_response = _PlainStructResponse(payload=0x1234)
+    parsed_response, remaining = _PlainStructResponse.deserialize(
+        plain_response.serialize()
+    )
+    assert remaining == b""
+    with patch("zigpy.zcl.Cluster.request", return_value=parsed_response):
+        await _issue_on_cluster_command(zha_device)
+
+    for malformed_response in (
+        0,
+        (0, Status.SUCCESS),
+        [0, Status.SUCCESS],
+        b"\x00\x00",
+    ):
+        with (
+            patch("zigpy.zcl.Cluster.request", return_value=malformed_response),
+            pytest.raises(ZHAException, match="unexpected response"),
+        ):
+            await _issue_on_cluster_command(zha_device)
+
+
+async def test_issue_cluster_command_accepts_typed_ias_ace_arm_response(
+    zha_gateway: Gateway,
+) -> None:
+    """Test a one-field IAS ACE arm response is a valid command payload."""
+    zigpy_dev = zigpy_device(zha_gateway)
+    zigpy_dev.endpoints[3].add_input_cluster(security.IasAce.cluster_id)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    arm_response = security.IasAce.ClientCommandDefs.arm_response.schema(
+        arm_notification=security.IasAce.ArmNotification.All_Zones_Armed,
+    )
+    assert len(arm_response) == 1
+    assert not hasattr(arm_response, "status")
+
+    with patch("zigpy.zcl.Cluster.request", return_value=arm_response) as request_mock:
         await zha_device.issue_cluster_command(
             3,
-            general.OnOff.cluster_id,
-            general.OnOff.ServerCommandDefs.on.id,
+            security.IasAce.cluster_id,
+            security.IasAce.ServerCommandDefs.arm.id,
             CLUSTER_COMMAND_SERVER,
             None,
-            {},
+            {
+                "arm_mode": security.IasAce.ArmMode.Arm_All_Zones,
+                "arm_disarm_code": "1234",
+                "zone_id": 0,
+            },
         )
 
-        assert cluster.request.await_count == 1
+    request_mock.assert_awaited_once()
+    assert request_mock.await_args.kwargs["expect_reply"] is True
 
 
 async def test_async_add_to_group_remove_from_group(
