@@ -1940,8 +1940,8 @@ async def test_turn_on_colorloop_deactivation_order_and_guard(
 
 
 @pytest.mark.parametrize(
-    "status",
-    [zcl_f.Status.FAILURE, zcl_f.Status.UNSUP_CLUSTER_COMMAND],
+    "execute_if_off",
+    [False, True],
 )
 @patch(
     "zigpy.zcl.clusters.lighting.Color.request",
@@ -1957,13 +1957,17 @@ async def test_turn_on_colorloop_deactivation_order_and_guard(
 )
 async def test_colorloop_deactivation_failure_preserves_independent_commands(
     zha_gateway: Gateway,
-    status: zcl_f.Status,
+    execute_if_off: bool,
 ) -> None:
     """Test deactivation failure blocks only the dependent color command."""
     device_light = await device_light_3_mock(zha_gateway)
     entity = get_entity(device_light, platform=Platform.LIGHT)
     cluster_color = device_light.device.endpoints[1].light_color
     cluster_level = device_light.device.endpoints[1].level
+    cluster_color.PLUGGED_ATTR_READS = {
+        "options": (lighting.Color.Options.Execute_if_off if execute_if_off else 0)
+    }
+    update_attribute_cache(cluster_color)
 
     _restore_colorloop_test_state(
         entity,
@@ -1973,7 +1977,7 @@ async def test_colorloop_deactivation_failure_preserves_independent_commands(
     )
     cluster_color.request.reset_mock()
     cluster_level.request.reset_mock()
-    cluster_color.request.return_value = [sentinel.data, status]
+    cluster_color.request.return_value = [sentinel.data, zcl_f.Status.FAILURE]
 
     await entity.async_turn_on(brightness=150, color_temp=235, effect="off")
 
@@ -1995,17 +1999,11 @@ async def test_colorloop_deactivation_failure_preserves_independent_commands(
 
 
 @pytest.mark.parametrize(
-    ("device_factory", "status", "expected_effect", "sends_command"),
+    ("status", "expected_effect"),
     [
-        (device_light_3_mock, zcl_f.Status.SUCCESS, "colorloop", True),
-        (device_light_3_mock, zcl_f.Status.FAILURE, "off", True),
-        (
-            device_light_3_mock,
-            zcl_f.Status.UNSUP_CLUSTER_COMMAND,
-            "off",
-            True,
-        ),
-        (device_light_1_mock, zcl_f.Status.SUCCESS, "off", False),
+        (zcl_f.Status.SUCCESS, "colorloop"),
+        (zcl_f.Status.FAILURE, "off"),
+        (zcl_f.Status.UNSUP_CLUSTER_COMMAND, "off"),
     ],
 )
 @patch(
@@ -2018,20 +2016,18 @@ async def test_colorloop_deactivation_failure_preserves_independent_commands(
 )
 async def test_requested_colorloop_activation_policy(
     zha_gateway: Gateway,
-    device_factory: Any,
     status: zcl_f.Status,
     expected_effect: str,
-    sends_command: bool,
 ) -> None:
-    """Test activation requires support and a successful command response."""
-    device_light = await device_factory(zha_gateway)
+    """Test activation updates the effect only after a successful response."""
+    device_light = await device_light_3_mock(zha_gateway)
     entity = get_entity(device_light, platform=Platform.LIGHT)
     cluster_color = device_light.device.endpoints[1].light_color
 
     _restore_colorloop_test_state(
         entity,
         state=True,
-        effect="off" if sends_command else "colorloop",
+        effect="off",
     )
     assert entity.state["effect"] == "off"
     cluster_color.request.reset_mock()
@@ -2039,15 +2035,13 @@ async def test_requested_colorloop_activation_policy(
 
     await entity.async_turn_on(effect="colorloop")
 
-    expected_commands = (
-        [cluster_color.commands_by_name["color_loop_set"].id] if sends_command else []
+    assert _color_command_ids(cluster_color) == [
+        cluster_color.commands_by_name["color_loop_set"].id
+    ]
+    assert (
+        cluster_color.request.await_args.kwargs["action"]
+        is lighting.Color.ColorLoopAction.Activate_from_current_hue
     )
-    assert _color_command_ids(cluster_color) == expected_commands
-    if sends_command:
-        assert (
-            cluster_color.request.await_args.kwargs["action"]
-            is lighting.Color.ColorLoopAction.Activate_from_current_hue
-        )
     assert entity.state["effect"] == expected_effect
 
 

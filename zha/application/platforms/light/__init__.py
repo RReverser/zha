@@ -256,12 +256,7 @@ class BaseLight(BaseEntity, ABC):
         if color_mode is not None and color_mode in self._supported_color_modes:
             self._color_mode = color_mode
         if effect is not None:
-            self._effect = (
-                EFFECT_OFF
-                if effect == EFFECT_COLORLOOP
-                and EFFECT_COLORLOOP not in (self._effect_list or ())
-                else effect
-            )
+            self._effect = effect
 
 
 class BaseSharedLight(BaseLight):
@@ -524,8 +519,6 @@ class BaseSharedLight(BaseLight):
         t_log = {}
 
         color_loop_supported = EFFECT_COLORLOOP in (self._effect_list or ())
-        if not color_loop_supported and self._effect == EFFECT_COLORLOOP:
-            self._effect = EFFECT_OFF
         color_loop_remembered = (
             color_loop_supported and self._effect == EFFECT_COLORLOOP
         )
@@ -675,7 +668,7 @@ class BaseSharedLight(BaseLight):
         self.async_transition_start_timer(transition_time)
 
         if self._color_cluster is not None:
-            if effect == EFFECT_COLORLOOP and color_loop_supported:
+            if effect == EFFECT_COLORLOOP:
                 result = await self._color_cluster.color_loop_set(
                     update_flags=(
                         Color.ColorLoopUpdateFlags.Action
