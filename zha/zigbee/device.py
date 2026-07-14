@@ -371,10 +371,8 @@ class Device(LogMixin, EventBase):
 
         self._platform_entities: dict[tuple[Platform, str], PlatformEntity] = {}
         self._pending_entities: list[PlatformEntity] = []
-        # All entities discovered for this device, including ones removed by a quirk.
-        # Used for aggregating cluster configs so binding/reporting matches the
-        # legacy claim-during-discovery flow (which configured handlers even when
-        # the visible entity was filtered out later).
+        # Entities retained after quirk suppression, including virtual entities.
+        # Used for aggregating cluster configs for binding, reporting, and reads.
         self._discovered_entities: list[PlatformEntity] = []
         self._initialized: bool = False
         self.semaphore: asyncio.Semaphore = asyncio.Semaphore(3)
@@ -1087,10 +1085,10 @@ class Device(LogMixin, EventBase):
                 _LOGGER.exception("Failed to create entity during discovery")
                 continue
 
-            self._discovered_entities.append(entity)
-
             if self._is_entity_removed_by_quirk(entity):
                 continue
+
+            self._discovered_entities.append(entity)
 
             # Apply any metadata changes from quirks v2
             self._apply_entity_metadata_changes(entity)

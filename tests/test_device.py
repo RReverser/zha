@@ -1200,6 +1200,31 @@ async def test_join_binding_reporting(zha_gateway: Gateway) -> None:
     ]
 
 
+async def test_quirks_v2_prevent_entity_excludes_cluster_configuration(
+    zha_gateway: Gateway,
+) -> None:
+    """Test a quirk-suppressed entity does not configure its cluster."""
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/innr-sp-240-0x191e3685.json",
+    )
+
+    level = zigpy_dev.endpoints[1].level
+    on_off = zigpy_dev.endpoints[1].on_off
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    assert zha_device.quirk_applied
+
+    assert level.bind.mock_calls == []
+    assert level.configure_reporting_multiple.mock_calls == []
+    assert level.read_attributes.mock_calls == []
+
+    assert on_off.bind.mock_calls == [call()]
+    assert on_off.configure_reporting_multiple.call_count == 1
+    assert on_off.read_attributes.call_count == 2
+
+
 async def test_endpoint_none_profile(
     zha_gateway: Gateway,
     caplog: pytest.LogCaptureFixture,
