@@ -202,7 +202,10 @@ class Switch(PlatformEntity, BaseSwitch):
             )
 
     def _is_supported(self) -> bool:
-        if self._cluster.is_attribute_unsupported(self._attribute_name):
+        if (
+            self._attribute_name not in self._cluster.attributes_by_name
+            or self._cluster.is_attribute_unsupported(self._attribute_name)
+        ):
             _LOGGER.debug(
                 "%s is not supported - skipping %s entity creation",
                 self._attribute_name,
@@ -1041,8 +1044,8 @@ class WindowCoveringInversionSwitch(ConfigurableAttributeSwitch):
 
         # this entity needs a second attribute to function
         if (
-            self._cluster.is_attribute_unsupported(window_covering_mode_attr)
-            or window_covering_mode_attr not in self._cluster.attributes_by_name
+            window_covering_mode_attr not in self._cluster.attributes_by_name
+            or self._cluster.is_attribute_unsupported(window_covering_mode_attr)
             or self._cluster.get(window_covering_mode_attr) is None
         ):
             _LOGGER.debug(

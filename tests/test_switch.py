@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+from typing import Final
 from unittest.mock import call, patch
 
 import pytest
@@ -34,6 +35,7 @@ from tests.common import (
     get_group_entity,
     group_entity_availability_test,
     join_zigpy_device,
+    patch_cluster_for_testing,
     send_attributes_report,
     update_attribute_cache,
     zigpy_device_from_json,
@@ -43,6 +45,11 @@ from zha.application.gateway import Gateway
 from zha.application.platforms import GroupEntity, PlatformEntity
 from zha.exceptions import ZHAException
 from zha.quirks import QUIRK_REGISTRY_ENTRY_ATTR, DeviceRegistry
+from zha.zigbee.cluster_config import (
+    AggregatedAttrConfig,
+    AggregatedClusterConfig,
+    initialize_cluster_configs,
+)
 from zha.zigbee.device import Device
 from zha.zigbee.group import Group, GroupMemberReference
 
@@ -903,4 +910,72 @@ async def test_binary_output_cluster(zha_gateway: Gateway) -> None:
             only_cache=False,
             manufacturer=UNDEFINED,
         )
+    ]
+
+
+class MissingOnOffAttributesCluster(CustomCluster, general.OnOff):
+    """OnOff cluster without the standard attribute definitions."""
+
+    class AttributeDefs(zcl_f.BaseAttributeDefs):
+        """Attribute definitions not inheriting from OnOff.AttributeDefs."""
+
+        window_detection_temperature: Final = zcl_f.ZCLAttributeDef(
+            id=0x6000, type=t.int16s, is_manufacturer_specific=True
+        )
+
+
+async def test_switch_missing_standard_attribute_definitions(
+    zha_gateway: Gateway,
+) -> None:
+    """A quirk-replaced OnOff cluster does not abort device discovery."""
+    registry = DeviceRegistry()
+    zigpy_device = create_mock_zigpy_device(
+        zha_gateway,
+        ZIGPY_DEVICE,
+        manufacturer="Test_Manufacturer",
+        model="Test_Model",
+    )
+
+    (
+        QuirkBuilder(zigpy_device.manufacturer, zigpy_device.model)
+        .replaces(MissingOnOffAttributesCluster)
+        .add_to_registry(registry)
+    )
+
+    zigpy_device = registry.resolve(zigpy_device)
+    assert getattr(zigpy_device, QUIRK_REGISTRY_ENTRY_ATTR, None) is not None
+    assert isinstance(zigpy_device.endpoints[1].on_off, MissingOnOffAttributesCluster)
+    patch_cluster_for_testing(zigpy_device.endpoints[1].on_off)
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+
+    with pytest.raises(KeyError):
+        get_entity(zha_device, platform=Platform.SWITCH)
+
+
+async def test_missing_definition_does_not_suppress_valid_startup_read(
+    zha_gateway: Gateway,
+) -> None:
+    """An undefined config attribute does not suppress a valid startup read."""
+    zigpy_device = create_mock_zigpy_device(
+        zha_gateway,
+        ZIGPY_DEVICE,
+    )
+    cluster = zigpy_device.endpoints[1].on_off
+    configs = {
+        (1, general.OnOff.cluster_id, True): AggregatedClusterConfig(
+            cluster=cluster,
+            attributes={
+                general.OnOff.AttributeDefs.on_off.name: AggregatedAttrConfig(
+                    read_on_startup=True
+                ),
+                "missing_attribute": AggregatedAttrConfig(read_on_startup=True),
+            },
+        )
+    }
+
+    await initialize_cluster_configs(configs, from_cache=False)
+    assert cluster.read_attributes_raw.call_count == 1
+    assert cluster.read_attributes_raw.call_args.args[0] == [
+        general.OnOff.AttributeDefs.on_off.id
     ]

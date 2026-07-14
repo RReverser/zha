@@ -919,8 +919,9 @@ class AggregatedClusterPoller(VirtualEntity):
                 continue
             if not entity.enabled:
                 continue
-            if entity._attribute_name and self._cluster.is_attribute_unsupported(
-                entity._attribute_name
+            if entity._attribute_name and (
+                entity._attribute_name not in self._cluster.attributes_by_name
+                or self._cluster.is_attribute_unsupported(entity._attribute_name)
             ):
                 continue
             cfg = entity._server_cluster_config.get(self._cluster_id)
@@ -929,10 +930,14 @@ class AggregatedClusterPoller(VirtualEntity):
             for attr_def, attr_cfg in cfg.attributes.items():
                 if attr_cfg.reporting is None:
                     continue
-                if self._cluster.is_attribute_unsupported(attr_def):
+                attr_name = attr_def if isinstance(attr_def, str) else attr_def.name
+                if (
+                    attr_name not in self._cluster.attributes_by_name
+                    or self._cluster.is_attribute_unsupported(attr_name)
+                ):
                     continue
 
-                attrs.add(attr_def if isinstance(attr_def, str) else attr_def.name)
+                attrs.add(attr_name)
 
         if not attrs:
             return
