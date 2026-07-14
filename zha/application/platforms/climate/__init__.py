@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import asyncio
 from asyncio import Task
 from dataclasses import dataclass
 import datetime as dt
@@ -881,23 +882,23 @@ class Thermostat(BaseThermostat):
         if self.hvac_mode == HVACMode.HEAT_COOL:
             if target_temp_low is not None:
                 await self._async_set_heating_setpoint(
-                    temperature=int(target_temp_low * ZCL_TEMP),
+                    temperature=round(target_temp_low * ZCL_TEMP),
                     is_away=is_away,
                 )
             if target_temp_high is not None:
                 await self._async_set_cooling_setpoint(
-                    temperature=int(target_temp_high * ZCL_TEMP),
+                    temperature=round(target_temp_high * ZCL_TEMP),
                     is_away=is_away,
                 )
         elif temperature is not None:
             if self.hvac_mode == HVACMode.COOL:
                 await self._async_set_cooling_setpoint(
-                    temperature=int(temperature * ZCL_TEMP),
+                    temperature=round(temperature * ZCL_TEMP),
                     is_away=is_away,
                 )
             elif self.hvac_mode == HVACMode.HEAT:
                 await self._async_set_heating_setpoint(
-                    temperature=int(temperature * ZCL_TEMP),
+                    temperature=round(temperature * ZCL_TEMP),
                     is_away=is_away,
                 )
             else:
@@ -945,7 +946,10 @@ class SinopeTechnologiesThermostat(Thermostat):
         self._sinope_cluster = endpoint.zigpy_endpoint.in_clusters[
             SINOPE_MANUFACTURER_CLUSTER
         ]
-        self._time_update_task: Task | None = None
+        self._time_update_task: Task[Any] | None = None
+        self._time_update_restart_pending = False
+        self._time_update_stopping = False
+        self._time_update_remove_lock = asyncio.Lock()
 
     def recompute_capabilities(self) -> None:
         """Recompute capabilities and feature flags."""
@@ -957,15 +961,56 @@ class SinopeTechnologiesThermostat(Thermostat):
         super().on_add()
         self.start_polling()
 
+    def _track_time_update_task(self, task: Task[Any]) -> None:
+        """Track ownership of a time updater task."""
+        if not any(tracked_task is task for tracked_task in self._tracked_tasks):
+            self._tracked_tasks.append(task)
+
+    def _time_update_task_done(self, task: Task[Any]) -> None:
+        """Release ownership of a completed time updater task."""
+        self._tracked_tasks[:] = [
+            tracked_task
+            for tracked_task in self._tracked_tasks
+            if tracked_task is not task
+        ]
+        if self._time_update_task is not task:
+            return
+
+        self._time_update_task = None
+        restart_pending = self._time_update_restart_pending
+        self._time_update_restart_pending = False
+        if not restart_pending or not self.enabled or self._time_update_stopping:
+            return
+
+        self.start_polling()
+
     def start_polling(self) -> None:
         """Start polling."""
+        if not self.enabled or self._time_update_stopping:
+            self._time_update_restart_pending = False
+            return
+
+        current_task = self._time_update_task
+        if current_task is not None:
+            if current_task.done():
+                self._time_update_restart_pending = True
+                self._time_update_task_done(current_task)
+                return
+
+            self._track_time_update_task(current_task)
+            if current_task.cancelling():
+                self._time_update_restart_pending = True
+            return
+
+        self._time_update_restart_pending = False
         self._time_update_task = self.device.gateway.async_create_background_task(
             self._update_time(),
             name=f"sinope_time_updater_{self.unique_id}",
             eager_start=True,
             untracked=True,
         )
-        self._tracked_tasks.append(self._time_update_task)
+        self._track_time_update_task(self._time_update_task)
+        self._time_update_task.add_done_callback(self._time_update_task_done)
         self.debug(
             "started time updating interval of %s",
             getattr(self, "__polling_interval"),
@@ -973,16 +1018,36 @@ class SinopeTechnologiesThermostat(Thermostat):
 
     def enable(self) -> None:
         """Enable the entity."""
+        if self._time_update_stopping:
+            return
         super().enable()
         self.start_polling()
 
     def disable(self) -> None:
         """Disable the entity."""
         super().disable()
-        if self._time_update_task:
-            self._tracked_tasks.remove(self._time_update_task)
-            self._time_update_task.cancel()
-            self._time_update_task = None
+        self._time_update_restart_pending = False
+        time_update_task = self._time_update_task
+        if time_update_task is None:
+            return
+        if time_update_task.done():
+            self._time_update_task_done(time_update_task)
+            return
+
+        self._track_time_update_task(time_update_task)
+        if not time_update_task.cancelling():
+            time_update_task.cancel()
+
+    async def on_remove(self) -> None:
+        """Stop time updates before removing the entity."""
+        async with self._time_update_remove_lock:
+            if self._time_update_stopping:
+                return
+
+            self._time_update_stopping = True
+            self._time_update_restart_pending = False
+            self.disable()
+            await super().on_remove()
 
     @periodic((2700, 4500))
     async def _update_time(self) -> None:
