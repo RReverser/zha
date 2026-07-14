@@ -369,6 +369,7 @@ class Device(LogMixin, EventBase):
         self.unique_id = str(zigpy_device.ieee)
         self._gateway: Gateway = _gateway
 
+        self._initialize_lock = asyncio.Lock()
         self._platform_entities: dict[tuple[Platform, str], PlatformEntity] = {}
         self._pending_entities: list[PlatformEntity] = []
         # All entities discovered for this device, including ones removed by a quirk.
@@ -1206,7 +1207,24 @@ class Device(LogMixin, EventBase):
 
     async def async_initialize(self, from_cache: bool = False) -> None:
         """Initialize cluster handlers."""
+        async with self._initialize_lock:
+            await self._async_initialize(from_cache)
+
+    async def _async_initialize(self, from_cache: bool) -> None:
+        """Initialize cluster handlers while holding the initialization lock."""
         self.debug("started initialization")
+
+        while self._pending_entities:
+            entity = self._pending_entities.pop()
+            try:
+                await entity.on_remove()
+            except Exception:
+                _LOGGER.warning(
+                    "Failed to remove stale pending entity %s for device %s",
+                    entity,
+                    self,
+                    exc_info=True,
+                )
 
         # We discover prospective entities before initialization
         self._discover_new_entities()
@@ -1421,6 +1439,9 @@ class Device(LogMixin, EventBase):
             if command_type == CLUSTER_COMMAND_SERVER
             else cluster.client_commands
         )
+        manufacturer_kwargs = (
+            {} if manufacturer is None else {"manufacturer": manufacturer}
+        )
         if args is not None:
             self.warning(
                 (
@@ -1430,11 +1451,14 @@ class Device(LogMixin, EventBase):
                 args,
                 [field.name for field in commands[command].schema.fields],
             )
-            response = await getattr(cluster, commands[command].name)(*args)
+            response = await getattr(cluster, commands[command].name)(
+                *args, **manufacturer_kwargs
+            )
         else:
             assert params is not None
             response = await getattr(cluster, commands[command].name)(
-                **convert_to_zcl_values(params, commands[command].schema)
+                **convert_to_zcl_values(params, commands[command].schema),
+                **manufacturer_kwargs,
             )
         self.debug(
             "Issued cluster command: %s %s %s %s %s %s %s %s",

@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import time
+from typing import Any
 from unittest import mock
 from unittest.mock import AsyncMock, call, patch
 
@@ -22,6 +23,7 @@ from zigpy.zcl.clusters import general
 from zigpy.zcl.clusters.general import Ota, PowerConfiguration
 from zigpy.zcl.clusters.lighting import Color
 from zigpy.zcl.clusters.measurement import CarbonDioxideConcentration
+from zigpy.zcl.clusters.wwah import WorksWithAllHubs
 from zigpy.zcl.foundation import Status, WriteAttributesResponse
 from zigpy.zcl.helpers import ReportingConfig
 import zigpy.zdo.types as zdo_t
@@ -596,6 +598,93 @@ async def test_issue_cluster_command(
         )
 
         assert cluster.request.await_count == 1
+
+
+@pytest.mark.parametrize("use_args", [True, False], ids=["args", "params"])
+@pytest.mark.parametrize(
+    "command_type",
+    [CLUSTER_COMMAND_SERVER, CLUSTER_COMMANDS_CLIENT],
+    ids=["server", "client"],
+)
+async def test_issue_cluster_command_forwards_manufacturer(
+    zha_gateway: Gateway,
+    command_type: str,
+    use_args: bool,
+) -> None:
+    """Test manufacturer forwarding for every cluster command invocation path."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zigpy_dev.endpoints[3].add_input_cluster(general.Groups.cluster_id)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    if command_type == CLUSTER_COMMAND_SERVER:
+        command = general.Groups.ServerCommandDefs.add.id
+        command_args: list[Any] = [0x0001, "test group"]
+        command_params: dict[str, Any] = {
+            "group_id": 0x0001,
+            "group_name": "test group",
+        }
+        transport_patch = "zigpy.zcl.Cluster.request"
+        transport_response = [0x05, Status.SUCCESS]
+    else:
+        command = general.Groups.ClientCommandDefs.add_response.id
+        command_args = [Status.SUCCESS, 0x0001]
+        command_params = {"status": Status.SUCCESS, "group_id": 0x0001}
+        transport_patch = "zigpy.zcl.Cluster.reply"
+        transport_response = None
+
+    args = command_args if use_args else None
+    params = None if use_args else command_params
+
+    with patch(transport_patch, return_value=transport_response) as transport:
+        await zha_device.issue_cluster_command(
+            3,
+            general.Groups.cluster_id,
+            command,
+            command_type,
+            args,
+            params,
+            manufacturer=0,
+        )
+
+        assert transport.await_count == 1
+        assert transport.await_args.kwargs["manufacturer"] == 0
+
+
+@pytest.mark.parametrize("use_args", [True, False], ids=["args", "params"])
+async def test_issue_cluster_command_preserves_manufacturer_inference(
+    zha_gateway: Gateway,
+    use_args: bool,
+) -> None:
+    """Test manufacturer inference when no manufacturer is passed."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zigpy_dev.endpoints[3].add_input_cluster(WorksWithAllHubs.cluster_id)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    command_def = (
+        WorksWithAllHubs.ClientCommandDefs.aps_link_key_authorization_query_response
+    )
+    command_args: list[Any] = [general.OnOff.cluster_id, True]
+    command_params: dict[str, Any] = {
+        "cluster_id": general.OnOff.cluster_id,
+        "aps_link_key_auth_status": True,
+    }
+    args = command_args if use_args else None
+    params = None if use_args else command_params
+
+    with patch("zigpy.zcl.Cluster.reply", return_value=None) as transport:
+        await zha_device.issue_cluster_command(
+            3,
+            WorksWithAllHubs.cluster_id,
+            command_def.id,
+            CLUSTER_COMMANDS_CLIENT,
+            args,
+            params,
+        )
+
+        assert transport.await_count == 1
+        assert (
+            transport.await_args.kwargs["manufacturer"] == command_def.manufacturer_code
+        )
 
 
 async def test_async_add_to_group_remove_from_group(
@@ -1544,6 +1633,131 @@ async def test_device_on_remove_pending_entity_failure(
 
     assert "Failed to remove pending entity" in caplog.text
     assert "Pending entity removal failed" in caplog.text
+
+
+async def test_platform_entity_on_remove_callback_failure_does_not_abort_cleanup(
+    zha_gateway: Gateway,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that a failed remove callback does not abort remaining cleanup."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    entity = get_entity(zha_device, platform=Platform.SWITCH)
+
+    successful_callback = mock.Mock()
+    failing_callback = mock.Mock(side_effect=RuntimeError("entity callback failure"))
+    entity._on_remove_callbacks.extend((successful_callback, failing_callback))
+
+    tracked_task = asyncio.create_task(asyncio.Event().wait())
+    entity._tracked_tasks.append(tracked_task)
+
+    try:
+        await entity.on_remove()
+
+        failing_callback.assert_called_once_with()
+        successful_callback.assert_called_once_with()
+        assert tracked_task.cancelled()
+        assert tracked_task not in entity._tracked_tasks
+        assert "Failed to execute on_remove callback" in caplog.text
+        assert "entity callback failure" in caplog.text
+    finally:
+        if not tracked_task.done():
+            tracked_task.cancel()
+        await asyncio.gather(tracked_task, return_exceptions=True)
+
+
+async def test_async_initialize_drains_stale_pending_entities_before_discovery(
+    zha_gateway: Gateway,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test stale pending entities are removed before a new discovery cycle."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    stale_entities = [mock.Mock(), mock.Mock()]
+    stale_entities[0].on_remove = AsyncMock()
+    stale_entities[1].on_remove = AsyncMock(
+        side_effect=RuntimeError("stale pending cleanup failed")
+    )
+    zha_device._pending_entities.extend(stale_entities)
+
+    def assert_pending_entities_drained() -> None:
+        assert not zha_device._pending_entities
+
+    with patch.object(
+        zha_device,
+        "_discover_new_entities",
+        side_effect=assert_pending_entities_drained,
+    ) as discover_new_entities:
+        await zha_device.async_initialize(from_cache=False)
+
+    for entity in stale_entities:
+        entity.on_remove.assert_awaited_once_with()
+    discover_new_entities.assert_called_once_with()
+    assert "Failed to remove stale pending entity" in caplog.text
+    assert "stale pending cleanup failed" in caplog.text
+
+
+async def test_concurrent_async_initialize_serializes_reconciliation(
+    zha_gateway: Gateway,
+) -> None:
+    """Test concurrent initialization passes cannot share pending entities."""
+    zigpy_dev = zigpy_device(zha_gateway, with_basic_cluster=True)
+    zha_device = zha_gateway.get_or_create_device(zigpy_dev)
+
+    first_reconciliation_started = asyncio.Event()
+    finish_first_reconciliation = asyncio.Event()
+    original_add_pending_entities = zha_device._add_pending_entities
+    add_pending_call_count = 0
+
+    async def controlled_add_pending_entities(*, emit_event: bool = True) -> None:
+        nonlocal add_pending_call_count
+        add_pending_call_count += 1
+        if add_pending_call_count == 1:
+            first_reconciliation_started.set()
+            await finish_first_reconciliation.wait()
+        await original_add_pending_entities(emit_event=emit_event)
+
+    initialize_tasks: list[asyncio.Task[None]] = []
+    with (
+        patch.object(
+            zha_device,
+            "_discover_new_entities",
+            wraps=zha_device._discover_new_entities,
+        ) as discover_new_entities,
+        patch.object(
+            zha_device,
+            "_add_pending_entities",
+            side_effect=controlled_add_pending_entities,
+        ),
+    ):
+        try:
+            first_initialize = asyncio.create_task(
+                zha_device.async_initialize(from_cache=False)
+            )
+            initialize_tasks.append(first_initialize)
+            await asyncio.wait_for(first_reconciliation_started.wait(), timeout=1)
+
+            second_initialize = asyncio.create_task(
+                zha_device.async_initialize(from_cache=False)
+            )
+            initialize_tasks.append(second_initialize)
+            await asyncio.sleep(0)
+
+            assert discover_new_entities.call_count == 1
+            assert not second_initialize.done()
+
+            finish_first_reconciliation.set()
+            await asyncio.gather(*initialize_tasks)
+
+            assert discover_new_entities.call_count == 2
+            assert not zha_device._pending_entities
+        finally:
+            finish_first_reconciliation.set()
+            for task in initialize_tasks:
+                if not task.done():
+                    task.cancel()
+            await asyncio.gather(*initialize_tasks, return_exceptions=True)
 
 
 async def test_initial_entity_discovery_does_not_emit_events(
