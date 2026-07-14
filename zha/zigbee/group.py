@@ -157,6 +157,7 @@ class Group(LogMixin):
         self._zigpy_group = zigpy_group
         self._group_entities: dict[str, GroupEntity] = {}
         self._entity_unsubs: dict[str, Callable] = {}
+        self._group_entity_cleanup_tasks: set[asyncio.Task[None]] = set()
 
     @property
     def name(self) -> str:
@@ -232,9 +233,35 @@ class Group(LogMixin):
 
     def unregister_group_entity(self, group_entity: GroupEntity) -> None:
         """Unregister a group entity."""
-        if group_entity.unique_id in self._group_entities:
-            self._group_entities.pop(group_entity.unique_id)
-            self._entity_unsubs.pop(group_entity.unique_id)()
+        if self._group_entities.get(group_entity.unique_id) is not group_entity:
+            return
+
+        self._group_entities.pop(group_entity.unique_id)
+        if unsubscribe := self._entity_unsubs.pop(group_entity.unique_id, None):
+            unsubscribe()
+        self.update_entity_subscriptions()
+
+    async def _async_cleanup_group_entity(self, group_entity: GroupEntity) -> None:
+        """Run and observe lifecycle cleanup for a group entity."""
+        try:
+            await group_entity.on_remove()
+        except Exception:
+            _LOGGER.warning(
+                "Failed to remove group entity %s",
+                group_entity,
+                exc_info=True,
+            )
+
+    def schedule_group_entity_cleanup(self, group_entity: GroupEntity) -> None:
+        """Detach a group entity and schedule its lifecycle cleanup."""
+        self.unregister_group_entity(group_entity)
+        cleanup_task = self.gateway.async_create_task(
+            self._async_cleanup_group_entity(group_entity),
+            name=f"zha.group-remove-entity-{group_entity.unique_id}",
+            eager_start=True,
+        )
+        self._group_entity_cleanup_tasks.add(cleanup_task)
+        cleanup_task.add_done_callback(self._group_entity_cleanup_tasks.discard)
 
     def _handle_maybe_update_group_members(self, event: EntityStateChangedEvent):
         """Handle the maybe update group members event."""
@@ -346,11 +373,7 @@ class Group(LogMixin):
     async def on_remove(self) -> None:
         """Cancel tasks this group owns."""
         for group_entity in tuple(self._group_entities.values()):
-            try:
-                await group_entity.on_remove()
-            except Exception:
-                _LOGGER.warning(
-                    "Failed to remove group entity %s",
-                    group_entity,
-                    exc_info=True,
-                )
+            self.schedule_group_entity_cleanup(group_entity)
+
+        if cleanup_tasks := tuple(self._group_entity_cleanup_tasks):
+            await asyncio.gather(*cleanup_tasks)

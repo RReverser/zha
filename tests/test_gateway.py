@@ -1,6 +1,7 @@
 """Test ZHA Gateway."""
 
 import asyncio
+from collections.abc import Callable
 from contextlib import suppress
 from unittest.mock import AsyncMock, MagicMock, PropertyMock, call, patch
 
@@ -39,8 +40,9 @@ from zha.application.gateway import (
     RawDeviceInitializedEvent,
 )
 from zha.application.helpers import ZHAData
-from zha.application.platforms import GroupEntity
+from zha.application.platforms import BaseEntity, GroupEntity
 from zha.application.platforms.light.const import EFFECT_OFF, LightEntityFeature
+from zha.const import STATE_CHANGED
 from zha.quirks import DeviceMatch, DeviceRegistry, ModelInfo, QuirkRegistryEntry
 from zha.zigbee.device import Device, DeviceEntityAddedEvent, DeviceEntityRemovedEvent
 from zha.zigbee.group import Group, GroupMemberReference
@@ -149,6 +151,194 @@ async def device_light_2_mock(zha_gateway: Gateway) -> Device:
     )
     zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
     return zha_device
+
+
+def _has_state_changed_listener(
+    entity: BaseEntity, callback: Callable[..., object]
+) -> bool:
+    """Return whether an entity has the given state listener."""
+    return any(
+        listener.callback == callback
+        for listener in entity._listeners.get(STATE_CHANGED, [])
+    )
+
+
+async def _create_light_group(
+    zha_gateway: Gateway,
+) -> tuple[Group, Device, Device, GroupEntity]:
+    """Create a two-member light group."""
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+    members = [
+        GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+        GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+    ]
+    zha_group = await zha_gateway.async_create_zigpy_group("Test Group", members)
+    assert zha_group is not None
+    await zha_gateway.async_block_till_done()
+    entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+    return zha_group, device_light_1, device_light_2, entity
+
+
+async def test_direct_group_membership_change_refreshes_entity_subscriptions(
+    zha_gateway: Gateway,
+) -> None:
+    """Test direct membership changes refresh an existing group entity."""
+    zha_group, _, _, entity = await _create_light_group(zha_gateway)
+    device_light_3 = await join_zigpy_device(
+        zha_gateway,
+        create_mock_zigpy_device(
+            zha_gateway,
+            {
+                1: {
+                    SIG_EP_INPUT: [
+                        general.OnOff.cluster_id,
+                        general.LevelControl.cluster_id,
+                        lighting.Color.cluster_id,
+                        general.Groups.cluster_id,
+                    ],
+                    SIG_EP_OUTPUT: [],
+                    SIG_EP_TYPE: zha.DeviceType.COLOR_DIMMABLE_LIGHT,
+                    SIG_EP_PROFILE: zha.PROFILE_ID,
+                }
+            },
+            ieee="03:2d:6f:00:0a:90:69:e8",
+        ),
+    )
+    third_member_entity = get_entity(device_light_3, platform=Platform.LIGHT)
+    endpoint = device_light_3.device.endpoints[1]
+
+    assert not _has_state_changed_listener(third_member_entity, entity.debounced_update)
+
+    zha_group.zigpy_group.add_member(endpoint)
+
+    assert zha_group.group_entities[entity.unique_id] is entity
+    assert _has_state_changed_listener(third_member_entity, entity.debounced_update)
+
+    zha_group.zigpy_group.remove_member(endpoint)
+
+    assert zha_group.group_entities[entity.unique_id] is entity
+    assert not _has_state_changed_listener(third_member_entity, entity.debounced_update)
+
+
+async def test_delayed_group_entity_cleanup_cannot_remove_replacement(
+    zha_gateway: Gateway,
+) -> None:
+    """Test delayed stale cleanup cannot unregister a rediscovered entity."""
+    zha_group, device_light_1, device_light_2, old_entity = await _create_light_group(
+        zha_gateway
+    )
+    member_entities = [
+        get_entity(device, platform=Platform.LIGHT)
+        for device in (device_light_1, device_light_2)
+    ]
+    original_on_remove = old_entity.on_remove
+    cleanup_started = asyncio.Event()
+    release_cleanup = asyncio.Event()
+
+    async def delayed_cleanup() -> None:
+        cleanup_started.set()
+        await release_cleanup.wait()
+        await original_on_remove()
+
+    try:
+        with patch.object(
+            old_entity,
+            "on_remove",
+            new=AsyncMock(side_effect=delayed_cleanup),
+        ) as on_remove:
+            endpoint = device_light_2.device.endpoints[1]
+            zha_group.zigpy_group.remove_member(endpoint)
+            await cleanup_started.wait()
+
+            assert all(
+                not _has_state_changed_listener(member, old_entity.debounced_update)
+                for member in member_entities
+            )
+
+            zha_group.zigpy_group.add_member(endpoint)
+            replacement = get_group_entity(zha_group, platform=Platform.LIGHT)
+
+            assert replacement is not old_entity
+            assert [
+                entity
+                for entity in zha_group.group_entities.values()
+                if entity.PLATFORM == Platform.LIGHT
+            ] == [replacement]
+            assert all(
+                _has_state_changed_listener(member, replacement.debounced_update)
+                for member in member_entities
+            )
+
+            release_cleanup.set()
+            await zha_gateway.async_block_till_done()
+
+            assert zha_group.group_entities[replacement.unique_id] is replacement
+            assert on_remove.await_count == 1
+            assert all(
+                _has_state_changed_listener(member, replacement.debounced_update)
+                for member in member_entities
+            )
+    finally:
+        release_cleanup.set()
+        await zha_gateway.async_block_till_done()
+        await zha_group.on_remove()
+
+
+async def test_group_platform_quorum_loss_prunes_only_stale_entity(
+    zha_gateway: Gateway,
+) -> None:
+    """Test losing one platform quorum prunes only that group entity."""
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+    switch_endpoints = {
+        1: {
+            SIG_EP_INPUT: [general.OnOff.cluster_id, general.Groups.cluster_id],
+            SIG_EP_OUTPUT: [],
+            SIG_EP_TYPE: zha.DeviceType.ON_OFF_SWITCH,
+            SIG_EP_PROFILE: zha.PROFILE_ID,
+        }
+    }
+    device_switch_1, device_switch_2 = [
+        await join_zigpy_device(
+            zha_gateway,
+            create_mock_zigpy_device(zha_gateway, switch_endpoints, ieee=ieee),
+        )
+        for ieee in ("03:2d:6f:00:0a:90:69:e8", "04:2d:6f:00:0a:90:69:e8")
+    ]
+    members = [
+        GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+        GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        GroupMemberReference(ieee=device_switch_1.ieee, endpoint_id=1),
+        GroupMemberReference(ieee=device_switch_2.ieee, endpoint_id=1),
+    ]
+    zha_group = await zha_gateway.async_create_zigpy_group("Test Group", members)
+    await zha_gateway.async_block_till_done()
+    light_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+    switch_entity = get_group_entity(zha_group, platform=Platform.SWITCH)
+    light_member_entity = get_entity(device_light_1, platform=Platform.LIGHT)
+    switch_member_entity = get_entity(device_switch_1, platform=Platform.SWITCH)
+
+    try:
+        with patch.object(
+            light_entity,
+            "on_remove",
+            new=AsyncMock(wraps=light_entity.on_remove),
+        ) as on_remove:
+            await zha_group.async_remove_members([members[1]])
+            await zha_gateway.async_block_till_done()
+
+            assert on_remove.await_count == 1
+            assert light_entity.unique_id not in zha_group.group_entities
+            assert zha_group.group_entities[switch_entity.unique_id] is switch_entity
+            assert not _has_state_changed_listener(
+                light_member_entity, light_entity.debounced_update
+            )
+            assert _has_state_changed_listener(
+                switch_member_entity, switch_entity.debounced_update
+            )
+    finally:
+        await zha_group.on_remove()
 
 
 async def test_device_left(zha_gateway: Gateway) -> None:
@@ -1277,11 +1467,31 @@ async def test_group_on_remove_entity_failure(
     await zha_gateway.async_block_till_done()
 
     group_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+    member_entity = get_entity(zha_device_1, platform=Platform.LIGHT)
+    original_on_remove = group_entity.on_remove
 
-    with patch.object(
-        group_entity, "on_remove", side_effect=Exception("Group entity removal failed")
-    ):
-        await zha_group.on_remove()
+    try:
+        assert _has_state_changed_listener(
+            group_entity, zha_group._handle_maybe_update_group_members
+        )
+        assert _has_state_changed_listener(member_entity, group_entity.debounced_update)
 
-    assert "Failed to remove group entity" in caplog.text
-    assert "Group entity removal failed" in caplog.text
+        with patch.object(
+            group_entity,
+            "on_remove",
+            new=AsyncMock(side_effect=Exception("Group entity removal failed")),
+        ) as on_remove:
+            await zha_group.on_remove()
+
+        assert on_remove.await_count == 1
+        assert group_entity.unique_id not in zha_group.group_entities
+        assert not _has_state_changed_listener(
+            group_entity, zha_group._handle_maybe_update_group_members
+        )
+        assert not _has_state_changed_listener(
+            member_entity, group_entity.debounced_update
+        )
+        assert "Failed to remove group entity" in caplog.text
+        assert "Group entity removal failed" in caplog.text
+    finally:
+        await original_on_remove()

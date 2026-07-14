@@ -117,7 +117,8 @@ def discover_group_entities(group: Group) -> Iterator[GroupEntity]:
             group.name,
             group.group_id,
         )
-        group.group_entities.clear()
+        for group_entity in tuple(group.group_entities.values()):
+            group.schedule_group_entity_cleanup(group_entity)
         return
 
     # We only create groups with two or more devices
@@ -130,8 +131,16 @@ def discover_group_entities(group: Group) -> Iterator[GroupEntity]:
         for entity in member.associated_entities:
             platform_counts[entity.PLATFORM] += 1
 
+    for group_entity in tuple(group.group_entities.values()):
+        if platform_counts[group_entity.PLATFORM] < 2:
+            group.schedule_group_entity_cleanup(group_entity)
+
+    existing_platforms = {
+        group_entity.PLATFORM for group_entity in group.group_entities.values()
+    }
+
     for platform, count in platform_counts.items():
-        if count < 2:
+        if count < 2 or platform in existing_platforms:
             continue
 
         for group_entity_class in GROUP_ENTITY_REGISTRY:
@@ -142,6 +151,7 @@ def discover_group_entities(group: Group) -> Iterator[GroupEntity]:
                 group_entity_class,
                 group.name,
             )
+            existing_platforms.add(platform)
             yield group_entity_class(group)
 
 
