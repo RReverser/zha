@@ -256,7 +256,12 @@ class BaseLight(BaseEntity, ABC):
         if color_mode is not None and color_mode in self._supported_color_modes:
             self._color_mode = color_mode
         if effect is not None:
-            self._effect = effect
+            self._effect = (
+                EFFECT_OFF
+                if effect == EFFECT_COLORLOOP
+                and EFFECT_COLORLOOP not in (self._effect_list or ())
+                else effect
+            )
 
 
 class BaseSharedLight(BaseLight):
@@ -518,6 +523,32 @@ class BaseSharedLight(BaseLight):
 
         t_log = {}
 
+        color_loop_supported = EFFECT_COLORLOOP in (self._effect_list or ())
+        if not color_loop_supported and self._effect == EFFECT_COLORLOOP:
+            self._effect = EFFECT_OFF
+        color_loop_remembered = (
+            color_loop_supported and self._effect == EFFECT_COLORLOOP
+        )
+        color_loop_active = self._state and color_loop_remembered
+        deactivate_color_loop = color_loop_supported and effect != EFFECT_COLORLOOP
+        dependent_color_commands_allowed = True
+        if deactivate_color_loop and color_loop_active:
+            assert self._color_cluster is not None
+            result = await self._color_cluster.color_loop_set(
+                update_flags=Color.ColorLoopUpdateFlags.Action,
+                action=Color.ColorLoopAction.Deactivate,
+                direction=Color.ColorLoopDirection.Decrement,
+                time=0,
+                start_hue=0,
+            )
+            t_log["color_loop_set"] = result
+            dependent_color_commands_allowed = result[1] is Status.SUCCESS
+            if dependent_color_commands_allowed:
+                self._effect = EFFECT_OFF
+        deactivate_color_loop_after_turn_on = (
+            deactivate_color_loop and color_loop_remembered and not color_loop_active
+        )
+
         if new_color_provided_while_off:
             assert self._level_cluster is not None
 
@@ -541,7 +572,7 @@ class BaseSharedLight(BaseLight):
             # be set at the second move_to_level call
             self._state = True
 
-        if execute_if_off_supported:
+        if execute_if_off_supported and dependent_color_commands_allowed:
             self.debug("handling color commands before turning on/level")
             if not await self.async_handle_color_commands(
                 color_temp,
@@ -602,7 +633,7 @@ class BaseSharedLight(BaseLight):
                 return
             self._state = True
 
-        if not execute_if_off_supported:
+        if not execute_if_off_supported and dependent_color_commands_allowed:
             self.debug("handling color commands after turning on/level")
             if not await self.async_handle_color_commands(
                 color_temp,
@@ -644,7 +675,7 @@ class BaseSharedLight(BaseLight):
         self.async_transition_start_timer(transition_time)
 
         if self._color_cluster is not None:
-            if effect == EFFECT_COLORLOOP:
+            if effect == EFFECT_COLORLOOP and color_loop_supported:
                 result = await self._color_cluster.color_loop_set(
                     update_flags=(
                         Color.ColorLoopUpdateFlags.Action
@@ -657,8 +688,9 @@ class BaseSharedLight(BaseLight):
                     start_hue=0,
                 )
                 t_log["color_loop_set"] = result
-                self._effect = EFFECT_COLORLOOP
-            elif self._effect == EFFECT_COLORLOOP and effect != EFFECT_COLORLOOP:
+                if result[1] is Status.SUCCESS:
+                    self._effect = EFFECT_COLORLOOP
+            elif deactivate_color_loop_after_turn_on:
                 result = await self._color_cluster.color_loop_set(
                     update_flags=Color.ColorLoopUpdateFlags.Action,
                     action=Color.ColorLoopAction.Deactivate,
@@ -667,7 +699,8 @@ class BaseSharedLight(BaseLight):
                     start_hue=0,
                 )
                 t_log["color_loop_set"] = result
-                self._effect = EFFECT_OFF
+                if result[1] is Status.SUCCESS:
+                    self._effect = EFFECT_OFF
 
         if flash is not None:
             assert self._identify_cluster is not None
