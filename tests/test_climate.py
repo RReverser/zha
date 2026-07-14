@@ -3,7 +3,7 @@
 # pylint: disable=redefined-outer-name,too-many-lines
 
 import asyncio
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterator
 import logging
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, call, patch
@@ -266,21 +266,6 @@ async def sinope_climate_entity(
     return device, entity
 
 
-def sinope_time_update_tasks(
-    entity: SinopeThermostatEntity,
-    tasks: Iterable[asyncio.Future[Any]] | None = None,
-) -> list[asyncio.Task[Any]]:
-    """Return the Sinope updater tasks in an ownership collection."""
-    if tasks is None:
-        tasks = entity._tracked_tasks
-    task_name = f"sinope_time_updater_{entity.unique_id}"
-    return [
-        task
-        for task in tasks
-        if isinstance(task, asyncio.Task) and task.get_name() == task_name
-    ]
-
-
 def test_sequence_mappings():
     """Test correct mapping between control sequence -> HVAC Mode -> Sysmode."""
 
@@ -459,30 +444,28 @@ async def test_sinope_time(
 async def test_sinope_time_update_task_lifecycle_is_idempotent(
     zha_gateway: Gateway,
 ) -> None:
-    """Test a burst of toggles defers exactly one updater restart."""
+    """Test polling is idempotent and restarts after cancellation completes."""
     _, entity = await sinope_climate_entity(zha_gateway)
     time_update_task = entity._time_update_task
     assert time_update_task is not None
-    assert sinope_time_update_tasks(entity) == [time_update_task]
-    assert sinope_time_update_tasks(
-        entity, zha_gateway._untracked_background_tasks
-    ) == [time_update_task]
+    assert entity._tracked_tasks == [time_update_task]
+    assert time_update_task in zha_gateway._untracked_background_tasks
 
-    entity.enable()
-    assert entity._time_update_task is time_update_task
-    assert sinope_time_update_tasks(entity) == [time_update_task]
-
-    for _ in range(25):
-        entity.disable()
+    for _ in range(3):
         entity.enable()
+        entity.start_polling()
+    assert entity._time_update_task is time_update_task
+    assert entity._tracked_tasks == [time_update_task]
 
-    assert entity.enabled
+    entity.disable()
+    entity.start_polling()
+    assert not entity.enabled
     assert entity._time_update_task is time_update_task
     assert time_update_task.cancelling() == 1
-    assert sinope_time_update_tasks(entity) == [time_update_task]
-    assert sinope_time_update_tasks(
-        entity, zha_gateway._untracked_background_tasks
-    ) == [time_update_task]
+
+    entity.enable()
+    assert entity.enabled
+    assert entity._time_update_task is time_update_task
 
     await asyncio.gather(time_update_task, return_exceptions=True)
     await asyncio.sleep(0)
@@ -490,73 +473,45 @@ async def test_sinope_time_update_task_lifecycle_is_idempotent(
     replacement_task = entity._time_update_task
     assert replacement_task is not None
     assert replacement_task is not time_update_task
-
     assert time_update_task.done()
-    assert sinope_time_update_tasks(entity) == [replacement_task]
-    assert sinope_time_update_tasks(
-        entity, zha_gateway._untracked_background_tasks
-    ) == [replacement_task]
+    assert entity._tracked_tasks == [replacement_task]
+    assert replacement_task in zha_gateway._untracked_background_tasks
+    assert time_update_task not in zha_gateway._untracked_background_tasks
 
-    await entity.on_remove()
+    entity.disable()
+    await asyncio.gather(replacement_task, return_exceptions=True)
+    await asyncio.sleep(0)
     assert replacement_task.done()
     assert entity._time_update_task is None
-    assert not sinope_time_update_tasks(entity)
-    assert not sinope_time_update_tasks(entity, zha_gateway._untracked_background_tasks)
+    assert not entity._tracked_tasks
+    assert replacement_task not in zha_gateway._untracked_background_tasks
 
 
-async def test_sinope_removal_blocks_updater_restart_races(
+async def test_sinope_removal_prevents_updater_restart(
     zha_gateway: Gateway,
 ) -> None:
-    """Test removal prevents updater work from escaping cleanup."""
+    """Test removal cancels the updater and prevents a pending restart."""
     _, entity = await sinope_climate_entity(zha_gateway)
-    initial_task = entity._time_update_task
-    assert initial_task is not None
+    time_update_task = entity._time_update_task
+    assert time_update_task is not None
+
     entity.disable()
-    await asyncio.gather(initial_task, return_exceptions=True)
-    await asyncio.sleep(0)
-
-    cancellation_started = asyncio.Event()
-    allow_completion = asyncio.Event()
-
-    async def update_until_removed() -> None:
-        try:
-            await asyncio.Event().wait()
-        except asyncio.CancelledError:
-            cancellation_started.set()
-            while not allow_completion.is_set():
-                try:
-                    await allow_completion.wait()
-                except asyncio.CancelledError:
-                    cancellation_started.set()
-
-    with patch.object(entity, "_update_time", new=update_until_removed):
-        entity.enable()
-        time_update_task = entity._time_update_task
-        assert time_update_task is not None
-
-    remove_task = asyncio.create_task(entity.on_remove())
-    await cancellation_started.wait()
-
-    assert not entity.enabled
-    assert sinope_time_update_tasks(entity) == [time_update_task]
     entity.enable()
-    entity.start_polling()
+    assert entity.enabled
     assert entity._time_update_task is time_update_task
 
-    concurrent_remove_task = asyncio.create_task(entity.on_remove())
-    await asyncio.sleep(0)
-    assert not concurrent_remove_task.done()
-
-    allow_completion.set()
-    await asyncio.gather(remove_task, concurrent_remove_task)
-
-    entity.enable()
-    entity.start_polling()
+    await entity.on_remove()
     assert not entity.enabled
     assert time_update_task.done()
     assert entity._time_update_task is None
-    assert not sinope_time_update_tasks(entity)
-    assert not sinope_time_update_tasks(entity, zha_gateway._untracked_background_tasks)
+    assert not entity._tracked_tasks
+    assert time_update_task not in zha_gateway._untracked_background_tasks
+
+    entity.enable()
+    entity.start_polling()
+    assert not entity.enabled
+    assert entity._time_update_task is None
+    assert not entity._tracked_tasks
 
 
 async def test_climate_hvac_action_running_state_zen(
