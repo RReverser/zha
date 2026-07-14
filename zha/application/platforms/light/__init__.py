@@ -15,6 +15,7 @@ import itertools
 import logging
 from typing import TYPE_CHECKING, Any
 
+from zigpy.profiles import zha, zll
 from zigpy.zcl import (
     AttributeReadEvent,
     AttributeReportedEvent,
@@ -23,7 +24,12 @@ from zigpy.zcl import (
     ReportingConfig,
 )
 from zigpy.zcl.clusters.general import Identify, LevelControl, OnOff
-from zigpy.zcl.clusters.lighting import Color, ColorCapabilities, Options
+from zigpy.zcl.clusters.lighting import (
+    Color,
+    ColorCapabilities,
+    ColorMode as ZCLColorMode,
+    Options,
+)
 from zigpy.zcl.foundation import Status
 
 from zha.application import Platform
@@ -86,6 +92,15 @@ if TYPE_CHECKING:
     from zha.zigbee.group import Group
 
 _LOGGER = logging.getLogger(__name__)
+
+_COLOR_TEMP_PROFILE_DEVICE_TYPES = frozenset(
+    {
+        (zha.PROFILE_ID, zha.DeviceType.COLOR_TEMPERATURE_LIGHT),
+        (zha.PROFILE_ID, zha.DeviceType.EXTENDED_COLOR_LIGHT),
+        (zll.PROFILE_ID, zll.DeviceType.COLOR_TEMPERATURE_LIGHT),
+        (zll.PROFILE_ID, zll.DeviceType.EXTENDED_COLOR_LIGHT),
+    }
+)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -283,36 +298,70 @@ class BaseSharedLight(BaseLight):
         self._internal_supported_color_modes: set[ColorMode] = set()
 
     @property
-    def _color_capabilities(self) -> ColorCapabilities:
+    def _color_capabilities(self) -> ColorCapabilities | None:
         """Return ZCL color capabilities of the light."""
         if self._color_cluster is None:
-            return Color.ColorCapabilities.XY_attributes
-        color_capabilities = self._color_cluster.get(
-            Color.AttributeDefs.color_capabilities.name
+            return None
+        color_capabilities_name = Color.AttributeDefs.color_capabilities.name
+        color_capabilities_attr = self._color_cluster.attributes_by_name.get(
+            color_capabilities_name
         )
+        if color_capabilities_attr is None:
+            return None
+        if self._color_cluster.is_attribute_unsupported(color_capabilities_attr):
+            return None
+        color_capabilities = self._color_cluster.get(color_capabilities_name)
         if color_capabilities is None:
-            return Color.ColorCapabilities.XY_attributes
+            return None
         return Color.ColorCapabilities(color_capabilities)
 
     @property
     def _color_temperature(self) -> int | None:
         if self._color_cluster is None:
             return None
-        return self._color_cluster.get(Color.AttributeDefs.color_temperature.name)
+        color_temperature_name = Color.AttributeDefs.color_temperature.name
+        if color_temperature_name not in self._color_cluster.attributes_by_name:
+            return None
+        return self._color_cluster.get(color_temperature_name)
+
+    @property
+    def _reported_color_mode(self) -> ZCLColorMode | None:
+        if self._color_cluster is None:
+            return None
+        color_mode_name = Color.AttributeDefs.color_mode.name
+        if color_mode_name not in self._color_cluster.attributes_by_name:
+            return None
+        return self._color_cluster.get(color_mode_name)
 
     @property
     def _color_xy_supported(self) -> bool:
-        return Color.ColorCapabilities.XY_attributes in self._color_capabilities
+        color_capabilities = self._color_capabilities
+        return color_capabilities is None or (
+            Color.ColorCapabilities.XY_attributes in color_capabilities
+        )
 
     @property
     def _color_temp_supported(self) -> bool:
+        color_capabilities = self._color_capabilities
+        if color_capabilities is not None:
+            return Color.ColorCapabilities.Color_temperature in color_capabilities
+
+        if self._color_cluster is None:
+            return False
+
+        zigpy_endpoint = self._color_cluster.endpoint
         return (
-            Color.ColorCapabilities.Color_temperature in self._color_capabilities
-        ) or self._color_temperature is not None
+            self._reported_color_mode == ZCLColorMode.Color_temperature
+            or (zigpy_endpoint.profile_id, zigpy_endpoint.device_type)
+            in _COLOR_TEMP_PROFILE_DEVICE_TYPES
+        )
 
     @property
     def _color_loop_supported(self) -> bool:
-        return Color.ColorCapabilities.Color_loop in self._color_capabilities
+        color_capabilities = self._color_capabilities
+        return color_capabilities is not None and (
+            Color.ColorCapabilities.Color_loop in color_capabilities
+        )
 
     @property
     def _color_options(self) -> Options:
@@ -1064,6 +1113,8 @@ class Light(BaseSharedLight, PlatformEntity):
             if self._color_temp_supported:
                 self._internal_supported_color_modes.add(ColorMode.COLOR_TEMP)
                 self._color_temp = self._color_temperature
+            else:
+                self._color_temp = None
 
             if self._color_xy_supported:
                 self._internal_supported_color_modes.add(ColorMode.XY)
@@ -1090,10 +1141,7 @@ class Light(BaseSharedLight, PlatformEntity):
             self._color_mode = next(iter(supported_color_modes))
         else:  # Light supports color_temp + xy, determine which mode the light is in
             assert self._color_cluster is not None
-            if (
-                self._color_cluster.get(Color.AttributeDefs.color_mode.name)
-                == Color.ColorMode.Color_temperature
-            ):
+            if self._reported_color_mode == ZCLColorMode.Color_temperature:
                 self._color_mode = ColorMode.COLOR_TEMP
             else:
                 self._color_mode = ColorMode.XY
@@ -1242,13 +1290,22 @@ class Light(BaseSharedLight, PlatformEntity):
                 self._brightness = level
 
         if self._color_cluster is not None:
-            attributes = [
-                Color.AttributeDefs.color_mode.name,
-                Color.AttributeDefs.current_x.name,
-                Color.AttributeDefs.current_y.name,
-            ]
-            if self._color_temp_supported:
-                attributes.append(Color.AttributeDefs.color_temperature.name)
+            color_mode_name = Color.AttributeDefs.color_mode.name
+            attributes = []
+            if color_mode_name in self._color_cluster.attributes_by_name:
+                attributes.append(color_mode_name)
+            attributes.extend(
+                [
+                    Color.AttributeDefs.current_x.name,
+                    Color.AttributeDefs.current_y.name,
+                ]
+            )
+            color_temperature_name = Color.AttributeDefs.color_temperature.name
+            if (
+                self._color_temp_supported
+                and color_temperature_name in self._color_cluster.attributes_by_name
+            ):
+                attributes.append(color_temperature_name)
             if self._color_loop_supported:
                 attributes.append(Color.AttributeDefs.color_loop_active.name)
 
@@ -1270,7 +1327,7 @@ class Light(BaseSharedLight, PlatformEntity):
                 # supported, use it regardless of what the device reports
                 if len(self._supported_color_modes) == 1:
                     effective_mode = next(iter(self._supported_color_modes))
-                elif color_mode == Color.ColorMode.Color_temperature:
+                elif color_mode == ZCLColorMode.Color_temperature:
                     effective_mode = ColorMode.COLOR_TEMP
                 else:
                     effective_mode = ColorMode.XY
