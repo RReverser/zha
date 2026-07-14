@@ -10,6 +10,7 @@ import pytest
 from zha import async_ as zha_async
 from zha.application.gateway import Gateway
 from zha.async_ import AsyncUtilMixin, ZHAJob, ZHAJobType, create_eager_task
+from zha.decorators import periodic
 
 
 @pytest.mark.parametrize("eager_start", [True, False])
@@ -481,6 +482,38 @@ async def test_gather_with_limited_concurrency() -> None:
     )
 
     assert results == [2, 2, -1, -1]
+
+
+@pytest.mark.parametrize("limit", [0, -1])
+async def test_gather_with_limited_concurrency_rejects_non_positive_limit(
+    limit: int,
+) -> None:
+    """Test gather_with_limited_concurrency rejects a non-positive limit."""
+    task = asyncio.create_task(asyncio.sleep(0))
+    with pytest.raises(ValueError, match="limit must be > 0"):
+        await zha_async.gather_with_limited_concurrency(limit, task)
+    await task
+
+
+async def test_periodic_cancellation_propagates() -> None:
+    """Test cancellation propagates from a periodic method."""
+    started = asyncio.Event()
+    release = asyncio.Event()
+
+    class Poller:
+        @periodic((1, 1), run_immediately=True)
+        async def poll(self) -> None:
+            started.set()
+            await release.wait()
+
+    task = asyncio.create_task(Poller().poll())
+    await started.wait()
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    assert task.cancelled()
 
 
 async def test_create_eager_task_312(zha_gateway: Gateway) -> None:  # pylint: disable=unused-argument
