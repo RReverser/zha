@@ -47,11 +47,7 @@ from zha.application.const import (
     RadioType,
 )
 from zha.application.helpers import DeviceAvailabilityChecker, GlobalUpdater, ZHAData
-from zha.async_ import (
-    AsyncUtilMixin,
-    create_eager_task,
-    gather_with_limited_concurrency,
-)
+from zha.async_ import AsyncUtilMixin, create_eager_task
 from zha.event import EventBase
 from zha.quirks import DEVICE_REGISTRY, QUIRK_REGISTRY_ENTRY_ATTR
 from zha.zigbee.device import Device, DeviceInfo, DeviceStatus, ExtendedDeviceInfo
@@ -337,13 +333,6 @@ class Gateway(AsyncUtilMixin, EventBase):
             for entity in discovery.discover_group_entities(zha_group):
                 entity.on_add()
 
-    @property
-    def radio_concurrency(self) -> int:
-        """Maximum configured radio concurrency."""
-        return (
-            self.application_controller._concurrent_requests_semaphore.max_concurrency
-        )  # pylint: disable=protected-access
-
     async def async_fetch_updated_state_mains(self) -> None:
         """Fetch updated state for mains powered devices."""
         _LOGGER.debug("Fetching current state for mains powered devices")
@@ -364,16 +353,24 @@ class Gateway(AsyncUtilMixin, EventBase):
             key=lambda device: cast(float, device.last_seen), reverse=True
         )
 
-        # Make sure that we always leave slots for non-startup requests
-        maximum_polling_concurrency = max(1, self.radio_concurrency - 4)
-
         # Startup polling is best effort. Wait for every device so a failure cannot
         # leave sibling initialization tasks running after this operation completes.
-        initialization_results = await gather_with_limited_concurrency(
-            maximum_polling_concurrency,
-            *(device.async_initialize(from_cache=False) for device in online_devices),
-            return_exceptions=True,
-        )
+        startup_polling_priority = t.PacketPriority.LOW
+
+        # Keep the ambient priority for radio libraries that resolve the request
+        # context, and pass it explicitly for libraries such as zigpy-ziggurat that
+        # transmit the priority stored on each packet.
+        async with self.request_priority(startup_polling_priority):
+            initialization_results = await asyncio.gather(
+                *(
+                    device.async_initialize(
+                        from_cache=False,
+                        request_priority=startup_polling_priority,
+                    )
+                    for device in online_devices
+                ),
+                return_exceptions=True,
+            )
 
         for device, initialization_result in zip(
             online_devices, initialization_results, strict=True
@@ -410,8 +407,7 @@ class Gateway(AsyncUtilMixin, EventBase):
             """Fetch updated state for mains powered devices."""
             try:
                 if self.config.config.device_options.enable_mains_startup_polling:
-                    async with self.request_priority(t.PacketPriority.LOW):
-                        await self.async_fetch_updated_state_mains()
+                    await self.async_fetch_updated_state_mains()
                 else:
                     _LOGGER.debug(
                         "Polling of mains powered devices at startup is disabled"

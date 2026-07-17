@@ -2,7 +2,7 @@
 
 import asyncio
 from contextlib import suppress
-from unittest.mock import AsyncMock, MagicMock, PropertyMock, call, patch
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 from zhaquirks.builder import QuirkBuilder
@@ -297,17 +297,33 @@ async def test_startup_polling_waits_for_remaining_devices_after_failure(
     allow_blocked_device_to_finish = asyncio.Event()
     blocked_device_finished = asyncio.Event()
 
-    async def initialize_failing_device(*, from_cache: bool) -> None:
+    def assert_low_startup_priority(request_priority: int | None) -> None:
+        assert request_priority == zigpy.types.PacketPriority.LOW
+        assert (
+            zha_gateway.application_controller._packet_priority_var.get()
+            == zigpy.types.PacketPriority.LOW
+        )  # pylint: disable=protected-access
+
+    async def initialize_failing_device(
+        *, from_cache: bool, request_priority: int | None
+    ) -> None:
         assert from_cache is False
+        assert_low_startup_priority(request_priority)
         device_failure_raised.set()
         raise RuntimeError("device startup refresh failed")
 
-    async def initialize_cancelled_device(*, from_cache: bool) -> None:
+    async def initialize_cancelled_device(
+        *, from_cache: bool, request_priority: int | None
+    ) -> None:
         assert from_cache is False
+        assert_low_startup_priority(request_priority)
         raise asyncio.CancelledError
 
-    async def initialize_blocked_device(*, from_cache: bool) -> None:
+    async def initialize_blocked_device(
+        *, from_cache: bool, request_priority: int | None
+    ) -> None:
         assert from_cache is False
+        assert_low_startup_priority(request_priority)
         blocked_device_started.set()
         await allow_blocked_device_to_finish.wait()
         blocked_device_finished.set()
@@ -328,12 +344,6 @@ async def test_startup_polling_waits_for_remaining_devices_after_failure(
             "async_initialize",
             side_effect=initialize_blocked_device,
         ) as blocked_device_initialize,
-        patch.object(
-            type(zha_gateway),
-            "radio_concurrency",
-            new_callable=PropertyMock,
-            return_value=8,
-        ),
     ):
         startup_polling_task = asyncio.create_task(
             zha_gateway.async_fetch_updated_state_mains()
@@ -351,9 +361,18 @@ async def test_startup_polling_waits_for_remaining_devices_after_failure(
             await startup_polling_task
 
     assert blocked_device_finished.is_set()
-    failing_device_initialize.assert_awaited_once_with(from_cache=False)
-    cancelled_device_initialize.assert_awaited_once_with(from_cache=False)
-    blocked_device_initialize.assert_awaited_once_with(from_cache=False)
+    failing_device_initialize.assert_awaited_once_with(
+        from_cache=False,
+        request_priority=zigpy.types.PacketPriority.LOW,
+    )
+    cancelled_device_initialize.assert_awaited_once_with(
+        from_cache=False,
+        request_priority=zigpy.types.PacketPriority.LOW,
+    )
+    blocked_device_initialize.assert_awaited_once_with(
+        from_cache=False,
+        request_priority=zigpy.types.PacketPriority.LOW,
+    )
     assert (
         f"[{failing_device.nwk}]({failing_device.name}) "
         "Failed to refresh state during startup polling"
@@ -411,9 +430,17 @@ async def test_startup_polling_cancellation_propagates(
     blocked_device_cancelled = asyncio.Event()
     never_finish = asyncio.Event()
 
-    async def initialize_blocked_device(*, from_cache: bool) -> None:
+    async def initialize_blocked_device(
+        *, from_cache: bool, request_priority: int | None = None
+    ) -> None:
         if from_cache:
+            assert request_priority is None
             return
+        assert request_priority == zigpy.types.PacketPriority.LOW
+        assert (
+            zha_gateway.application_controller._packet_priority_var.get()
+            == zigpy.types.PacketPriority.LOW
+        )  # pylint: disable=protected-access
         blocked_device_started.set()
         try:
             await never_finish.wait()
@@ -638,81 +665,68 @@ async def test_remove_device_cleans_up_group_membership(
     assert device_light_1.ieee not in zha_gateway.devices
 
 
-@pytest.mark.parametrize("radio_concurrency", [1, 2, 8])
-async def test_startup_concurrency_limit(
-    radio_concurrency: int,
+async def test_startup_polling_uses_low_priority_without_limiting_initialization(
     zigpy_app_controller: ControllerApplication,
     zha_data: ZHAData,
-):
-    """Test ZHA gateway limits concurrency on startup."""
-    zha_gw = Gateway(zha_data)
+) -> None:
+    """Test all startup initializers run with low request priority."""
+    zha_gateway = Gateway(zha_data)
+    zha_gateway.application_controller = zigpy_app_controller
 
-    with patch(
-        "bellows.zigbee.application.ControllerApplication.new",
-        return_value=zigpy_app_controller,
-    ):
-        await zha_gw.async_initialize()
-
-    for i in range(50):
-        zigpy_dev = create_mock_zigpy_device(
-            zha_gw,
-            {
-                1: {
-                    SIG_EP_INPUT: [
-                        general.OnOff.cluster_id,
-                        general.LevelControl.cluster_id,
-                        lighting.Color.cluster_id,
-                        general.Groups.cluster_id,
-                    ],
-                    SIG_EP_OUTPUT: [],
-                    SIG_EP_TYPE: zha.DeviceType.COLOR_DIMMABLE_LIGHT,
-                    SIG_EP_PROFILE: zha.PROFILE_ID,
-                }
-            },
-            ieee=f"11:22:33:44:{i:08x}",
-            nwk=0x1234 + i,
-        )
-        zigpy_dev.node_desc.mac_capability_flags |= (
-            zigpy.zdo.types.NodeDescriptor.MACCapabilityFlags.MainsPowered
+    device_count = 8
+    for device_number in range(device_count):
+        create_mains_powered_startup_device(
+            zha_gateway,
+            ieee=f"11:22:33:44:{device_number:08x}",
+            nwk=0x1234 + device_number,
         )
 
-        zha_gw.get_or_create_device(zigpy_dev)
+    active_initialization_count = 0
+    maximum_active_initialization_count = 0
+    all_initializations_started = asyncio.Event()
+    allow_initializations_to_finish = asyncio.Event()
 
-    # Keep track of request concurrency during initialization
-    current_concurrency = 0
-    concurrencies = []
+    async def initialize_device(
+        *, from_cache: bool, request_priority: int | None
+    ) -> None:
+        nonlocal active_initialization_count, maximum_active_initialization_count
 
-    async def mock_send_packet(*args, **kwargs):  # pylint: disable=unused-argument
-        """Mock send packet."""
-        nonlocal current_concurrency
+        assert from_cache is False
+        assert request_priority == zigpy.types.PacketPriority.LOW
+        assert (
+            zha_gateway.application_controller._packet_priority_var.get()
+            == zigpy.types.PacketPriority.LOW
+        )  # pylint: disable=protected-access
 
-        current_concurrency += 1
-        concurrencies.append(current_concurrency)
+        active_initialization_count += 1
+        maximum_active_initialization_count = max(
+            maximum_active_initialization_count,
+            active_initialization_count,
+        )
+        if active_initialization_count == device_count:
+            all_initializations_started.set()
 
-        await asyncio.sleep(0.001)
-
-        current_concurrency -= 1
-        concurrencies.append(current_concurrency)
-
-    type(zha_gw).radio_concurrency = PropertyMock(return_value=radio_concurrency)
-    assert zha_gw.radio_concurrency == radio_concurrency
+        try:
+            await allow_initializations_to_finish.wait()
+        finally:
+            active_initialization_count -= 1
 
     with patch(
         "zha.zigbee.device.Device.async_initialize",
-        side_effect=mock_send_packet,
-    ):
-        await zha_gw.async_fetch_updated_state_mains()
+        side_effect=initialize_device,
+    ) as initialize_device_mock:
+        startup_polling_task = asyncio.create_task(
+            zha_gateway.async_fetch_updated_state_mains()
+        )
+        try:
+            await all_initializations_started.wait()
+        finally:
+            allow_initializations_to_finish.set()
+            await startup_polling_task
 
-    await zha_gw.shutdown()
-
-    # Make sure concurrency was always limited
-    assert current_concurrency == 0
-    assert min(concurrencies) == 0
-
-    if radio_concurrency > 1:
-        assert 1 <= max(concurrencies) < zha_gw.radio_concurrency
-    else:
-        assert 1 == max(concurrencies) == zha_gw.radio_concurrency
+    assert initialize_device_mock.await_count == device_count
+    assert maximum_active_initialization_count == device_count
+    assert active_initialization_count == 0
 
 
 async def test_gateway_device_removed(zha_gateway: Gateway) -> None:
