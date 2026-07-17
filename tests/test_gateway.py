@@ -59,6 +59,26 @@ ZIGPY_DEVICE_BASIC = {
 }
 
 
+def create_mains_powered_startup_device(
+    gateway: Gateway,
+    *,
+    ieee: str,
+    nwk: int,
+) -> Device:
+    """Create a recent mains-powered device for startup polling tests."""
+    zigpy_device = create_mock_zigpy_device(
+        gateway,
+        ZIGPY_DEVICE_BASIC,
+        ieee=ieee,
+        nwk=nwk,
+    )
+    assert zigpy_device.node_desc is not None
+    zigpy_device.node_desc.mac_capability_flags |= (
+        zigpy.zdo.types.NodeDescriptor.MACCapabilityFlags.MainsPowered
+    )
+    return gateway.get_or_create_device(zigpy_device)
+
+
 async def coordinator_mock(zha_gateway: Gateway) -> Device:
     """Test ZHA light platform."""
 
@@ -245,6 +265,188 @@ async def test_mains_devices_startup_polling_config(
 
         await zha_gateway.shutdown()
         await zha_gateway.async_block_till_done()
+
+
+async def test_startup_polling_waits_for_remaining_devices_after_failure(
+    zha_data: ZHAData,
+    zigpy_app_controller: ControllerApplication,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test one device failure does not detach the remaining startup polls."""
+    zha_gateway = Gateway(zha_data)
+    zha_gateway.application_controller = zigpy_app_controller
+
+    failing_device = create_mains_powered_startup_device(
+        zha_gateway,
+        ieee="11:22:33:44:00:00:00:01",
+        nwk=0x1001,
+    )
+    cancelled_device = create_mains_powered_startup_device(
+        zha_gateway,
+        ieee="11:22:33:44:00:00:00:02",
+        nwk=0x1002,
+    )
+    blocked_device = create_mains_powered_startup_device(
+        zha_gateway,
+        ieee="11:22:33:44:00:00:00:03",
+        nwk=0x1003,
+    )
+
+    device_failure_raised = asyncio.Event()
+    blocked_device_started = asyncio.Event()
+    allow_blocked_device_to_finish = asyncio.Event()
+    blocked_device_finished = asyncio.Event()
+
+    async def initialize_failing_device(*, from_cache: bool) -> None:
+        assert from_cache is False
+        device_failure_raised.set()
+        raise RuntimeError("device startup refresh failed")
+
+    async def initialize_cancelled_device(*, from_cache: bool) -> None:
+        assert from_cache is False
+        raise asyncio.CancelledError
+
+    async def initialize_blocked_device(*, from_cache: bool) -> None:
+        assert from_cache is False
+        blocked_device_started.set()
+        await allow_blocked_device_to_finish.wait()
+        blocked_device_finished.set()
+
+    with (
+        patch.object(
+            failing_device,
+            "async_initialize",
+            side_effect=initialize_failing_device,
+        ) as failing_device_initialize,
+        patch.object(
+            cancelled_device,
+            "async_initialize",
+            side_effect=initialize_cancelled_device,
+        ) as cancelled_device_initialize,
+        patch.object(
+            blocked_device,
+            "async_initialize",
+            side_effect=initialize_blocked_device,
+        ) as blocked_device_initialize,
+        patch.object(
+            type(zha_gateway),
+            "radio_concurrency",
+            new_callable=PropertyMock,
+            return_value=8,
+        ),
+    ):
+        startup_polling_task = asyncio.create_task(
+            zha_gateway.async_fetch_updated_state_mains()
+        )
+        try:
+            await asyncio.gather(
+                device_failure_raised.wait(),
+                blocked_device_started.wait(),
+            )
+            await asyncio.sleep(0)
+
+            assert not startup_polling_task.done()
+        finally:
+            allow_blocked_device_to_finish.set()
+            await startup_polling_task
+
+    assert blocked_device_finished.is_set()
+    failing_device_initialize.assert_awaited_once_with(from_cache=False)
+    cancelled_device_initialize.assert_awaited_once_with(from_cache=False)
+    blocked_device_initialize.assert_awaited_once_with(from_cache=False)
+    assert (
+        f"[{failing_device.nwk}]({failing_device.name}) "
+        "Failed to refresh state during startup polling"
+    ) in caplog.text
+    assert "RuntimeError: device startup refresh failed" in caplog.text
+    assert (
+        f"[{cancelled_device.nwk}]({cancelled_device.name}) "
+        "Startup state refresh was cancelled"
+    ) in caplog.text
+
+
+async def test_startup_polling_restores_polling_after_unexpected_failure(
+    zha_data: ZHAData,
+    zigpy_app_controller: ControllerApplication,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test polling is restored after an unexpected startup polling failure."""
+    zha_gateway = Gateway(zha_data)
+    zha_gateway.application_controller = zigpy_app_controller
+
+    with patch.object(
+        zha_gateway,
+        "async_fetch_updated_state_mains",
+        side_effect=RuntimeError("unexpected startup polling failure"),
+    ) as fetch_updated_state_mains:
+        await zha_gateway.async_initialize_devices_and_entities()
+        startup_polling_task = next(
+            task
+            for task in zha_gateway._background_tasks
+            if task.get_name() == "zha.gateway-fetch_updated_state"
+        )
+        await startup_polling_task
+
+    fetch_updated_state_mains.assert_awaited_once_with()
+    assert zha_gateway.config.allow_polling is True
+    assert "Unexpected failure during startup polling" in caplog.text
+    assert "RuntimeError: unexpected startup polling failure" in caplog.text
+
+
+async def test_startup_polling_cancellation_propagates(
+    zha_data: ZHAData,
+    zigpy_app_controller: ControllerApplication,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test cancelling startup polling cancels its device initialization."""
+    zha_gateway = Gateway(zha_data)
+    zha_gateway.application_controller = zigpy_app_controller
+
+    blocked_device = create_mains_powered_startup_device(
+        zha_gateway,
+        ieee="11:22:33:44:00:00:00:04",
+        nwk=0x1004,
+    )
+    blocked_device_started = asyncio.Event()
+    blocked_device_cancelled = asyncio.Event()
+    never_finish = asyncio.Event()
+
+    async def initialize_blocked_device(*, from_cache: bool) -> None:
+        if from_cache:
+            return
+        blocked_device_started.set()
+        try:
+            await never_finish.wait()
+        except asyncio.CancelledError:
+            blocked_device_cancelled.set()
+            raise
+
+    with patch.object(
+        blocked_device,
+        "async_initialize",
+        side_effect=initialize_blocked_device,
+    ):
+        await zha_gateway.async_initialize_devices_and_entities()
+        startup_polling_task = next(
+            task
+            for task in zha_gateway._background_tasks
+            if task.get_name() == "zha.gateway-fetch_updated_state"
+        )
+        try:
+            await blocked_device_started.wait()
+
+            startup_polling_task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await startup_polling_task
+        finally:
+            if not startup_polling_task.done():
+                startup_polling_task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await startup_polling_task
+
+    assert blocked_device_cancelled.is_set()
+    assert zha_gateway.config.allow_polling is True
+    assert "Unexpected failure during startup polling" not in caplog.text
 
 
 async def test_gateway_group_methods(
