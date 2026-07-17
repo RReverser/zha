@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from collections import deque
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager, suppress
 from dataclasses import dataclass
@@ -182,6 +183,13 @@ class Gateway(AsyncUtilMixin, EventBase):
         self.coordinator_zha_device: Device | None = None
 
         self.shutting_down: bool = False
+        # Controller shutdown and local cleanup can fail independently. Track the
+        # phases separately so a later call retries only incomplete work.
+        self._shutdown_lock: asyncio.Lock = asyncio.Lock()
+        self._local_shutdown_preparation_complete: bool = False
+        self._local_shutdown_finalization_complete: bool = False
+        self._devices_pending_shutdown: deque[Device] | None = None
+        self._groups_pending_shutdown: deque[Group] | None = None
         self._reload_task: asyncio.Task | None = None
 
         self.global_updater: GlobalUpdater = GlobalUpdater(self)
@@ -194,6 +202,15 @@ class Gateway(AsyncUtilMixin, EventBase):
     def radio_type(self) -> RadioType:
         """Get the current radio type."""
         return RadioType[self.config.config.coordinator_configuration.radio_type]
+
+    @property
+    def _shutdown_complete(self) -> bool:
+        """Return whether every shutdown phase reached its terminal state."""
+        return (
+            self._local_shutdown_preparation_complete
+            and self._local_shutdown_finalization_complete
+            and self.application_controller is None
+        )
 
     def get_application_controller_data(self) -> tuple[ControllerApplication, dict]:
         """Get an uninitialized instance of a zigpy `ControllerApplication`."""
@@ -242,32 +259,42 @@ class Gateway(AsyncUtilMixin, EventBase):
 
     async def _async_initialize(self) -> None:
         """Initialize controller and connect radio."""
-        self.shutting_down = False
+        async with self._shutdown_lock:
+            if self.shutting_down and not self._shutdown_complete:
+                raise RuntimeError(
+                    "Cannot initialize ZHA while shutdown work remains incomplete"
+                )
 
-        app_controller_cls, app_config = self.get_application_controller_data()
-        self.application_controller = await app_controller_cls.new(
-            config=app_config,
-            auto_form=False,
-            start_radio=False,
-            device_resolver=DEVICE_REGISTRY.resolve,
-            uninitialized_packet_handler=(
-                self.config.config.quirks_configuration.uninitialized_packet_handler
-            ),
-        )
+            self.shutting_down = False
+            self._local_shutdown_preparation_complete = False
+            self._local_shutdown_finalization_complete = False
+            self._devices_pending_shutdown = None
+            self._groups_pending_shutdown = None
 
-        await self.application_controller.startup(auto_form=True)
+            app_controller_cls, app_config = self.get_application_controller_data()
+            self.application_controller = await app_controller_cls.new(
+                config=app_config,
+                auto_form=False,
+                start_radio=False,
+                device_resolver=DEVICE_REGISTRY.resolve,
+                uninitialized_packet_handler=(
+                    self.config.config.quirks_configuration.uninitialized_packet_handler
+                ),
+            )
 
-        self.coordinator_zha_device = self.get_or_create_device(
-            self._find_coordinator_device()
-        )
+            await self.application_controller.startup(auto_form=True)
 
-        await self.load_devices()
-        self.load_groups()
+            self.coordinator_zha_device = self.get_or_create_device(
+                self._find_coordinator_device()
+            )
 
-        self.application_controller.add_listener(self)
-        self.application_controller.groups.add_listener(self)
-        self.global_updater.start()
-        self._device_availability_checker.start()
+            await self.load_devices()
+            self.load_groups()
+
+            self.application_controller.add_listener(self)
+            self.application_controller.groups.add_listener(self)
+            self.global_updater.start()
+            self._device_availability_checker.start()
 
     async def async_initialize(self) -> None:
         """Initialize controller and connect radio."""
@@ -883,18 +910,24 @@ class Gateway(AsyncUtilMixin, EventBase):
                 await asyncio.gather(*tasks)
         self.application_controller.groups.pop(group_id)
 
-    async def shutdown(self) -> None:
-        """Stop ZHA Controller Application."""
-        if self.shutting_down:
-            _LOGGER.debug("Ignoring duplicate shutdown event")
-            return
-
-        self.shutting_down = True
+    async def _async_prepare_local_shutdown(self) -> None:
+        """Stop local producers and tear down device and group state."""
+        if self._devices_pending_shutdown is None:
+            self._devices_pending_shutdown = deque(self._devices.values())
+        if self._groups_pending_shutdown is None:
+            self._groups_pending_shutdown = deque(self._groups.values())
 
         self.global_updater.stop()
         self._device_availability_checker.stop()
 
-        for device in self._devices.values():
+        if self.application_controller is not None:
+            # A controller retained after a failed shutdown must not emit callbacks
+            # into local state that has already been cleared.
+            self.application_controller.remove_listener(self)
+            self.application_controller.groups.remove_listener(self)
+
+        while self._devices_pending_shutdown:
+            device = self._devices_pending_shutdown[0]
             try:
                 await device.on_remove()
             except Exception:
@@ -903,8 +936,10 @@ class Gateway(AsyncUtilMixin, EventBase):
                     device,
                     exc_info=True,
                 )
+            self._devices_pending_shutdown.popleft()
 
-        for group in self._groups.values():
+        while self._groups_pending_shutdown:
+            group = self._groups_pending_shutdown[0]
             try:
                 await group.on_remove()
             except Exception:
@@ -913,18 +948,62 @@ class Gateway(AsyncUtilMixin, EventBase):
                     group,
                     exc_info=True,
                 )
+            self._groups_pending_shutdown.popleft()
 
-        _LOGGER.debug("Shutting down ZHA ControllerApplication")
-        if self.application_controller is not None:
-            await self.application_controller.shutdown()
-            self.application_controller = None
-            # give bellows thread callback a chance to run
-            await asyncio.sleep(SHUT_DOWN_DELAY_S)
+        self._devices_pending_shutdown = None
+        self._groups_pending_shutdown = None
 
-        await super().shutdown()
+    async def _async_finalize_local_shutdown(self) -> None:
+        """Cancel owned work and clear local device and group state."""
+        try:
+            await super().shutdown()
+        finally:
+            self._devices.clear()
+            self._groups.clear()
 
-        self._devices.clear()
-        self._groups.clear()
+    async def shutdown(self) -> None:
+        """Stop ZHA Controller Application."""
+        async with self._shutdown_lock:
+            if self._shutdown_complete:
+                _LOGGER.debug("Ignoring duplicate shutdown event")
+                return
+
+            self.shutting_down = True
+            # Defer cancellation and controller failures until local finalization;
+            # a secondary cleanup failure must not hide the original cause.
+            primary_shutdown_error: BaseException | None = None
+            local_cleanup_error: BaseException | None = None
+
+            try:
+                if not self._local_shutdown_preparation_complete:
+                    await self._async_prepare_local_shutdown()
+                    self._local_shutdown_preparation_complete = True
+
+                if self.application_controller is not None:
+                    _LOGGER.debug("Shutting down ZHA ControllerApplication")
+                    await self.application_controller.shutdown()
+                    self.application_controller = None
+                    # Give the bellows thread callback a chance to run.
+                    await asyncio.sleep(SHUT_DOWN_DELAY_S)
+            except BaseException as shutdown_exception:
+                primary_shutdown_error = shutdown_exception
+            finally:
+                if not self._local_shutdown_finalization_complete:
+                    try:
+                        await self._async_finalize_local_shutdown()
+                    except BaseException as local_cleanup_exception:
+                        local_cleanup_error = local_cleanup_exception
+                        if primary_shutdown_error is not None:
+                            _LOGGER.exception(
+                                "Local cleanup failed after an earlier shutdown error"
+                            )
+                    else:
+                        self._local_shutdown_finalization_complete = True
+
+            if primary_shutdown_error is not None:
+                raise primary_shutdown_error
+            if local_cleanup_error is not None:
+                raise local_cleanup_error
 
     def handle_message(  # pylint: disable=unused-argument
         self,

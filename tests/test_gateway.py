@@ -41,6 +41,7 @@ from zha.application.gateway import (
 from zha.application.helpers import ZHAData
 from zha.application.platforms import GroupEntity
 from zha.application.platforms.light.const import EFFECT_OFF, LightEntityFeature
+from zha.async_ import AsyncUtilMixin
 from zha.quirks import DeviceMatch, DeviceRegistry, ModelInfo, QuirkRegistryEntry
 from zha.zigbee.device import Device, DeviceEntityAddedEvent, DeviceEntityRemovedEvent
 from zha.zigbee.group import Group, GroupMemberReference
@@ -1250,6 +1251,440 @@ async def test_gateway_shutdown_group_on_remove_failure(
 
     assert "Failed to remove group" in caplog.text
     assert "Group removal failed" in caplog.text
+
+
+async def test_gateway_shutdown_controller_failure_cleans_up_and_retries(
+    zha_gateway: Gateway,
+) -> None:
+    """Test local cleanup completes before a failed controller is retried."""
+    application_controller = zha_gateway.application_controller
+    original_controller_shutdown = application_controller.shutdown
+    controller_shutdown_error = RuntimeError("Controller shutdown failed")
+    controller_shutdown_attempts = 0
+    background_task_cancelled = asyncio.Event()
+
+    async def shutdown_controller() -> None:
+        nonlocal controller_shutdown_attempts
+        controller_shutdown_attempts += 1
+        if controller_shutdown_attempts == 1:
+            raise controller_shutdown_error
+        await original_controller_shutdown()
+
+    async def wait_until_cancelled() -> None:
+        try:
+            await asyncio.Event().wait()
+        except asyncio.CancelledError:
+            background_task_cancelled.set()
+            raise
+
+    background_task = zha_gateway.async_create_background_task(
+        wait_until_cancelled(),
+        name="test pending task",
+        untracked=True,
+    )
+    await asyncio.sleep(0)
+
+    zha_device = next(iter(zha_gateway.devices.values()))
+    zha_group = next(iter(zha_gateway.groups.values()))
+    with (
+        patch.object(
+            application_controller,
+            "shutdown",
+            side_effect=shutdown_controller,
+        ) as controller_shutdown,
+        patch.object(
+            application_controller,
+            "remove_listener",
+            wraps=application_controller.remove_listener,
+        ) as remove_controller_listener,
+        patch.object(
+            application_controller.groups,
+            "remove_listener",
+            wraps=application_controller.groups.remove_listener,
+        ) as remove_group_listener,
+        patch.object(
+            zha_gateway.global_updater,
+            "stop",
+            wraps=zha_gateway.global_updater.stop,
+        ) as stop_global_updater,
+        patch.object(
+            zha_gateway._device_availability_checker,
+            "stop",
+            wraps=zha_gateway._device_availability_checker.stop,
+        ) as stop_availability_checker,
+        patch.object(
+            zha_device, "on_remove", wraps=zha_device.on_remove
+        ) as remove_device,
+        patch.object(zha_group, "on_remove", wraps=zha_group.on_remove) as remove_group,
+    ):
+        with pytest.raises(RuntimeError) as exc_info:
+            await zha_gateway.shutdown()
+
+        assert exc_info.value is controller_shutdown_error
+        assert background_task_cancelled.is_set()
+        assert background_task.cancelled()
+        assert not zha_gateway._background_tasks
+        assert not zha_gateway._tracked_completable_tasks
+        assert not zha_gateway._device_init_tasks
+        assert not zha_gateway._untracked_background_tasks
+        assert not zha_gateway.devices
+        assert not zha_gateway.groups
+        assert zha_gateway.application_controller is application_controller
+        assert zha_gateway.shutting_down
+
+        await zha_gateway.shutdown()
+
+    assert zha_gateway.application_controller is None
+    assert controller_shutdown.await_count == 2
+    remove_controller_listener.assert_called_once_with(zha_gateway)
+    remove_group_listener.assert_called_once_with(zha_gateway)
+    stop_global_updater.assert_called_once_with()
+    stop_availability_checker.assert_called_once_with()
+    remove_device.assert_awaited_once_with()
+    remove_group.assert_awaited_once_with()
+
+
+async def test_gateway_shutdown_retries_interrupted_device_cleanup(
+    zha_gateway: Gateway,
+) -> None:
+    """Test interrupted wrapper cleanup retains the wrapper for a retry."""
+    application_controller = zha_gateway.application_controller
+    zha_device = next(iter(zha_gateway.devices.values()))
+    original_device_on_remove = zha_device.on_remove
+    original_base_shutdown = AsyncUtilMixin.shutdown
+    device_cleanup_attempts = 0
+    base_shutdown_attempts = 0
+
+    async def remove_device() -> None:
+        nonlocal device_cleanup_attempts
+        device_cleanup_attempts += 1
+        if device_cleanup_attempts == 1:
+            raise asyncio.CancelledError
+        await original_device_on_remove()
+
+    async def shutdown_base(instance: AsyncUtilMixin) -> None:
+        nonlocal base_shutdown_attempts
+        base_shutdown_attempts += 1
+        await original_base_shutdown(instance)
+
+    with (
+        patch.object(
+            application_controller,
+            "shutdown",
+            wraps=application_controller.shutdown,
+        ) as controller_shutdown,
+        patch.object(zha_device, "on_remove", side_effect=remove_device) as on_remove,
+        patch.object(
+            AsyncUtilMixin,
+            "shutdown",
+            autospec=True,
+            side_effect=shutdown_base,
+        ),
+    ):
+        with pytest.raises(asyncio.CancelledError):
+            await zha_gateway.shutdown()
+
+        assert not zha_gateway.devices
+        assert not zha_gateway.groups
+        assert zha_gateway.application_controller is application_controller
+
+        await zha_gateway.shutdown()
+
+    assert zha_gateway.application_controller is None
+    assert on_remove.await_count == 2
+    controller_shutdown.assert_awaited_once_with()
+    assert base_shutdown_attempts == 1
+
+
+async def test_gateway_initialize_cannot_replace_controller_during_failed_shutdown(
+    zha_gateway: Gateway,
+) -> None:
+    """Test initialization preserves a controller whose shutdown is incomplete."""
+    application_controller = zha_gateway.application_controller
+    original_controller_shutdown = application_controller.shutdown
+    controller_shutdown_error = RuntimeError("Controller shutdown failed")
+    controller_shutdown_attempts = 0
+
+    async def shutdown_controller() -> None:
+        nonlocal controller_shutdown_attempts
+        controller_shutdown_attempts += 1
+        if controller_shutdown_attempts == 1:
+            raise controller_shutdown_error
+        await original_controller_shutdown()
+
+    with (
+        patch.object(
+            application_controller,
+            "shutdown",
+            side_effect=shutdown_controller,
+        ) as controller_shutdown,
+        patch.object(
+            zha_gateway,
+            "get_application_controller_data",
+            side_effect=AssertionError("Controller factory must not be queried"),
+        ) as get_application_controller_data,
+    ):
+        with pytest.raises(RuntimeError) as shutdown_exc_info:
+            await zha_gateway.shutdown()
+        assert shutdown_exc_info.value is controller_shutdown_error
+
+        with pytest.raises(
+            RuntimeError,
+            match="Cannot initialize ZHA while shutdown work remains incomplete",
+        ):
+            await zha_gateway.async_initialize()
+
+    get_application_controller_data.assert_not_called()
+    assert controller_shutdown.await_count == 2
+    assert zha_gateway.application_controller is None
+
+
+async def test_gateway_shutdown_cancellation_during_controller_delay_cleans_up(
+    zha_gateway: Gateway,
+) -> None:
+    """Test cancellation during the controller delay cannot skip local cleanup."""
+    application_controller = zha_gateway.application_controller
+    original_sleep = asyncio.sleep
+    controlled_shutdown_delay = 1234.5
+    controller_delay_started = asyncio.Event()
+    hold_controller_delay = asyncio.Event()
+    background_task_cancelled = asyncio.Event()
+
+    async def controlled_sleep(delay: float) -> None:
+        if delay == controlled_shutdown_delay:
+            controller_delay_started.set()
+            await hold_controller_delay.wait()
+            return
+        await original_sleep(delay)
+
+    async def wait_until_cancelled() -> None:
+        try:
+            await asyncio.Event().wait()
+        except asyncio.CancelledError:
+            background_task_cancelled.set()
+            raise
+
+    background_task = zha_gateway.async_create_background_task(
+        wait_until_cancelled(),
+        name="test pending task",
+        untracked=True,
+    )
+    await asyncio.sleep(0)
+
+    shutdown_task: asyncio.Task[None] | None = None
+    with (
+        patch.object(
+            application_controller,
+            "shutdown",
+            wraps=application_controller.shutdown,
+        ) as controller_shutdown,
+        patch("zha.application.gateway.SHUT_DOWN_DELAY_S", controlled_shutdown_delay),
+        patch("zha.application.gateway.asyncio.sleep", side_effect=controlled_sleep),
+    ):
+        try:
+            shutdown_task = asyncio.create_task(zha_gateway.shutdown())
+            async with asyncio.timeout(5):
+                await controller_delay_started.wait()
+
+            shutdown_task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await shutdown_task
+
+            assert background_task_cancelled.is_set()
+            assert background_task.cancelled()
+            assert not zha_gateway._background_tasks
+            assert not zha_gateway._tracked_completable_tasks
+            assert not zha_gateway._device_init_tasks
+            assert not zha_gateway._untracked_background_tasks
+            assert not zha_gateway.devices
+            assert not zha_gateway.groups
+            assert zha_gateway.application_controller is None
+
+            await zha_gateway.shutdown()
+            controller_shutdown.assert_awaited_once_with()
+        finally:
+            hold_controller_delay.set()
+            if shutdown_task is not None and not shutdown_task.done():
+                shutdown_task.cancel()
+            if shutdown_task is not None:
+                await asyncio.gather(shutdown_task, return_exceptions=True)
+            if not background_task.done():
+                background_task.cancel()
+            await asyncio.gather(background_task, return_exceptions=True)
+
+
+async def test_gateway_shutdown_base_cleanup_failure_clears_state_and_retries(
+    zha_gateway: Gateway,
+) -> None:
+    """Test a late base cleanup failure leaves a deterministic retry path."""
+    application_controller = zha_gateway.application_controller
+    base_cleanup_error = RuntimeError("Base cleanup failed")
+    original_base_shutdown = AsyncUtilMixin.shutdown
+    base_shutdown_attempts = 0
+    background_task_cancelled = asyncio.Event()
+
+    async def shutdown_base(instance: AsyncUtilMixin) -> None:
+        nonlocal base_shutdown_attempts
+        base_shutdown_attempts += 1
+        if base_shutdown_attempts == 1:
+            raise base_cleanup_error
+        await original_base_shutdown(instance)
+
+    async def wait_until_cancelled() -> None:
+        try:
+            await asyncio.Event().wait()
+        except asyncio.CancelledError:
+            background_task_cancelled.set()
+            raise
+
+    background_task = zha_gateway.async_create_background_task(
+        wait_until_cancelled(),
+        name="test pending task",
+        untracked=True,
+    )
+    await asyncio.sleep(0)
+
+    with (
+        patch.object(
+            application_controller,
+            "shutdown",
+            wraps=application_controller.shutdown,
+        ) as controller_shutdown,
+        patch.object(
+            AsyncUtilMixin,
+            "shutdown",
+            autospec=True,
+            side_effect=shutdown_base,
+        ) as base_shutdown,
+    ):
+        with pytest.raises(RuntimeError) as exc_info:
+            await zha_gateway.shutdown()
+
+        assert exc_info.value is base_cleanup_error
+        assert not zha_gateway.devices
+        assert not zha_gateway.groups
+        assert zha_gateway.application_controller is None
+        assert not background_task.done()
+        assert background_task in zha_gateway._untracked_background_tasks
+
+        await zha_gateway.shutdown()
+
+    controller_shutdown.assert_awaited_once_with()
+    assert base_shutdown.await_count == 2
+    assert background_task_cancelled.is_set()
+    assert background_task.cancelled()
+    assert not zha_gateway._background_tasks
+    assert not zha_gateway._tracked_completable_tasks
+    assert not zha_gateway._device_init_tasks
+    assert not zha_gateway._untracked_background_tasks
+
+
+async def test_gateway_shutdown_preserves_controller_error_when_cleanup_fails(
+    zha_gateway: Gateway,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a local cleanup error cannot replace the controller failure."""
+    application_controller = zha_gateway.application_controller
+    original_controller_shutdown = application_controller.shutdown
+    controller_shutdown_error = RuntimeError("Controller shutdown failed")
+    base_cleanup_error = RuntimeError("Base cleanup failed")
+    controller_shutdown_attempts = 0
+    original_base_shutdown = AsyncUtilMixin.shutdown
+    base_shutdown_attempts = 0
+
+    async def shutdown_controller() -> None:
+        nonlocal controller_shutdown_attempts
+        controller_shutdown_attempts += 1
+        if controller_shutdown_attempts == 1:
+            raise controller_shutdown_error
+        await original_controller_shutdown()
+
+    async def shutdown_base(instance: AsyncUtilMixin) -> None:
+        nonlocal base_shutdown_attempts
+        base_shutdown_attempts += 1
+        await original_base_shutdown(instance)
+        if base_shutdown_attempts == 1:
+            raise base_cleanup_error
+
+    with (
+        patch.object(
+            application_controller,
+            "shutdown",
+            side_effect=shutdown_controller,
+        ) as controller_shutdown,
+        patch.object(
+            AsyncUtilMixin,
+            "shutdown",
+            autospec=True,
+            side_effect=shutdown_base,
+        ) as base_shutdown,
+    ):
+        with pytest.raises(RuntimeError) as exc_info:
+            await zha_gateway.shutdown()
+
+        assert exc_info.value is controller_shutdown_error
+        assert "Local cleanup failed after an earlier shutdown error" in caplog.text
+        assert "Base cleanup failed" in caplog.text
+        assert not zha_gateway.devices
+        assert not zha_gateway.groups
+        assert zha_gateway.application_controller is application_controller
+
+        await zha_gateway.shutdown()
+
+    assert zha_gateway.application_controller is None
+    assert controller_shutdown.await_count == 2
+    assert base_shutdown.await_count == 2
+
+
+async def test_gateway_concurrent_shutdown_waits_for_active_attempt(
+    zha_gateway: Gateway,
+) -> None:
+    """Test concurrent shutdown callers share one serialized attempt."""
+    application_controller = zha_gateway.application_controller
+    original_controller_shutdown = application_controller.shutdown
+    controller_shutdown_started = asyncio.Event()
+    finish_controller_shutdown = asyncio.Event()
+
+    async def controlled_controller_shutdown() -> None:
+        controller_shutdown_started.set()
+        await finish_controller_shutdown.wait()
+        await original_controller_shutdown()
+
+    first_shutdown_task: asyncio.Task[None] | None = None
+    second_shutdown_task: asyncio.Task[None] | None = None
+    with patch.object(
+        application_controller,
+        "shutdown",
+        side_effect=controlled_controller_shutdown,
+    ) as controller_shutdown:
+        try:
+            first_shutdown_task = asyncio.create_task(zha_gateway.shutdown())
+            async with asyncio.timeout(5):
+                await controller_shutdown_started.wait()
+
+            second_shutdown_task = asyncio.create_task(zha_gateway.shutdown())
+            await asyncio.sleep(0)
+            assert not second_shutdown_task.done()
+            controller_shutdown.assert_awaited_once_with()
+
+            finish_controller_shutdown.set()
+            await asyncio.gather(first_shutdown_task, second_shutdown_task)
+        finally:
+            finish_controller_shutdown.set()
+            pending_shutdown_tasks = [
+                task
+                for task in (first_shutdown_task, second_shutdown_task)
+                if task is not None
+            ]
+            for task in pending_shutdown_tasks:
+                if not task.done():
+                    task.cancel()
+            await asyncio.gather(*pending_shutdown_tasks, return_exceptions=True)
+
+    controller_shutdown.assert_awaited_once_with()
+    assert zha_gateway.application_controller is None
+    assert not zha_gateway.devices
+    assert not zha_gateway.groups
 
 
 async def test_group_on_remove_entity_failure(
