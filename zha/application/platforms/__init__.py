@@ -504,6 +504,7 @@ class PlatformEntity(BaseEntity):
         entity_type: EntityType | None = None,
         primary: bool | None = None,
         initially_disabled: bool = False,
+        only_if_supported: bool = False,
         legacy_discovery_unique_id: str | None = None,
         **kwargs: Any,
     ):
@@ -513,6 +514,10 @@ class PlatformEntity(BaseEntity):
         config keywords (`fallback_name`, `translation_key`, `entity_type`, etc.);
         the platform subclasses add their own keywords. Default-discovery
         entities pass none of these.
+
+        Quirk entities are assumed to always be supported unless they pass
+        `only_if_supported=True`, which opts them into the same per-platform
+        supported checks that default-discovery entities go through.
         """
         if from_quirk:
             self._apply_quirk_entity_config(
@@ -523,6 +528,7 @@ class PlatformEntity(BaseEntity):
                 entity_type=entity_type,
                 primary=primary,
                 initially_disabled=initially_disabled,
+                only_if_supported=only_if_supported,
             )
 
         if legacy_discovery_unique_id is None:
@@ -554,13 +560,15 @@ class PlatformEntity(BaseEntity):
         entity_type: EntityType | None,
         primary: bool | None,
         initially_disabled: bool,
+        only_if_supported: bool,
     ) -> None:
         """Apply the generic quirk entity configuration keywords."""
         if initially_disabled:
             self._attr_entity_registry_enabled_default = False
 
-        # quirk entities are assumed to always be supported
-        self._attr_always_supported = True
+        # quirk entities are assumed to always be supported, unless the quirk
+        # opts into the standard per-platform supported checks
+        self._attr_always_supported = not only_if_supported
 
         if fallback_name:
             self._attr_fallback_name = fallback_name

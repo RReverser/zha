@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from unittest.mock import call, patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 from zhaquirks.builder import QuirkBuilder
@@ -41,6 +41,7 @@ from tests.common import (
 from zha.application import Platform
 from zha.application.gateway import Gateway
 from zha.application.platforms import GroupEntity, PlatformEntity
+from zha.application.platforms.switch import ConfigurableAttributeSwitch
 from zha.exceptions import ZHAException
 from zha.quirks import QUIRK_REGISTRY_ENTRY_ATTR, DeviceRegistry
 from zha.zigbee.device import Device
@@ -904,3 +905,50 @@ async def test_binary_output_cluster(zha_gateway: Gateway) -> None:
             manufacturer=UNDEFINED,
         )
     ]
+
+
+def test_quirk_switch_only_if_supported() -> None:
+    """Test only_if_supported opting a quirk entity into supported checks."""
+    endpoint = MagicMock()
+    endpoint.id = 1
+    device = MagicMock()
+
+    cluster = MagicMock()
+    cluster.cluster_id = general.OnOff.cluster_id
+    cluster.attributes_by_name = general.OnOff.attributes_by_name
+    cluster.is_attribute_unsupported.return_value = False
+    cluster.get.return_value = 1
+
+    def make_switch(**extra_kwargs: bool) -> ConfigurableAttributeSwitch:
+        return ConfigurableAttributeSwitch(
+            endpoint=endpoint,
+            device=device,
+            cluster=cluster,
+            from_quirk=True,
+            attribute_name=general.OnOff.AttributeDefs.start_up_on_off.name,
+            fallback_name="Test switch",
+            **extra_kwargs,
+        )
+
+    always_entity = make_switch()
+    checked_entity = make_switch(only_if_supported=True)
+
+    # Without the flag, quirk entities keep the always-supported assumption.
+    assert always_entity._attr_always_supported is True
+    # With it, the standard supported checks apply.
+    assert checked_entity._attr_always_supported is False
+
+    # Attribute supported and cached: both are supported.
+    assert always_entity.is_supported()
+    assert checked_entity.is_supported()
+
+    # Device marks the attribute unsupported: only the opted-in entity drops.
+    cluster.is_attribute_unsupported.return_value = True
+    assert always_entity.is_supported()
+    assert not checked_entity.is_supported()
+
+    # No cached value yet: the opted-in entity is not supported either.
+    cluster.is_attribute_unsupported.return_value = False
+    cluster.get.return_value = None
+    assert always_entity.is_supported()
+    assert not checked_entity.is_supported()
