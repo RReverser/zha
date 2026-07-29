@@ -1,0 +1,101 @@
+name: Pending quirks snapshots
+
+# Keeps the `pending-quirks-snapshots` branch equal to dev plus the device
+# snapshots regenerated against zha-device-handlers dev. The branch (and its
+# draft PR) therefore always shows the accumulated snapshot changes from
+# quirks PRs that are merged but not yet released; merge or cherry-pick it
+# into the PR that bumps zha-quirks so the bump and the snapshots land
+# together. The branch is force-recreated on every run and deleted when the
+# snapshots are back in sync, so it never needs manual maintenance.
+
+on:
+  push:
+    branches:
+      - dev
+  # Sent by zha-device-handlers on pushes to its dev branch
+  repository_dispatch:
+    types:
+      - quirks-dev-push
+  # Fallback in case a dispatch is missed (e.g. token misconfiguration)
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch: ~
+
+concurrency:
+  group: pending-quirks-snapshots
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  regenerate:
+    name: Regenerate snapshots against quirks dev
+    if: github.repository == 'zigpy/zha'
+    runs-on: ubuntu-latest
+    env:
+      PENDING_BRANCH: pending-quirks-snapshots
+    steps:
+      - name: Check out zha
+        uses: actions/checkout@v6
+        with:
+          ref: dev
+
+      - name: Check out zha-device-handlers
+        uses: actions/checkout@v6
+        with:
+          repository: zigpy/zha-device-handlers
+          ref: dev
+          path: quirks-dev
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install ZHA with quirks dev
+        run: |
+          uv sync --group ci
+          uv pip install ./quirks-dev
+
+      - name: Regenerate snapshots
+        run: |
+          ./.venv/bin/python -m tools.regenerate_diagnostics > "$RUNNER_TEMP/regen.log" 2>&1 \
+            || { tail -50 "$RUNNER_TEMP/regen.log"; exit 1; }
+
+      - name: Update pending branch and draft PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet tests/data/devices; then
+            echo "Snapshots are in sync with quirks dev."
+            if git ls-remote --exit-code origin "refs/heads/$PENDING_BRANCH" > /dev/null 2>&1; then
+              echo "Deleting stale $PENDING_BRANCH branch (this also closes its draft PR)."
+              git push origin ":refs/heads/$PENDING_BRANCH"
+            fi
+            exit 0
+          fi
+          QUIRKS_SHA=$(git -C quirks-dev rev-parse --short HEAD)
+          git add tests/data/devices
+          git commit -m "Regenerate device snapshots against zha-quirks dev ($QUIRKS_SHA)"
+          git push --force origin "HEAD:refs/heads/$PENDING_BRANCH"
+          if [ "$(gh pr list --head "$PENDING_BRANCH" --base dev --state open --json number --jq length)" = "0" ]; then
+            gh pr create --draft --base dev --head "$PENDING_BRANCH" \
+              --title "Regenerate device snapshots for pending zha-quirks changes" \
+              --body-file - <<'EOF' || echo "::notice::Could not create the draft PR (the repository may disallow PRs created by Actions); the branch was still updated."
+          This draft PR is maintained automatically by the `pending-quirks-snapshots` workflow. It regenerates `tests/data/devices` against the current [zha-device-handlers](https://github.com/zigpy/zha-device-handlers) `dev` branch, so it accumulates the snapshot changes from quirks PRs that are merged but not yet released.
+
+          Do not merge it on its own — CI would fail against the currently pinned `zha-quirks` release. Instead, merge or cherry-pick this branch into the PR that bumps `zha-quirks`, so the bump and the snapshot updates land together.
+
+          The branch is force-recreated from `dev` on every update and deleted automatically once the snapshots are back in sync (which closes this PR).
+          EOF
+          fi
