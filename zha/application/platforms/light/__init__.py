@@ -128,6 +128,8 @@ class BaseLight(BaseEntity, ABC):
         self._min_mireds: int | None = 153
         self._max_mireds: int | None = 500
         self._xy_color: tuple[float, float] | None = None
+        self._last_seen_xy_color: tuple[float, float] | None = None
+        self._last_seen_color_temp: int | None = None
         self._color_mode = ColorMode.UNKNOWN  # Set by subclasses
         self._color_temp: int | None = None
         self._supported_features: LightEntityFeature = LightEntityFeature(0)
@@ -256,8 +258,10 @@ class BaseLight(BaseEntity, ABC):
             self._brightness = brightness
         if color_temp is not None:
             self._color_temp = color_temp
+            self._last_seen_color_temp = color_temp
         if xy_color is not None:
             self._xy_color = xy_color
+            self._last_seen_xy_color = xy_color
         # Older persisted states may contain a color_mode not in supported modes
         if color_mode is not None and color_mode in self._supported_color_modes:
             self._color_mode = color_mode
@@ -286,8 +290,6 @@ class BaseSharedLight(BaseLight):
         self._transition_listener: asyncio.TimerHandle | None = None
         self._transition_brightness_buffer: int | None = None
         self._transition_color_buffer: dict[int, Any] = {}
-        self._last_seen_xy_color: tuple[float, float] | None = None
-        self._last_seen_color_temp: int | None = None
 
         self._internal_supported_color_modes: set[ColorMode] = set()
 
@@ -779,6 +781,7 @@ class BaseSharedLight(BaseLight):
                 return False
             self._color_mode = ColorMode.COLOR_TEMP
             self._color_temp = color_temp
+            self._last_seen_color_temp = color_temp
             self._xy_color = None
 
         if xy_color is not None:
@@ -794,6 +797,7 @@ class BaseSharedLight(BaseLight):
                 return False
             self._color_mode = ColorMode.XY
             self._xy_color = xy_color
+            self._last_seen_xy_color = xy_color
             self._color_temp = None
 
         return True
@@ -851,14 +855,17 @@ class BaseSharedLight(BaseLight):
         supports_temp = ColorMode.COLOR_TEMP in self._internal_supported_color_modes
         supports_xy = ColorMode.XY in self._internal_supported_color_modes
 
-        if color_mode_report is not None:
+        # If only one mode is supported, use it regardless of what the device
+        # reports (mirroring async_update), so a bogus mode report cannot
+        # cause a valid value report to be discarded
+        if not (supports_temp and supports_xy):
+            color_mode = ColorMode.COLOR_TEMP if supports_temp else ColorMode.XY
+        elif color_mode_report is not None:
             color_mode = (
                 ColorMode.COLOR_TEMP
                 if color_mode_report == Color.ColorMode.Color_temperature
                 else ColorMode.XY
             )
-        elif not (supports_temp and supports_xy):
-            color_mode = ColorMode.COLOR_TEMP if supports_temp else ColorMode.XY
         elif xy_changed and not temp_changed:
             color_mode = ColorMode.XY
         elif temp_changed and not xy_changed:
@@ -878,6 +885,9 @@ class BaseSharedLight(BaseLight):
             self._xy_color = xy_color
             self._color_temp = None
 
+    def _cancel_color_report_flush(self) -> None:
+        """Discard color attribute updates aggregated but not yet applied."""
+
     @property
     def is_transitioning(self) -> bool:
         """Return if the light is transitioning."""
@@ -890,6 +900,10 @@ class BaseSharedLight(BaseLight):
         self._transitioning_group = False
         self._transition_brightness_buffer = None
         self._transition_color_buffer = {}
+        # Color reports aggregated before the transition started are stale:
+        # they must not survive into (or past) the transition, where they
+        # would overwrite the commanded target state
+        self._cancel_color_report_flush()
         if isinstance(self, LightGroup):
             for platform_entity in self.group.get_platform_entities(Light.PLATFORM):
                 assert isinstance(platform_entity, Light)
@@ -1347,11 +1361,21 @@ class Light(BaseSharedLight, PlatformEntity):
         """Handle a transition start event from a group."""
         self.debug("group transition started - setting member transitioning flag")
         self._transitioning_group = True
+        self._transition_color_buffer = {}
+        self._cancel_color_report_flush()
 
     def transition_off(self):
         """Handle a transition finished event from a group."""
         self.debug("group transition completed - unsetting member transitioning flag")
         self._transitioning_group = False
+        if not self.is_transitioning and self._transition_color_buffer:
+            self.debug(
+                "applying buffered color attribute updates %s from group transition",
+                self._transition_color_buffer,
+            )
+            self._apply_color_reports(self._transition_color_buffer)
+            self._transition_color_buffer = {}
+            self.maybe_emit_state_changed_event()
 
     def handle_attribute_updated(
         self,
@@ -1446,6 +1470,13 @@ class Light(BaseSharedLight, PlatformEntity):
             # as that state will not be accurate
             if self.is_transitioning:
                 return  # type: ignore[unreachable]
+
+            read_x = results.get("current_x")
+            read_y = results.get("current_y")
+            if read_x is not None and read_y is not None:
+                self._last_seen_xy_color = (read_x / 65535, read_y / 65535)
+            if (read_temp := results.get("color_temperature")) is not None:
+                self._last_seen_color_temp = read_temp
 
             if (color_mode := results.get("color_mode")) is not None:
                 # Determine the effective color mode: if only one mode is

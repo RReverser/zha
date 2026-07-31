@@ -2480,3 +2480,111 @@ async def test_color_report_buffering_during_transition(zha_gateway: Gateway) ->
     assert not entity.is_transitioning
     assert entity.state.color_mode == ColorMode.COLOR_TEMP
     assert entity.state.color_temp == 340
+
+
+@patch(
+    "zigpy.zcl.clusters.lighting.Color.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+@patch(
+    "zigpy.zcl.clusters.general.LevelControl.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+@patch(
+    "zigpy.zcl.clusters.general.OnOff.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+async def test_pre_transition_color_report_discarded(zha_gateway: Gateway) -> None:
+    """Test that reports aggregated before a transition do not survive it.
+
+    A report scheduled for aggregation right before a turn_on with transition
+    is stale: it must not overwrite the commanded target color, neither by
+    being folded into the transition buffer nor by flushing right after a
+    short transition completes.
+    """
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+    color_cluster = device.device.endpoints[1].light_color
+
+    # A report arrives and starts the aggregation window...
+    await send_attributes_report(
+        zha_gateway, color_cluster, {"current_x": 55000, "current_y": 54000}
+    )
+    # ...and before the window elapses, a color temperature is commanded
+    await entity.async_turn_on(transition=1, color_temp=300)
+    await zha_gateway.async_block_till_done()
+    assert entity.is_transitioning
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 300
+
+    # Wait past the aggregation window and the full transition
+    await asyncio.sleep(2)
+    await zha_gateway.async_block_till_done()
+    assert not entity.is_transitioning
+
+    # The stale pre-transition x/y report was discarded, not applied
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 300
+    assert entity.state.xy_color is None
+
+
+async def test_single_mode_light_ignores_bogus_color_mode_report(
+    zha_gateway: Gateway,
+) -> None:
+    """Test CT-only lights apply value reports despite a bogus mode report."""
+    zigpy_device = create_mock_zigpy_device(zha_gateway, LIGHT_COLOR)
+    color_cluster = zigpy_device.endpoints[1].light_color
+    color_cluster.PLUGGED_ATTR_READS = {
+        "color_capabilities": lighting.Color.ColorCapabilities.Color_temperature,
+        "color_temperature": 250,
+        "color_temp_physical_min": 153,
+        "color_temp_physical_max": 500,
+    }
+    update_attribute_cache(color_cluster)
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+    entity = get_entity(zha_device, platform=Platform.LIGHT)
+
+    assert entity.supported_color_modes == {ColorMode.COLOR_TEMP}
+    assert entity.state.color_temp == 250
+
+    # The device reports a new color temperature alongside a bogus XY mode
+    await send_attributes_report(
+        zha_gateway,
+        color_cluster,
+        {
+            "color_temperature": 300,
+            "color_mode": lighting.Color.ColorMode.X_and_Y,
+        },
+    )
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+
+    # The mode report is ignored and the new value is applied
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 300
+    assert entity.state.xy_color is None
+
+
+async def test_group_transition_color_buffer_applied(zha_gateway: Gateway) -> None:
+    """Test color reports buffered during a group transition are applied.
+
+    Group transitions set the member transitioning flag via transition_on();
+    reports buffered while it is set must be applied when transition_off()
+    clears it, not silently dropped.
+    """
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+    color_cluster = device.device.endpoints[1].light_color
+
+    entity.transition_on()
+    assert entity.is_transitioning
+
+    await send_attributes_report(zha_gateway, color_cluster, {"color_temperature": 320})
+    await zha_gateway.async_block_till_done()
+    # buffered, not applied
+    assert entity.state.color_temp != 320
+
+    entity.transition_off()
+    assert not entity.is_transitioning
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 320
