@@ -359,6 +359,7 @@ async def test_color_number(
                 "color_capabilities",
                 "start_up_color_temperature",
                 "options",
+                "enhanced_color_mode",
             ],
             allow_cache=True,
             only_cache=False,

@@ -12,6 +12,9 @@ DEFAULT_EXTRA_TRANSITION_DELAY_LONG = 2.0
 DEFAULT_LONG_TRANSITION_TIME = 10
 DEFAULT_MIN_BRIGHTNESS = 2
 ASSUME_UPDATE_GROUP_FROM_CHILD_DELAY = 0.05
+# Attributes reported within one frame arrive as individual events, so color
+# attribute updates are aggregated for this long before being applied together
+COLOR_REPORT_AGGREGATION_DELAY = 0.5
 
 DEFAULT_MIN_TRANSITION_MANUFACTURERS = {"sengled"}
 

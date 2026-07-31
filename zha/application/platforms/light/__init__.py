@@ -56,6 +56,7 @@ from zha.application.platforms.light.const import (
     ATTR_SUPPORTED_COLOR_MODES,
     ATTR_SUPPORTED_FEATURES,
     ATTR_XY_COLOR,
+    COLOR_REPORT_AGGREGATION_DELAY,
     DEFAULT_EXTRA_TRANSITION_DELAY_LONG,
     DEFAULT_EXTRA_TRANSITION_DELAY_SHORT,
     DEFAULT_LONG_TRANSITION_TIME,
@@ -84,6 +85,16 @@ if TYPE_CHECKING:
     from zha.zigbee.group import Group
 
 _LOGGER = logging.getLogger(__name__)
+
+_AGGREGATED_COLOR_ATTRIBUTES = frozenset(
+    {
+        Color.AttributeDefs.current_x.id,
+        Color.AttributeDefs.current_y.id,
+        Color.AttributeDefs.color_temperature.id,
+        Color.AttributeDefs.color_mode.id,
+        Color.AttributeDefs.enhanced_color_mode.id,
+    }
+)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -274,6 +285,9 @@ class BaseSharedLight(BaseLight):
         self._transitioning_group: bool = False
         self._transition_listener: asyncio.TimerHandle | None = None
         self._transition_brightness_buffer: int | None = None
+        self._transition_color_buffer: dict[int, Any] = {}
+        self._last_seen_xy_color: tuple[float, float] | None = None
+        self._last_seen_color_temp: int | None = None
 
         self._internal_supported_color_modes: set[ColorMode] = set()
 
@@ -784,6 +798,86 @@ class BaseSharedLight(BaseLight):
 
         return True
 
+    def _apply_color_reports(self, reports: dict[int, Any]) -> None:
+        """Apply a burst of reported color attribute values to the entity state.
+
+        The active color mode is taken from a reported (enhanced) color mode
+        attribute if one is present, as some lights report it despite the ZCL
+        marking it unreportable. Otherwise, the mode is inferred from which
+        attribute values changed. An ambiguous burst (both x/y and color
+        temperature changed) keeps the current mode: this covers periodic
+        max-interval reports and lights that keep their x/y attributes in sync
+        with the color temperature.
+        """
+        if self._color_cluster is None:
+            return
+
+        color_mode_report = reports.get(Color.AttributeDefs.color_mode.id)
+        if color_mode_report is None:
+            color_mode_report = reports.get(Color.AttributeDefs.enhanced_color_mode.id)
+
+        curr_x = reports.get(Color.AttributeDefs.current_x.id)
+        curr_y = reports.get(Color.AttributeDefs.current_y.id)
+        xy_reported = curr_x is not None or curr_y is not None
+        # x and y can arrive in separate frames, so fill in a missing
+        # counterpart from the attribute cache
+        if curr_x is None:
+            curr_x = self._color_cluster.get(Color.AttributeDefs.current_x.name)
+        if curr_y is None:
+            curr_y = self._color_cluster.get(Color.AttributeDefs.current_y.name)
+        xy_color = (
+            (curr_x / 65535, curr_y / 65535)
+            if curr_x is not None and curr_y is not None
+            else None
+        )
+        color_temp = reports.get(Color.AttributeDefs.color_temperature.id)
+
+        # Periodic max-interval reports fire without a value change and are not
+        # necessarily synchronized between attributes, so a value that matches
+        # the last seen one is not used as a color mode signal
+        xy_changed = (
+            xy_reported
+            and xy_color is not None
+            and xy_color != self._last_seen_xy_color
+        )
+        temp_changed = (
+            color_temp is not None and color_temp != self._last_seen_color_temp
+        )
+        if xy_color is not None:
+            self._last_seen_xy_color = xy_color
+        if color_temp is not None:
+            self._last_seen_color_temp = color_temp
+
+        supports_temp = ColorMode.COLOR_TEMP in self._internal_supported_color_modes
+        supports_xy = ColorMode.XY in self._internal_supported_color_modes
+
+        if color_mode_report is not None:
+            color_mode = (
+                ColorMode.COLOR_TEMP
+                if color_mode_report == Color.ColorMode.Color_temperature
+                else ColorMode.XY
+            )
+        elif not (supports_temp and supports_xy):
+            color_mode = ColorMode.COLOR_TEMP if supports_temp else ColorMode.XY
+        elif xy_changed and not temp_changed:
+            color_mode = ColorMode.XY
+        elif temp_changed and not xy_changed:
+            color_mode = ColorMode.COLOR_TEMP
+        else:
+            color_mode = self._color_mode
+
+        if color_mode == ColorMode.COLOR_TEMP and supports_temp:
+            if color_temp is None:
+                color_temp = self._color_temperature
+            if color_temp is not None:
+                self._color_mode = ColorMode.COLOR_TEMP
+                self._color_temp = color_temp
+                self._xy_color = None
+        elif color_mode == ColorMode.XY and supports_xy and xy_color is not None:
+            self._color_mode = ColorMode.XY
+            self._xy_color = xy_color
+            self._color_temp = None
+
     @property
     def is_transitioning(self) -> bool:
         """Return if the light is transitioning."""
@@ -795,6 +889,7 @@ class BaseSharedLight(BaseLight):
         self._transitioning_individual = True
         self._transitioning_group = False
         self._transition_brightness_buffer = None
+        self._transition_color_buffer = {}
         if isinstance(self, LightGroup):
             for platform_entity in self.group.get_platform_entities(Light.PLATFORM):
                 assert isinstance(platform_entity, Light)
@@ -852,6 +947,13 @@ class BaseSharedLight(BaseLight):
             else:
                 self._brightness = self._transition_brightness_buffer
             self._transition_brightness_buffer = None
+        if self._transition_color_buffer:
+            self.debug(
+                "applying buffered color attribute updates %s from transition",
+                self._transition_color_buffer,
+            )
+            self._apply_color_reports(self._transition_color_buffer)
+            self._transition_color_buffer = {}
         self.maybe_emit_state_changed_event()
         if isinstance(self, LightGroup):
             for platform_entity in self.group.get_platform_entities(Light.PLATFORM):
@@ -952,8 +1054,21 @@ class Light(BaseSharedLight, PlatformEntity):
                         min_interval=30, max_interval=900, reportable_change=1
                     ),
                 ),
+                # The (enhanced) color mode attributes are not reportable per
+                # the ZCL, but some lights report them anyway. Conformant
+                # devices reject just these records of the multi-record
+                # configure reporting command, so nothing is lost by trying.
                 Color.AttributeDefs.color_mode: AttrConfig(
                     read_on_startup=True,
+                    reporting=ReportingConfig(
+                        min_interval=0, max_interval=900, reportable_change=1
+                    ),
+                ),
+                Color.AttributeDefs.enhanced_color_mode: AttrConfig(
+                    read_on_startup=False,
+                    reporting=ReportingConfig(
+                        min_interval=0, max_interval=900, reportable_change=1
+                    ),
                 ),
                 Color.AttributeDefs.color_temp_physical_min: AttrConfig(
                     read_on_startup=False,
@@ -1001,6 +1116,8 @@ class Light(BaseSharedLight, PlatformEntity):
         self._identify_cluster = device.identify_cluster
 
         self._refresh_task: asyncio.Task | None = None
+        self._pending_color_reports: dict[int, Any] = {}
+        self._color_report_flush_handle: asyncio.TimerHandle | None = None
 
         self.recompute_capabilities()
 
@@ -1037,6 +1154,20 @@ class Light(BaseSharedLight, PlatformEntity):
                     )
                 )
 
+        if self._color_cluster is not None:
+            for event_type in (
+                AttributeReadEvent,
+                AttributeReportedEvent,
+                AttributeUpdatedEvent,
+                AttributeWrittenEvent,
+            ):
+                self._on_remove_callbacks.append(
+                    self._color_cluster.on_event(
+                        event_type.event_type, self.handle_color_attribute_updated
+                    )
+                )
+            self._on_remove_callbacks.append(self._cancel_color_report_flush)
+
         self.start_polling()
 
     def recompute_capabilities(self) -> None:
@@ -1060,6 +1191,7 @@ class Light(BaseSharedLight, PlatformEntity):
             if self._color_temp_supported:
                 self._internal_supported_color_modes.add(ColorMode.COLOR_TEMP)
                 self._color_temp = self._color_temperature
+                self._last_seen_color_temp = self._color_temp
 
             if self._color_xy_supported:
                 self._internal_supported_color_modes.add(ColorMode.XY)
@@ -1067,6 +1199,7 @@ class Light(BaseSharedLight, PlatformEntity):
                 curr_y = self._color_cluster.get(Color.AttributeDefs.current_y.name)
                 if curr_x is not None and curr_y is not None:
                     self._xy_color = (curr_x / 65535, curr_y / 65535)
+                    self._last_seen_xy_color = self._xy_color
                 else:
                     self._xy_color = (0, 0)
 
@@ -1124,6 +1257,59 @@ class Light(BaseSharedLight, PlatformEntity):
             return
         self._brightness = value
         self.maybe_emit_state_changed_event()
+
+    def handle_color_attribute_updated(
+        self,
+        event: AttributeReadEvent
+        | AttributeReportedEvent
+        | AttributeUpdatedEvent
+        | AttributeWrittenEvent,
+    ) -> None:
+        """Aggregate color attribute updates and apply them as one burst.
+
+        Related attributes (x/y, color temperature, color mode) can arrive as
+        individual events or even in separate frames, so they are collected
+        for a short window and classified together in
+        :meth:`_apply_color_reports`.
+        """
+        if event.attribute_id == Color.AttributeDefs.color_loop_active.id:
+            if self._color_loop_supported:
+                self._effect = EFFECT_COLORLOOP if event.value == 1 else EFFECT_OFF
+                self.maybe_emit_state_changed_event()
+            return
+        if event.attribute_id not in _AGGREGATED_COLOR_ATTRIBUTES:
+            return
+        if self.is_transitioning:
+            self.debug(
+                "received color change event %s while transitioning - buffering",
+                event,
+            )
+            self._transition_color_buffer[event.attribute_id] = event.value
+            return
+        self._pending_color_reports[event.attribute_id] = event.value
+        if self._color_report_flush_handle is not None:
+            self._color_report_flush_handle.cancel()
+        self._color_report_flush_handle = asyncio.get_running_loop().call_later(
+            COLOR_REPORT_AGGREGATION_DELAY, self._flush_pending_color_reports
+        )
+
+    def _flush_pending_color_reports(self) -> None:
+        """Classify and apply the aggregated color attribute updates."""
+        self._color_report_flush_handle = None
+        reports, self._pending_color_reports = self._pending_color_reports, {}
+        if self.is_transitioning:
+            # a transition started while the reports were being aggregated
+            self._transition_color_buffer.update(reports)
+            return
+        self._apply_color_reports(reports)
+        self.maybe_emit_state_changed_event()
+
+    def _cancel_color_report_flush(self) -> None:
+        """Cancel a pending color report flush."""
+        if self._color_report_flush_handle is not None:
+            self._color_report_flush_handle.cancel()
+            self._color_report_flush_handle = None
+        self._pending_color_reports = {}
 
     def start_polling(self) -> None:
         """Start polling."""

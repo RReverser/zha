@@ -2324,3 +2324,159 @@ async def test_turn_off_cancellation_cleans_up_transition_flag(
         await task
 
     assert entity.is_transitioning is False
+
+
+async def test_color_reports_update_state(zha_gateway: Gateway) -> None:
+    """Test that color attribute reports are applied to the entity state."""
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+    color_cluster = device.device.endpoints[1].light_color
+
+    assert entity.supported_color_modes == {ColorMode.COLOR_TEMP, ColorMode.XY}
+    assert entity.state.color_mode == ColorMode.XY
+
+    # An x/y report is aggregated first and applied after the window passes
+    await send_attributes_report(
+        zha_gateway, color_cluster, {"current_x": 30000, "current_y": 25000}
+    )
+    assert entity.state.xy_color != (30000 / 65535, 25000 / 65535)
+
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.XY
+    assert entity.state.xy_color == (30000 / 65535, 25000 / 65535)
+    assert entity.state.color_temp is None
+
+    # A report of only a changed color temperature switches the mode to CT
+    await send_attributes_report(zha_gateway, color_cluster, {"color_temperature": 350})
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 350
+    assert entity.state.xy_color is None
+
+    # An ambiguous burst (changed x/y AND color temperature, e.g. lights that
+    # keep x/y synced to the color temperature) keeps the current color mode
+    await send_attributes_report(
+        zha_gateway,
+        color_cluster,
+        {"current_x": 31000, "current_y": 26000, "color_temperature": 400},
+    )
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 400
+    assert entity.state.xy_color is None
+
+    # A periodic report of unchanged x/y values is not a mode switch signal
+    await send_attributes_report(
+        zha_gateway, color_cluster, {"current_x": 31000, "current_y": 26000}
+    )
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 400
+
+    # Changed x/y values do switch the mode back to XY
+    await send_attributes_report(
+        zha_gateway, color_cluster, {"current_x": 20000, "current_y": 21000}
+    )
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.XY
+    assert entity.state.xy_color == (20000 / 65535, 21000 / 65535)
+    assert entity.state.color_temp is None
+
+
+async def test_color_mode_report_is_authoritative(zha_gateway: Gateway) -> None:
+    """Test that a reported color mode resolves an ambiguous report burst."""
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+    color_cluster = device.device.endpoints[1].light_color
+
+    # Ambiguous value burst, but the light reports its color mode with it
+    await send_attributes_report(
+        zha_gateway,
+        color_cluster,
+        {
+            "current_x": 22000,
+            "current_y": 23000,
+            "color_temperature": 300,
+            "color_mode": lighting.Color.ColorMode.Color_temperature,
+        },
+    )
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 300
+    assert entity.state.xy_color is None
+
+    # The enhanced color mode attribute works as well: the light stays in CT
+    # mode despite the x/y values changing
+    await send_attributes_report(
+        zha_gateway,
+        color_cluster,
+        {
+            "current_x": 24000,
+            "current_y": 25000,
+            "enhanced_color_mode": lighting.Color.EnhancedColorMode.Color_temperature,
+        },
+    )
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 300
+
+    # And a non-CT mode report switches to XY, applying the cached x/y values
+    await send_attributes_report(
+        zha_gateway,
+        color_cluster,
+        {"color_mode": lighting.Color.ColorMode.X_and_Y},
+    )
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.XY
+    assert entity.state.xy_color == (24000 / 65535, 25000 / 65535)
+    assert entity.state.color_temp is None
+
+
+@patch(
+    "zigpy.zcl.clusters.lighting.Color.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+@patch(
+    "zigpy.zcl.clusters.general.LevelControl.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+@patch(
+    "zigpy.zcl.clusters.general.OnOff.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+async def test_color_report_buffering_during_transition(zha_gateway: Gateway) -> None:
+    """Test that color reports during a transition are buffered.
+
+    Intermediate reports must not overwrite the optimistically set target
+    color; the buffered values are applied when the transition completes.
+    """
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+    color_cluster = device.device.endpoints[1].light_color
+
+    await entity.async_turn_on(transition=1, color_temp=300)
+    await zha_gateway.async_block_till_done()
+
+    assert entity.is_transitioning
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 300
+
+    # An intermediate report mid-transition is buffered, not applied
+    await send_attributes_report(zha_gateway, color_cluster, {"color_temperature": 340})
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_temp == 300
+
+    # Wait for the transition to complete: the buffered report is applied
+    await asyncio.sleep(2)
+    await zha_gateway.async_block_till_done()
+    assert not entity.is_transitioning
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 340
