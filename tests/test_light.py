@@ -2588,3 +2588,107 @@ async def test_group_transition_color_buffer_applied(zha_gateway: Gateway) -> No
     assert not entity.is_transitioning
     assert entity.state.color_mode == ColorMode.COLOR_TEMP
     assert entity.state.color_temp == 320
+
+
+async def test_color_temp_sentinel_report_ignored(zha_gateway: Gateway) -> None:
+    """Test that sentinel color_temperature reports (0/0xFFFF) are ignored.
+
+    Some lights park color_temperature at a sentinel when leaving CT mode;
+    it must not be treated as a mode switch signal or a valid value.
+    """
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+    color_cluster = device.device.endpoints[1].light_color
+
+    # Establish XY mode with a known color
+    await send_attributes_report(
+        zha_gateway, color_cluster, {"current_x": 30000, "current_y": 25000}
+    )
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.XY
+    assert entity.state.xy_color == (30000 / 65535, 25000 / 65535)
+
+    # A lone sentinel color_temperature report changes nothing
+    for sentinel_value in (0, 0xFFFF):
+        await send_attributes_report(
+            zha_gateway, color_cluster, {"color_temperature": sentinel_value}
+        )
+        await asyncio.sleep(0.6)
+        await zha_gateway.async_block_till_done()
+        assert entity.state.color_mode == ColorMode.XY
+        assert entity.state.xy_color == (30000 / 65535, 25000 / 65535)
+        assert entity.state.color_temp is None
+
+    # A valid color_temperature report still switches the mode
+    await send_attributes_report(zha_gateway, color_cluster, {"color_temperature": 350})
+    await asyncio.sleep(0.6)
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_mode == ColorMode.COLOR_TEMP
+    assert entity.state.color_temp == 350
+
+
+@patch(
+    "zigpy.zcl.clusters.lighting.Color.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+@patch(
+    "zigpy.zcl.clusters.general.LevelControl.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+@patch(
+    "zigpy.zcl.clusters.general.OnOff.request",
+    new=AsyncMock(return_value=[sentinel.data, zcl_f.Status.SUCCESS]),
+)
+async def test_individual_transition_completing_during_group_transition(
+    zha_gateway: Gateway,
+) -> None:
+    """Test buffered color reports survive an overlapping group transition.
+
+    When an individual transition completes while a group transition is still
+    running on the same member, the color buffer must be deferred to the group
+    transition end, not applied mid-group-transition.
+    """
+    device = await device_light_1_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+    color_cluster = device.device.endpoints[1].light_color
+
+    # Start an individual transition, then a group transition on top
+    await entity.async_turn_on(transition=1, color_temp=300)
+    await zha_gateway.async_block_till_done()
+    assert entity.is_transitioning
+    entity.transition_on()
+
+    # A report arriving now is buffered
+    await send_attributes_report(zha_gateway, color_cluster, {"color_temperature": 340})
+    await zha_gateway.async_block_till_done()
+    assert entity.state.color_temp == 300
+
+    # The individual transition timer fires while the group transition is
+    # still running: the buffer must NOT be applied yet
+    await asyncio.sleep(2)
+    await zha_gateway.async_block_till_done()
+    assert entity.is_transitioning  # group flag still set
+    assert entity.state.color_temp == 300
+
+    # Group transition end applies the buffered report
+    entity.transition_off()
+    assert not entity.is_transitioning
+    assert entity.state.color_temp == 340
+
+
+async def test_color_loop_active_report_updates_effect(zha_gateway: Gateway) -> None:
+    """Test color_loop_active reports update the effect state."""
+    device = await device_light_3_mock(zha_gateway)
+    entity = get_entity(device, platform=Platform.LIGHT)
+    color_cluster = device.device.endpoints[1].light_color
+
+    assert entity.state.effect != "colorloop"
+
+    await send_attributes_report(zha_gateway, color_cluster, {"color_loop_active": 1})
+    await zha_gateway.async_block_till_done()
+    assert entity.state.effect == "colorloop"
+
+    await send_attributes_report(zha_gateway, color_cluster, {"color_loop_active": 0})
+    await zha_gateway.async_block_till_done()
+    assert entity.state.effect != "colorloop"

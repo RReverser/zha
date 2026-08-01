@@ -835,6 +835,11 @@ class BaseSharedLight(BaseLight):
             else None
         )
         color_temp = reports.get(Color.AttributeDefs.color_temperature.id)
+        # Some lights park color_temperature at a sentinel (0 or 0xFFFF) when
+        # they are not in color temperature mode: neither a valid value nor a
+        # color mode change signal
+        if color_temp is not None and not 0 < color_temp < 0xFFFF:
+            color_temp = None
 
         # Periodic max-interval reports fire without a value change and are not
         # necessarily synchronized between attributes, so a value that matches
@@ -875,7 +880,9 @@ class BaseSharedLight(BaseLight):
 
         if color_mode == ColorMode.COLOR_TEMP and supports_temp:
             if color_temp is None:
-                color_temp = self._color_temperature
+                cached_temp = self._color_temperature
+                if cached_temp is not None and 0 < cached_temp < 0xFFFF:
+                    color_temp = cached_temp
             if color_temp is not None:
                 self._color_mode = ColorMode.COLOR_TEMP
                 self._color_temp = color_temp
@@ -961,7 +968,8 @@ class BaseSharedLight(BaseLight):
             else:
                 self._brightness = self._transition_brightness_buffer
             self._transition_brightness_buffer = None
-        if self._transition_color_buffer:
+        if not self.is_transitioning and self._transition_color_buffer:
+            # if a group transition is still running, transition_off applies it
             self.debug(
                 "applying buffered color attribute updates %s from transition",
                 self._transition_color_buffer,
@@ -1312,8 +1320,9 @@ class Light(BaseSharedLight, PlatformEntity):
         self._color_report_flush_handle = None
         reports, self._pending_color_reports = self._pending_color_reports, {}
         if self.is_transitioning:
-            # a transition started while the reports were being aggregated
-            self._transition_color_buffer.update(reports)
+            # Defense-in-depth: transition start cancels the aggregation
+            # synchronously, so this should be unreachable. Reports aggregated
+            # before a transition are stale and must be discarded, not applied.
             return
         self._apply_color_reports(reports)
         self.maybe_emit_state_changed_event()
@@ -1351,6 +1360,7 @@ class Light(BaseSharedLight, PlatformEntity):
             self._tracked_tasks.remove(self._refresh_task)
             self._refresh_task.cancel()
             self._refresh_task = None
+        self._cancel_color_report_flush()
 
     @periodic(_REFRESH_INTERVAL)
     async def _refresh(self) -> None:
