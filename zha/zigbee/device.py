@@ -1189,14 +1189,27 @@ class Device(LogMixin, EventBase):
         # the add event registers them), so silence their changes
         with suppress_events():
             for entity in new_entities.values():
-                entity.maybe_emit_state_changed_event()
+                self._safe_emit_state_changed_event(entity)
 
         # `_compute_primary_entity` above can flip `primary` on an existing entity, and
         # the caller may have recomputed their capabilities beforehand; emit so those
         # changes reach consumers.
         for key, entity in all_entities.items():
             if key not in new_entities:
-                entity.maybe_emit_state_changed_event()
+                self._safe_emit_state_changed_event(entity)
+
+    def _safe_emit_state_changed_event(self, entity: PlatformEntity) -> None:
+        """Emit an entity's state change, tolerating a broken entity.
+
+        Computing a state runs entity (and, for quirk entities, quirk-supplied)
+        code. Letting that propagate would abort device initialization and, via
+        `load_devices`, fail the whole ZHA setup — one bad entity would take
+        every device down with it.
+        """
+        try:
+            entity.maybe_emit_state_changed_event()
+        except Exception:  # pylint: disable=broad-except
+            _LOGGER.exception("Failed to emit state changed event for %s", entity)
 
     async def recompute_entities(self) -> None:
         """Recompute all entities for this device."""

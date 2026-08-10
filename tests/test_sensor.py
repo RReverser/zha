@@ -1515,6 +1515,10 @@ class OppleCluster(CustomCluster, ManufacturerSpecificCluster):
     ep_attribute = "opple_cluster"
     attributes = {
         0x010C: ("last_feeding_size", t.uint16_t, True),
+        0x010D: ("power", t.uint16_t, True),
+        0x010E: ("energy", t.uint16_t, True),
+        0x010F: ("energy_delivered", t.uint16_t, True),
+        0x0110: ("energy_invalid_state_class", t.uint16_t, True),
     }
 
     def __init__(self, *args, **kwargs) -> None:

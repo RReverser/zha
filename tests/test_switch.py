@@ -904,3 +904,88 @@ async def test_binary_output_cluster(zha_gateway: Gateway) -> None:
             manufacturer=UNDEFINED,
         )
     ]
+
+
+async def test_quirk_switch_attribute_missing_from_cluster(
+    zha_gateway: Gateway, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A quirk switch naming an attribute the cluster lacks is skipped, not fatal.
+
+    Quirk entities are `always_supported`, so nothing used to stop such an entity
+    from being created; reading its state then raised `KeyError` out of device
+    initialization and failed the whole ZHA setup.
+    """
+
+    zigpy_dev = create_mock_zigpy_device(
+        zha_gateway,
+        ZIGPY_DEVICE,
+        manufacturer="manufacturer",
+        model="model",
+    )
+
+    registry = DeviceRegistry()
+    (
+        QuirkBuilder(zigpy_dev.manufacturer, zigpy_dev.model)
+        .switch(
+            "attribute_that_does_not_exist",
+            general.OnOff.cluster_id,
+            translation_key="nonexistent",
+            fallback_name="Nonexistent",
+        )
+        .add_to_registry(registry)
+    )
+
+    zha_device = await join_zigpy_device(zha_gateway, registry.resolve(zigpy_dev))
+
+    # The device still initializes and its regular on/off switch works
+    switch_entity = get_entity(zha_device, platform=Platform.SWITCH)
+    assert switch_entity._attribute_name == general.OnOff.AttributeDefs.on_off.name
+
+    # ...but no entity was created for the attribute the cluster does not have
+    assert not [
+        entity
+        for entity in zha_device.platform_entities.values()
+        if getattr(entity, "_attribute_name", None) == "attribute_that_does_not_exist"
+    ]
+    assert "which cluster 0x0006 does not have" in caplog.text
+
+
+async def test_quirk_removing_standard_attribute(zha_gateway: Gateway) -> None:
+    """A quirk dropping a standard ZCL attribute must not break device setup.
+
+    Some custom quirks replace `OnOff` with a cluster whose `AttributeDefs` do not
+    inherit the standard definitions, leaving no `on_off` attribute at all.
+    """
+
+    class OnOffWithoutStandardAttributes(CustomCluster, general.OnOff):
+        """`OnOff` cluster that defines none of the standard attributes."""
+
+        class AttributeDefs(zcl_f.BaseAttributeDefs):
+            """Only a manufacturer-specific attribute."""
+
+            some_custom_attribute = zcl_f.ZCLAttributeDef(
+                id=0x6000, type=t.uint8_t, is_manufacturer_specific=True
+            )
+
+    zigpy_dev = create_mock_zigpy_device(
+        zha_gateway,
+        ZIGPY_DEVICE,
+        manufacturer="manufacturer2",
+        model="model2",
+    )
+
+    registry = DeviceRegistry()
+    (
+        QuirkBuilder(zigpy_dev.manufacturer, zigpy_dev.model)
+        .replaces(OnOffWithoutStandardAttributes)
+        .add_to_registry(registry)
+    )
+
+    zha_device = await join_zigpy_device(zha_gateway, registry.resolve(zigpy_dev))
+
+    # Device setup succeeds; no switch entity is created for the missing attribute
+    assert not [
+        entity
+        for entity in zha_device.platform_entities.values()
+        if entity.PLATFORM == Platform.SWITCH
+    ]

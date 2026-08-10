@@ -178,7 +178,19 @@ async def configure_cluster_configs(
         for attr_name, attr_config in agg.attributes.items():
             if attr_config.reporting is None:
                 continue
-            attr_def = agg.cluster.find_attribute(attr_name)
+            # Configs are aggregated from entities that have not been filtered by
+            # `is_supported()` yet, so an attribute the cluster does not define
+            # (e.g. a quirk naming a nonexistent one) can still reach us here.
+            try:
+                attr_def = agg.cluster.find_attribute(attr_name)
+            except KeyError:
+                _LOGGER.debug(
+                    "[%s] Cluster %s has no attribute %r - skipping reporting config",
+                    device.nwk,
+                    agg.cluster.name,
+                    attr_name,
+                )
+                continue
             reporting_attrs[attr_def] = attr_config.reporting
 
         if reporting_attrs:
