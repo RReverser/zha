@@ -104,6 +104,33 @@ async def test_device_override(
         )
 
 
+async def test_device_override_ieee_case_insensitive(zha_gateway: Gateway) -> None:
+    """Test that a device override matches an upper case IEEE address."""
+
+    zigpy_device = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/sonoff-basiczbr3.json",
+    )
+
+    # The device is an on/off light by default. IEEE addresses are commonly displayed
+    # in upper case, so an override pasted from there must still match the (lower case)
+    # device unique_id.
+    unique_id = f"{zigpy_device.ieee}-1"
+    assert unique_id.upper() != unique_id
+
+    zha_gateway.config.config.device_overrides = {
+        unique_id.upper(): DeviceOverridesConfiguration(type=Platform.SWITCH)
+    }
+
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_device)
+
+    entity = zha_device.get_platform_entity(Platform.SWITCH, unique_id=unique_id)
+    assert entity is not None
+
+    with pytest.raises(KeyError):
+        zha_device.get_platform_entity(Platform.LIGHT, unique_id=unique_id)
+
+
 async def test_device_override_entities(zha_gateway: Gateway) -> None:
     """Test device discovery entity changes."""
     device_data_text = await asyncio.get_running_loop().run_in_executor(

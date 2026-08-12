@@ -165,10 +165,16 @@ def discover_entities_for_endpoint(endpoint: Endpoint) -> Iterator[PlatformEntit
     # `light` and `switch` for devices whose device type is incorrect.
     platform_override: Platform | None = None
 
+    # Override keys are user-provided (e.g. Home Assistant's `zha.device_config` YAML)
+    # and are matched case-insensitively: `str(EUI64)` is always lower case, but IEEE
+    # addresses are commonly displayed and pasted in upper case.
+    device_overrides = {
+        unique_id.lower(): override
+        for unique_id, override in device.gateway.config.config.device_overrides.items()
+    }
+
     if (
-        device_override := device.gateway.config.config.device_overrides.get(
-            f"{device.ieee}-{endpoint.id}"
-        )
+        device_override := device_overrides.get(f"{device.ieee}-{endpoint.id}")
     ) is not None:
         platform_override = device_override.type
 
