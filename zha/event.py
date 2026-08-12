@@ -122,19 +122,3 @@ class EventBase:
                 task = asyncio.create_task(call)
                 self._event_tasks.append(task)
                 task.add_done_callback(self._event_tasks.remove)
-
-    def _handle_event_protocol(self, event) -> None:
-        """Process an event based on event protocol."""
-        _LOGGER.debug(
-            "(%s) handling event protocol for event: %s", self.__class__.__name__, event
-        )
-        handler = getattr(self, f"handle_{event.event.replace(' ', '_')}", None)
-        if handler is None:
-            _LOGGER.warning("Received unknown event: %s", event)
-            return
-        if inspect.iscoroutinefunction(handler):
-            task = asyncio.create_task(handler(event))
-            self._event_tasks.append(task)
-            task.add_done_callback(self._event_tasks.remove)
-        else:
-            handler(event)

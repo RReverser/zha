@@ -5,20 +5,11 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, call
 
-import pytest
-
 from zha.event import EventBase, EventListener
 
 
 class EventGenerator(EventBase):
     """Event generator for testing."""
-
-
-class Event:
-    """Event class for testing."""
-
-    event = "test"
-    event_type = "testing"
 
 
 def test_event_base_unsubs():
@@ -158,18 +149,6 @@ async def test_event_base_emit_coro():
     unsub()
     assert not event._event_tasks
 
-    test_event = Event()
-    event.on_event(test_event.event, event._handle_event_protocol)
-    event.handle_test = AsyncMock()
-
-    event.emit(test_event.event, test_event)
-
-    await asyncio.gather(*event._event_tasks)
-
-    assert event.handle_test.await_count == 1
-    assert event.handle_test.mock_calls == [call(test_event)]
-    assert not event._event_tasks
-
 
 async def test_event_emit_with_context():
     """Test event emitting with context."""
@@ -186,28 +165,3 @@ async def test_event_emit_with_context():
 
     sync_callback.assert_called_once_with("test", "data")
     async_callback.assert_awaited_once_with("test", "data")
-
-
-def test_handle_event_protocol():
-    """Test event base class."""
-
-    event_handler = EventGenerator()
-    event_handler.handle_test = MagicMock()
-    event_handler.on_event("test", event_handler._handle_event_protocol)
-
-    event = Event()
-    event_handler.emit(event.event, event)
-
-    assert event_handler.handle_test.called
-    assert event_handler.handle_test.call_args[0] == (event,)
-
-
-def test_handle_event_protocol_no_event(caplog: pytest.LogCaptureFixture):
-    """Test event base class."""
-
-    event_handler = EventGenerator()
-    event_handler.on_event("not_test", event_handler._handle_event_protocol)
-    event = Event()
-    event_handler.emit("not_test", event)
-
-    assert "Received unknown event:" in caplog.text
