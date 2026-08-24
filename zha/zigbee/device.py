@@ -1464,10 +1464,15 @@ class Device(LogMixin, EventBase):
             return  # client commands don't return a response
         if isinstance(response, Exception):
             raise ZHAException("Failed to issue cluster command") from response
-        if response[1] is not ZclStatus.SUCCESS:
-            raise ZHAException(
-                f"Failed to issue cluster command with status: {response[1]}"
-            )
+
+        # The response is either a Default Response (`command_id`, `status`) or the
+        # cluster-specific response defined for the command, whose fields differ per
+        # command. Only the latter's `status` field, when it has one, is meaningful:
+        # indexing blindly into the response reads an unrelated field (e.g. a Groups
+        # `add_response`'s `group_id`) and reports it as a ZCL status.
+        status = getattr(response, "status", None)
+        if isinstance(status, ZclStatus) and status != ZclStatus.SUCCESS:
+            raise ZHAException(f"Failed to issue cluster command with status: {status}")
 
     async def async_add_to_group(self, group_id: int) -> None:
         """Add this device to the provided zigbee group."""

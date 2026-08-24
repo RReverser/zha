@@ -22,7 +22,12 @@ from zigpy.zcl.clusters import general
 from zigpy.zcl.clusters.general import Ota, PowerConfiguration
 from zigpy.zcl.clusters.lighting import Color
 from zigpy.zcl.clusters.measurement import CarbonDioxideConcentration
-from zigpy.zcl.foundation import Status, WriteAttributesResponse
+from zigpy.zcl.foundation import (
+    GENERAL_COMMANDS,
+    GeneralCommand,
+    Status,
+    WriteAttributesResponse,
+)
 from zigpy.zcl.helpers import ReportingConfig
 import zigpy.zdo.types as zdo_t
 
@@ -585,7 +590,15 @@ async def test_issue_cluster_command(
 
     cluster = zigpy_dev.endpoints[3].on_off
 
-    with patch("zigpy.zcl.Cluster.request", return_value=[0x5, Status.SUCCESS]):
+    default_response = GENERAL_COMMANDS[GeneralCommand.Default_Response].schema
+
+    with patch(
+        "zigpy.zcl.Cluster.request",
+        return_value=default_response(
+            command_id=general.OnOff.ServerCommandDefs.on.id,
+            status=Status.SUCCESS,
+        ),
+    ):
         await zha_device.issue_cluster_command(
             3,
             general.OnOff.cluster_id,
@@ -596,6 +609,103 @@ async def test_issue_cluster_command(
         )
 
         assert cluster.request.await_count == 1
+
+    # A failing Default Response is still reported
+    with (
+        patch(
+            "zigpy.zcl.Cluster.request",
+            return_value=default_response(
+                command_id=general.OnOff.ServerCommandDefs.on.id,
+                status=Status.UNSUP_CLUSTER_COMMAND,
+            ),
+        ),
+        pytest.raises(
+            ZHAException,
+            match="Failed to issue cluster command with status: "
+            r"<Status.UNSUP_CLUSTER_COMMAND: 129>",
+        ),
+    ):
+        await zha_device.issue_cluster_command(
+            3,
+            general.OnOff.cluster_id,
+            general.OnOff.ServerCommandDefs.on.id,
+            CLUSTER_COMMAND_SERVER,
+            None,
+            {},
+        )
+
+
+async def test_issue_cluster_command_specific_response(
+    zha_gateway: Gateway,
+) -> None:
+    """Test issue_cluster_command with a cluster-specific command response."""
+    zigpy_dev = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            3: {
+                SIG_EP_INPUT: [general.Basic.cluster_id, general.Groups.cluster_id],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zigpy.profiles.zha.DeviceType.ON_OFF_SWITCH,
+                SIG_EP_PROFILE: zigpy.profiles.zha.PROFILE_ID,
+            }
+        },
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    cluster = zigpy_dev.endpoints[3].groups
+
+    add_response = general.Groups.ClientCommandDefs.add_response.schema
+    get_membership_response = (
+        general.Groups.ClientCommandDefs.get_membership_response.schema
+    )
+
+    # A cluster-specific response is not a Default Response: its second field is a
+    # command-specific value (here `group_id`), not a status. Reading it as a status
+    # made successful commands look like failures (zigpy/zha#869): `group_id` 0x0085
+    # was reported as `Status.INVALID_FIELD` (133).
+    cluster.add = AsyncMock(
+        return_value=add_response(status=Status.SUCCESS, group_id=0x0085)
+    )
+    await zha_device.issue_cluster_command(
+        3,
+        general.Groups.cluster_id,
+        general.Groups.ServerCommandDefs.add.id,
+        CLUSTER_COMMAND_SERVER,
+        None,
+        {"group_id": 0x0085, "group_name": "test"},
+    )
+    assert cluster.add.await_count == 1
+
+    # A genuine failure status in a cluster-specific response is still reported
+    cluster.add = AsyncMock(
+        return_value=add_response(status=Status.INSUFFICIENT_SPACE, group_id=0x0085)
+    )
+    with pytest.raises(
+        ZHAException,
+        match="Failed to issue cluster command with status: "
+        r"<Status.INSUFFICIENT_SPACE: 137>",
+    ):
+        await zha_device.issue_cluster_command(
+            3,
+            general.Groups.cluster_id,
+            general.Groups.ServerCommandDefs.add.id,
+            CLUSTER_COMMAND_SERVER,
+            None,
+            {"group_id": 0x0085, "group_name": "test"},
+        )
+
+    # A response without a `status` field at all is not checked
+    cluster.get_membership = AsyncMock(
+        return_value=get_membership_response(capacity=3, groups=[])
+    )
+    await zha_device.issue_cluster_command(
+        3,
+        general.Groups.cluster_id,
+        general.Groups.ServerCommandDefs.get_membership.id,
+        CLUSTER_COMMAND_SERVER,
+        None,
+        {"groups": []},
+    )
+    assert cluster.get_membership.await_count == 1
 
 
 async def test_async_add_to_group_remove_from_group(
