@@ -18,7 +18,7 @@ import zigpy.profiles.zha
 import zigpy.types
 from zigpy.typing import UNDEFINED
 from zigpy.zcl import ClusterType
-from zigpy.zcl.clusters import general, lightlink
+from zigpy.zcl.clusters import general, lightlink, security
 from zigpy.zcl.clusters.general import Ota, PowerConfiguration
 from zigpy.zcl.clusters.lighting import Color
 from zigpy.zcl.clusters.measurement import CarbonDioxideConcentration
@@ -1143,6 +1143,135 @@ async def test_primary_entity_weight_0_not_elected(zha_gateway: Gateway) -> None
 
     # The weight-0 battery entity is not elected as the primary entity
     assert not battery.primary
+
+
+async def test_primary_entity_reelection(zha_gateway: Gateway) -> None:
+    """Test election losers are not permanently excluded from later elections."""
+
+    # A smart plug with an IAS zone
+    zigpy_dev = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_INPUT: [
+                    general.OnOff.cluster_id,
+                    security.IasZone.cluster_id,
+                ],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zigpy.profiles.zha.DeviceType.SMART_PLUG,
+                SIG_EP_PROFILE: zigpy.profiles.zha.PROFILE_ID,
+            }
+        },
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    switch = get_entity(zha_device, Platform.SWITCH, entity_type=Switch)
+    ias_zone = get_entity(zha_device, Platform.BINARY_SENSOR, entity_type=IASZone)
+
+    assert switch.primary
+    assert not ias_zone.primary
+
+    # When the `on_off` attribute becomes unsupported, the switch is removed and a
+    # re-election elects the runner-up instead of permanently leaving the device
+    # without a primary entity
+    zigpy_dev.endpoints[1].on_off.add_unsupported_attribute(
+        general.OnOff.AttributeDefs.on_off.id
+    )
+    await zha_device.recompute_entities()
+
+    assert (Platform.SWITCH, switch.unique_id) not in zha_device.platform_entities
+    assert ias_zone.primary
+
+    # Writing a value clears the unsupported flag; the rediscovered switch wins
+    # back the election
+    zigpy_dev.endpoints[1].on_off.update_attribute(
+        general.OnOff.AttributeDefs.on_off.id, zigpy.types.Bool.false
+    )
+    await zha_device.recompute_entities()
+
+    switch = get_entity(zha_device, Platform.SWITCH, entity_type=Switch)
+    assert switch.primary
+    assert not ias_zone.primary
+
+
+async def test_primary_entity_election_ignores_enabled(zha_gateway: Gateway) -> None:
+    """Test the election ignores runtime enabled state.
+
+    The primary entity describes the main feature of the device, which does not
+    change when its entity is disabled (via the entity registry in HA).
+    """
+
+    # A smart plug with an IAS zone
+    zigpy_dev = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            1: {
+                SIG_EP_INPUT: [
+                    general.OnOff.cluster_id,
+                    security.IasZone.cluster_id,
+                ],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zigpy.profiles.zha.DeviceType.SMART_PLUG,
+                SIG_EP_PROFILE: zigpy.profiles.zha.PROFILE_ID,
+            }
+        },
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    switch = get_entity(zha_device, Platform.SWITCH, entity_type=Switch)
+    ias_zone = get_entity(zha_device, Platform.BINARY_SENSOR, entity_type=IASZone)
+
+    assert switch.primary
+    assert not ias_zone.primary
+
+    # A disabled entity stays primary, the runner-up does not take its spot
+    switch.disable()
+    await zha_device.recompute_entities()
+
+    assert switch.primary
+    assert not ias_zone.primary
+
+    # Re-enabling changes nothing
+    switch.enable()
+    await zha_device.recompute_entities()
+
+    assert switch.primary
+    assert not ias_zone.primary
+
+    # An explicitly primary entity also keeps its spot when disabled
+    ias_zone._attr_primary = True
+    await zha_device.recompute_entities()
+
+    ias_zone.disable()
+    await zha_device.recompute_entities()
+
+    assert ias_zone.primary
+    assert not switch.primary
+
+
+async def test_primary_entity_election_explicit_primary_takes_over(
+    zha_gateway: Gateway,
+) -> None:
+    """Test an explicitly primary entity replaces a previously computed winner."""
+
+    # Night light with a bulb and a motion sensor
+    zigpy_dev = await zigpy_device_from_json(
+        zha_gateway.application_controller,
+        "tests/data/devices/third-reality-inc-3rsnl02043z-0x0000003c.json",
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+
+    light = get_entity(zha_device, Platform.LIGHT, entity_type=Light)
+    motion = get_entity(zha_device, Platform.BINARY_SENSOR, entity_type=IASZone)
+    assert light.primary
+
+    # Mark the motion sensor as explicitly primary, like a quirk would.
+    # Recomputing the entities re-runs the primary entity election.
+    motion._attr_primary = True
+    await zha_device.recompute_entities()
+
+    assert motion.primary
+    assert not light.primary
 
 
 async def test_quirks_v2_primary_entity(zha_gateway: Gateway) -> None:

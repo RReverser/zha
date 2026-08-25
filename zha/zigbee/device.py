@@ -371,6 +371,7 @@ class Device(LogMixin, EventBase):
 
         self._platform_entities: dict[tuple[Platform, str], PlatformEntity] = {}
         self._pending_entities: list[PlatformEntity] = []
+        self._primary_entity: PlatformEntity | None = None
         # All entities discovered for this device, including ones removed by a quirk.
         # Used for aggregating cluster configs so binding/reporting matches the
         # legacy claim-during-discovery flow (which configured handlers even when
@@ -740,6 +741,11 @@ class Device(LogMixin, EventBase):
     def platform_entities(self) -> dict[tuple[Platform, str], PlatformEntity]:
         """Return the platform entities for this device."""
         return self._platform_entities
+
+    @property
+    def primary_entity(self) -> PlatformEntity | None:
+        """Return the primary entity of the device, if any."""
+        return self._primary_entity
 
     def get_platform_entity(self, platform: Platform, unique_id: str) -> PlatformEntity:
         """Get a platform entity by unique id."""
@@ -1141,6 +1147,10 @@ class Device(LogMixin, EventBase):
             # rediscovers the same unique_id would skip the replacement and
             # leave the stale entity shadowing it indefinitely.
             del self._platform_entities[key]
+            if entity is self._primary_entity:
+                # No re-election here: every live-removal caller runs the
+                # election right after via `_add_pending_entities`
+                self._primary_entity = None
             if emit_event:
                 self.emit(
                     DeviceEntityRemovedEvent.event_type,
@@ -1618,26 +1628,29 @@ class Device(LogMixin, EventBase):
 
     def _compute_primary_entity(self, entities: Sequence[PlatformEntity]) -> None:
         """Compute the primary entity from a given set of entities."""
+        self._primary_entity = None
 
         # First, check if any entity is explicitly primary
-        explicitly_primary = [entity for entity in entities if entity.primary]
+        explicitly_primary = [entity for entity in entities if entity._attr_primary]
 
         if len(explicitly_primary) == 1:
             self.debug(
                 "Device has a single explicitly primary entity,"
                 " not performing weight matching"
             )
+            self._primary_entity = explicitly_primary[0]
             return
 
         # It should not be possible for there to be more than one
         assert not explicitly_primary
 
         # For weight matching, only consider entities with a non-zero primary weight
-        # which are not explicitly marked as not primary
+        # which are not explicitly marked as not primary. Entities disabled at runtime
+        # (via the entity registry in HA) deliberately stay candidates: the primary
+        # entity describes the main feature of the device, which does not change when
+        # its entity is disabled.
         candidates = [
-            e
-            for e in entities
-            if e.enabled and e._attr_primary is not False and e.primary_weight > 0
+            e for e in entities if e._attr_primary is not False and e.primary_weight > 0
         ]
         candidates.sort(reverse=True, key=lambda e: e.primary_weight)
 
@@ -1649,19 +1662,12 @@ class Device(LogMixin, EventBase):
 
         # We have a clear winner
         if not others or winner.primary_weight > others[0].primary_weight:
-            winner.primary = True
-
-            for entity in others:
-                entity.primary = False
-
+            self._primary_entity = winner
             return
 
         self.debug(
             "Primary entity tie between %s and %s, no primary entity", winner, others[0]
         )
-
-        for entity in candidates:
-            entity.primary = False
 
     def get_diagnostics_json(self):
         """Get ZHA device information."""

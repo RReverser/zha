@@ -279,6 +279,10 @@ class BaseEntity(LogMixin, EventBase):
     _attr_enabled: bool = True
     _attr_extra_state_attribute_names: set[str] | None = None
     _attr_always_supported: bool = False
+
+    # Explicitly marks the entity as (not) primary, set by entity classes and quirks.
+    # It takes precedence over (and is never overwritten by) the weight-based primary
+    # entity election, whose result is held by the device.
     _attr_primary: bool | None = None
 
     # When two entities both want to be primary, the one with the higher weight will be
@@ -329,15 +333,7 @@ class BaseEntity(LogMixin, EventBase):
     @property
     def primary(self) -> bool:
         """Return if the entity is the primary device control."""
-        if self._attr_primary is None:
-            return False
-
-        return self._attr_primary
-
-    @primary.setter
-    def primary(self, value: bool | None) -> None:
-        """Set the entity as the primary device control."""
-        self._attr_primary = value
+        return bool(self._attr_primary)
 
     @property
     def primary_weight(self) -> int:
@@ -632,6 +628,14 @@ class PlatformEntity(BaseEntity):
     def device(self) -> Device:
         """Return the device."""
         return self._device
+
+    @property
+    def primary(self) -> bool:
+        """Return if the entity is the primary device control."""
+        if self._attr_primary is not None:
+            return self._attr_primary
+
+        return self._device.primary_entity is self
 
     @property
     def endpoint(self) -> Endpoint:
