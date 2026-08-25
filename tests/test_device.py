@@ -18,7 +18,7 @@ import zigpy.profiles.zha
 import zigpy.types
 from zigpy.typing import UNDEFINED
 from zigpy.zcl import ClusterType
-from zigpy.zcl.clusters import general
+from zigpy.zcl.clusters import general, lightlink
 from zigpy.zcl.clusters.general import Ota, PowerConfiguration
 from zigpy.zcl.clusters.lighting import Color
 from zigpy.zcl.clusters.measurement import CarbonDioxideConcentration
@@ -706,6 +706,68 @@ async def test_issue_cluster_command_specific_response(
         {"groups": []},
     )
     assert cluster.get_membership.await_count == 1
+
+
+async def test_issue_cluster_command_lightlink_status(
+    zha_gateway: Gateway,
+) -> None:
+    """Test issue_cluster_command with a response using a non-ZCL status enum."""
+    zigpy_dev = create_mock_zigpy_device(
+        zha_gateway,
+        {
+            3: {
+                SIG_EP_INPUT: [
+                    general.Basic.cluster_id,
+                    lightlink.LightLink.cluster_id,
+                ],
+                SIG_EP_OUTPUT: [],
+                SIG_EP_TYPE: zigpy.profiles.zha.DeviceType.ON_OFF_SWITCH,
+                SIG_EP_PROFILE: zigpy.profiles.zha.PROFILE_ID,
+            }
+        },
+    )
+    zha_device = await join_zigpy_device(zha_gateway, zigpy_dev)
+    cluster = zigpy_dev.endpoints[3].lightlink
+
+    network_start_rsp = lightlink.LightLink.ClientCommandDefs.network_start_rsp.schema
+
+    def _response(status: lightlink.Status) -> network_start_rsp:
+        return network_start_rsp(
+            inter_pan_transaction_id=0x12345678,
+            status=status,
+            epid=zigpy.types.EUI64.convert("11:22:33:44:55:66:77:88"),
+            nwk_update_id=0,
+            logical_channel=15,
+            pan_id=0x1234,
+        )
+
+    # LightLink defines its own `Status` enum, so the response status is not a
+    # `foundation.Status`. The comparison is numeric, so both outcomes are still
+    # reported correctly.
+    cluster.network_start = AsyncMock(return_value=_response(lightlink.Status.Success))
+    await zha_device.issue_cluster_command(
+        3,
+        lightlink.LightLink.cluster_id,
+        lightlink.LightLink.ServerCommandDefs.network_start.id,
+        CLUSTER_COMMAND_SERVER,
+        None,
+        {},
+    )
+    assert cluster.network_start.await_count == 1
+
+    cluster.network_start = AsyncMock(return_value=_response(lightlink.Status.Failure))
+    with pytest.raises(
+        ZHAException,
+        match="Failed to issue cluster command with status: <Status.Failure: 1>",
+    ):
+        await zha_device.issue_cluster_command(
+            3,
+            lightlink.LightLink.cluster_id,
+            lightlink.LightLink.ServerCommandDefs.network_start.id,
+            CLUSTER_COMMAND_SERVER,
+            None,
+            {},
+        )
 
 
 async def test_async_add_to_group_remove_from_group(

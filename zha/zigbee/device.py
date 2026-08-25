@@ -1465,13 +1465,15 @@ class Device(LogMixin, EventBase):
         if isinstance(response, Exception):
             raise ZHAException("Failed to issue cluster command") from response
 
-        # The response is either a Default Response (`command_id`, `status`) or the
-        # cluster-specific response defined for the command, whose fields differ per
-        # command. Only the latter's `status` field, when it has one, is meaningful:
+        # Depending on the command, the reply is either a Default Response
+        # (`command_id`, `status`) or the cluster-specific response defined for that
+        # command, whose fields differ per command. A field named `status` means the
+        # same thing in either kind of reply -- but its position does not carry over:
         # indexing blindly into the response reads an unrelated field (e.g. a Groups
-        # `add_response`'s `group_id`) and reports it as a ZCL status.
+        # `add_response`'s `group_id`) and reports it as a status. Many cluster-specific
+        # responses, such as `get_membership_response`, have no `status` field at all.
         status = getattr(response, "status", None)
-        if isinstance(status, ZclStatus) and status != ZclStatus.SUCCESS:
+        if status is not None and status != ZclStatus.SUCCESS:
             raise ZHAException(f"Failed to issue cluster command with status: {status}")
 
     async def async_add_to_group(self, group_id: int) -> None:
