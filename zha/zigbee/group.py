@@ -235,7 +235,13 @@ class Group(LogMixin):
         # removal cannot unregister a recreated entity with the same unique id
         if self._group_entities.get(group_entity.unique_id) is group_entity:
             self._group_entities.pop(group_entity.unique_id)
-            self._entity_unsubs.pop(group_entity.unique_id)()
+            # `on_remove()` drains `_entity_unsubs` without touching
+            # `_group_entities`, so a group entity registered while it was
+            # running is left here without an unsubscribe callback
+            if (
+                unsub := self._entity_unsubs.pop(group_entity.unique_id, None)
+            ) is not None:
+                unsub()
 
     def _handle_maybe_update_group_members(self, event: EntityStateChangedEvent):
         """Handle the maybe update group members event."""
@@ -355,6 +361,10 @@ class Group(LogMixin):
                     group_entity,
                     exc_info=True,
                 )
+            # `GroupEntity.on_remove` unregisters the entity itself, but if it
+            # raised before getting there, unregister it here so that
+            # `_group_entities` and `_entity_unsubs` stay in sync
+            self.unregister_group_entity(group_entity)
         # Unsubscribe any remaining member entity subscriptions
         while self._entity_unsubs:
             _, unsub = self._entity_unsubs.popitem()

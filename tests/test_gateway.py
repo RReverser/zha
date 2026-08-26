@@ -28,6 +28,7 @@ from tests.common import (
 )
 from zha.application import Platform
 from zha.application.const import ZHA_GW_MSG, ZHA_GW_MSG_CONNECTION_LOST, RadioType
+from zha.application.discovery import discover_group_entities
 from zha.application.gateway import (
     ConnectionLostEvent,
     DeviceFullInitEvent,
@@ -1412,7 +1413,8 @@ async def test_group_removed_tears_down_group_entities(
 
     assert get_group_entity(zha_group, platform=Platform.LIGHT) is not None
 
-    # remove the zigpy group directly, without removing the members first
+    # `Groups.pop()` removes every member first, so the teardown here runs
+    # through the `group_member_removed` path
     zha_gateway.application_controller.groups.pop(zha_group.group_id)
     await zha_gateway.async_block_till_done()
 
@@ -1423,3 +1425,111 @@ async def test_group_removed_tears_down_group_entities(
     assert (
         len(device_1_light_entity._listeners[STATE_CHANGED]) == baseline_listener_count
     )
+
+
+async def test_gateway_group_removed_tears_down_group_entities(
+    zha_gateway: Gateway,
+) -> None:
+    """Test `Gateway.group_removed` tears down a group that still has entities."""
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    device_1_light_entity = get_entity(device_light_1, platform=Platform.LIGHT)
+    baseline_listener_count = len(
+        device_1_light_entity._listeners.get(STATE_CHANGED, [])
+    )
+
+    zha_group: Group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+
+    assert get_group_entity(zha_group, platform=Platform.LIGHT) is not None
+    assert zha_group._entity_unsubs
+
+    # call the zigpy listener callback directly, so the group still has its
+    # members (and therefore its group entities) when it is removed
+    zha_gateway.group_removed(zha_group.zigpy_group)
+    await zha_gateway.async_block_till_done()
+
+    assert zha_gateway.get_group(zha_group.group_id) is None
+    assert not zha_group.group_entities
+    # all entity subscriptions are released
+    assert not zha_group._entity_unsubs
+    assert (
+        len(device_1_light_entity._listeners[STATE_CHANGED]) == baseline_listener_count
+    )
+
+
+async def test_group_on_remove_entity_failure_keeps_state_consistent(
+    zha_gateway: Gateway,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test `Group.on_remove` leaves consistent state when an entity fails to remove."""
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group: Group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+
+    group_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+
+    with patch.object(
+        group_entity, "on_remove", side_effect=Exception("Group entity removal failed")
+    ):
+        await zha_group.on_remove()
+
+    assert "Failed to remove group entity" in caplog.text
+    # the failed entity is still unregistered, so both mappings stay in sync
+    assert not zha_group.group_entities
+    assert not zha_group._entity_unsubs
+
+    # unregistering it again must not raise
+    zha_group.unregister_group_entity(group_entity)
+
+
+async def test_unregister_group_entity_ignores_stale_entity(
+    zha_gateway: Gateway,
+) -> None:
+    """Test a delayed removal cannot unregister a recreated group entity."""
+    device_light_1 = await device_light_1_mock(zha_gateway)
+    device_light_2 = await device_light_2_mock(zha_gateway)
+
+    zha_group: Group = await zha_gateway.async_create_zigpy_group(
+        "Test Group",
+        [
+            GroupMemberReference(ieee=device_light_1.ieee, endpoint_id=1),
+            GroupMemberReference(ieee=device_light_2.ieee, endpoint_id=1),
+        ],
+    )
+    await zha_gateway.async_block_till_done()
+
+    original_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+
+    # the entity is unregistered, then recreated with the same unique id
+    # before its (delayed) `on_remove` gets to run
+    zha_group.unregister_group_entity(original_entity)
+    assert original_entity.unique_id not in zha_group.group_entities
+
+    for entity in discover_group_entities(zha_group):
+        entity.on_add()
+
+    recreated_entity = get_group_entity(zha_group, platform=Platform.LIGHT)
+    assert recreated_entity is not original_entity
+    assert recreated_entity.unique_id == original_entity.unique_id
+
+    await original_entity.on_remove()
+
+    # the recreated entity is still registered and still subscribed
+    assert zha_group.group_entities[recreated_entity.unique_id] is recreated_entity
+    assert recreated_entity.unique_id in zha_group._entity_unsubs

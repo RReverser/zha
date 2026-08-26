@@ -149,9 +149,10 @@ def discover_group_entities(group: Group) -> Iterator[GroupEntity]:
         for entity in member.associated_entities:
             platform_counts[entity.PLATFORM] += 1
 
-    eligible_platforms = {
+    # A list (not a set) so group entity creation order stays deterministic
+    eligible_platforms = [
         platform for platform, count in platform_counts.items() if count >= 2
-    }
+    ]
 
     # Remove group entities for platforms that no longer have enough members
     if stale_entities := [
