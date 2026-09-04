@@ -1480,10 +1480,7 @@ class LightGroup(BaseSharedLight, GroupEntity):
             and kwargs.get("effect") is None
             and kwargs.get("flash") is None
             and (
-                (
-                    kwargs.get("brightness") is not None
-                    or kwargs.get("transition") is not None
-                )
+                kwargs.get("brightness") is not None
                 # Mirrors the level gating `_async_turn_on_impl` applies on its
                 # own, minus that method's `self._level_cluster is not None`
                 # check: `LightGroup.__init__` always sets it from the group's
