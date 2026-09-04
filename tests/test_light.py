@@ -2435,6 +2435,22 @@ async def test_group_adjust_only_lit_members(zha_gateway: Gateway) -> None:
     assert entity.state.color_temp == 300
 
     group_cluster_on_off.request.reset_mock()
+    group_cluster_color.request.reset_mock()
+
+    # same for XY color
+    await entity.async_turn_on(xy_color=(0.1, 0.2))
+    await zha_gateway.async_block_till_done()
+    assert group_cluster_on_off.request.call_count == 0
+    assert group_cluster_color.request.call_count == 1
+    assert (
+        group_cluster_color.request.call_args.args[1]
+        == group_cluster_color.commands_by_name["move_to_color"].id
+    )
+    assert group_cluster_color.request.call_args.kwargs["color_x"] == int(0.1 * 65535)
+    assert group_cluster_color.request.call_args.kwargs["color_y"] == int(0.2 * 65535)
+    assert entity.state.xy_color == (0.1, 0.2)
+
+    group_cluster_on_off.request.reset_mock()
     group_cluster_level.request.reset_mock()
 
     # disabling the option restores the default behavior even with a lit member
